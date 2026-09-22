@@ -97,6 +97,7 @@
   .auth{max-width:420px;margin:8vh auto 0}
   .auth .mark-big{width:72px;height:72px;border-radius:18px;margin:0 auto 12px;display:grid;place-items:center;background:var(--green);color:var(--on-primary);font-size:34px;font-weight:800;overflow:hidden}
   .auth .mark-big img{width:100%;height:100%;object-fit:contain;background:#fff}
+  .mark img{padding:0}
   .auth h1{text-align:center}
   body.signed-out nav,body.signed-out #refresh{display:none}
   .skeleton{height:90px;border-radius:14px;background:linear-gradient(90deg,var(--card),var(--line),var(--card));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}
@@ -284,8 +285,9 @@ function applyBrand(d) {
   if (d && d.logo !== undefined) { logoCache = d.logo && d.logo.version ? d.logo : null; try { if (logoCache) localStorage.setItem('ninja.logo', JSON.stringify(logoCache)); else localStorage.removeItem('ninja.logo'); } catch (e) {} }
   var mark = document.getElementById('brand-mark');
   mark.textContent = '';
-  if (logoCache && logoCache.dataUrl) mark.appendChild(h('img', { src: logoCache.dataUrl, alt: '' })); else mark.textContent = ((p && p.name) || 'N').trim().charAt(0).toUpperCase();
-  mark.style.background = logoCache ? 'transparent' : '';
+  var logoSrc = logoCache && logoCache.dataUrl ? logoCache.dataUrl : (typeof PWA !== 'undefined' && PWA ? 'icon-192.png' : '');
+  if (logoSrc) mark.appendChild(h('img', { src: logoSrc, alt: '' })); else mark.textContent = ((p && p.name) || 'N').trim().charAt(0).toUpperCase();
+  mark.style.background = logoSrc ? 'transparent' : '';
   if (p && p.name) { brandName = p.name; document.getElementById('brand-name').textContent = p.name.toUpperCase(); document.title = brandName + ' · ' + (lang === 'ar' ? 'الملّاك' : 'Owners'); }
   applyMode();
 }
@@ -502,7 +504,7 @@ function team() {
 }
 
 function authScreen() {
-  var logo = logoCache && logoCache.dataUrl ? h('img', { src: logoCache.dataUrl, alt: '' }) : (brandName || 'N').charAt(0);
+  var logo = h('img', { src: logoCache && logoCache.dataUrl ? logoCache.dataUrl : 'icon-192.png', alt: '' });
   var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
   function fail(e) { err.hidden = false; err.textContent = e.message; }
   if (!kv('ninja.backend')) return h('section', { class: 'auth' }, h('div', { class: 'mark-big' }, logo), h('h1', { text: t('connectTitle') }), h('p', { class: 'note', text: t('connectNote') }),
