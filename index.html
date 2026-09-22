@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Owners</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#221E1F">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Owners">
+<script>if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#221E1F;--card:#2C2728;--line:#4E4A4B;--green:#6DBE45;--gold:#CBA56A;--white:#FFFFFF;--muted:#B9B4B5;--danger:#F07167;--amber:#E9B949;--on-primary:#221E1F;--field:#1a1718;--bar:rgba(34,30,31,.96);--forest:color-mix(in srgb,var(--green) 45%,#0b120a);color-scheme:dark}
+  html[data-mode=light]{--black:#F5F6F4;--card:#FFFFFF;--line:#DFE5D9;--white:#221E1F;--muted:#5F6B57;--danger:#B3261E;--amber:#8A6116;--field:#FFFFFF;--bar:rgba(255,255,255,.96);color-scheme:light}
+  .brand img{width:34px;height:34px;border-radius:9px;background:#fff;object-fit:contain;padding:2px}
+  .credit{font-size:11px;color:var(--muted);text-align:center;margin:18px 0 0}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--black);color:var(--white);font-family:Montserrat,system-ui,sans-serif;-webkit-text-size-adjust:100%}
+  button,input,textarea{font:inherit}
+  .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--bar);border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .mark{width:34px;height:34px;border-radius:9px;background:var(--green);color:var(--on-primary);display:grid;place-items:center;font-weight:800;font-size:20px}
+  .brand b{display:block;font-weight:800;letter-spacing:.14em;font-size:15px}
+  .brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.2em;font-weight:500}
+  .icon-btn{background:transparent;color:var(--white);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-height:40px;font-weight:700;font-size:13px}
+  main{padding:14px 16px 110px;max-width:640px;margin:0 auto}
+  h1{font-weight:800;font-size:24px;margin:6px 0 4px}
+  h2{font-weight:700;font-size:15px;margin:0 0 10px}
+  .sync{font-size:12.5px;color:var(--muted);margin:0 0 12px;display:flex;gap:8px;align-items:center}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex:none}
+  .dot.stale{background:var(--amber)} .dot.none{background:var(--danger)}
+  .banner{border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.45;margin-bottom:12px}
+  .banner.warn{background:rgba(233,185,73,.12);border:1px solid rgba(233,185,73,.5)}
+  .banner.err{background:rgba(240,113,103,.12);border:1px solid rgba(240,113,103,.5)}
+  .banner.ok{background:rgba(109,190,69,.12);border:1px solid rgba(109,190,69,.5)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .hero{background:linear-gradient(145deg,var(--forest),#1d3d27);border:0}
+  .hero span{font-size:12px;color:#d9ecd0;font-weight:500}
+  .hero strong{display:block;font-size:34px;font-weight:800;margin:6px 0 10px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .stats div{background:rgba(0,0,0,.18);border-radius:10px;padding:8px}
+  .stats b{display:block;font-size:15px}.stats small{font-size:11px;color:#d9ecd0}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(78,74,75,.6)}
+  .row:first-of-type{border-top:0}
+  .row small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+  .row strong{white-space:nowrap;font-weight:700}
+  .low{color:var(--danger)} .ok-txt{color:var(--green)} .gold{color:var(--gold)}
+  .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:3px 8px;background:rgba(255,255,255,.08)}
+  .pill.pending{background:rgba(233,185,73,.18);color:var(--amber)} .pill.imported{background:rgba(109,190,69,.18);color:var(--green)} .pill.rejected{background:rgba(240,113,103,.18);color:var(--danger)}
+  .bars{display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:6px}
+  .bars div{flex:1;background:var(--green);border-radius:4px 4px 0 0;min-height:2px;opacity:.85}
+  .bars div.today{background:var(--gold);opacity:1}
+  .axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:4px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;margin:6px 0 12px}
+  label{display:block;font-size:13px;font-weight:700;margin:12px 0 0}
+  input,textarea{display:block;width:100%;margin-top:6px;background:var(--field);color:var(--white);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:16px}
+  textarea{min-height:70px;resize:vertical}
+  input:focus,textarea:focus{outline:2px solid var(--green);border-color:transparent}
+  .primary{width:100%;margin-top:16px;min-height:50px;background:var(--green);color:var(--on-primary);border:0;border-radius:12px;font-weight:800;font-size:16px}
+  .primary:disabled{opacity:.5}
+  .link{background:none;border:0;color:var(--green);font-weight:700;padding:4px 0;font-size:12.5px;text-decoration:underline}
+  .search{margin-bottom:10px}
+  nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:var(--bar);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  nav button{background:none;border:0;color:var(--muted);min-height:54px;font-size:12px;font-weight:700;border-radius:10px}
+  nav button span{display:block;font-size:18px;margin-bottom:2px}
+  nav button[aria-current=page]{color:var(--green);background:rgba(109,190,69,.1)}
+  .viewer{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:20;display:flex;flex-direction:column;padding:16px}
+  .viewer img{max-width:100%;max-height:80vh;object-fit:contain;margin:auto;border-radius:8px}
+  .empty{color:var(--muted);font-size:13px;margin:4px 0}
+  .item-row{width:100%;background:none;border:0;border-top:1px solid rgba(78,74,75,.6);color:inherit;text-align:left;cursor:pointer;min-height:56px;font:inherit}
+  .item-row:first-of-type{border-top:0}
+  .item-row:active{background:rgba(109,190,69,.08)}
+  .sheet{justify-content:flex-end;padding:0;overflow:auto}
+  .sheet form{margin:0;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-width:640px;width:100%;align-self:center}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .sheet-head h2{margin:0;font-size:18px}
+  .segmented{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--field);border-radius:12px;padding:4px;margin:12px 0 4px}
+  .segmented button{background:none;border:0;color:var(--muted);font-weight:700;font-size:12px;min-height:40px;border-radius:9px}
+  .segmented button[aria-selected=true]{background:var(--green);color:var(--on-primary)}
+  [hidden]{display:none!important}
+  .top-actions{display:flex;gap:8px}
+  html[lang=ar],html[lang=ar] body,html[lang=ar] button,html[lang=ar] input,html[lang=ar] textarea{font-family:Cairo,Montserrat,system-ui,sans-serif}
+  html[lang=ar] .brand b{letter-spacing:.14em}
+  html[dir=rtl] .item-row{text-align:right}
+  .lang-btn{font-family:Cairo,Montserrat,sans-serif}
+  html[lang=ar] .lang-btn{font-family:Montserrat,sans-serif}
+  .num{unicode-bidi:isolate;direction:ltr;display:inline-block}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:8px}
+  .swatch{border:2px solid var(--line);border-radius:12px;background:var(--field);color:var(--white);padding:8px 4px;font-size:11px;font-weight:700;min-height:64px}
+  .swatch i{display:block;width:26px;height:26px;border-radius:50%;margin:0 auto 6px}
+  .swatch[aria-pressed=true]{border-color:var(--green)}
+  .auth{max-width:420px;margin:8vh auto 0}
+  .auth .mark-big{width:72px;height:72px;border-radius:18px;margin:0 auto 12px;display:grid;place-items:center;background:var(--green);color:var(--on-primary);font-size:34px;font-weight:800;overflow:hidden}
+  .auth .mark-big img{width:100%;height:100%;object-fit:contain;background:#fff}
+  .auth h1{text-align:center}
+  body.signed-out nav,body.signed-out #refresh{display:none}
+  .skeleton{height:90px;border-radius:14px;background:linear-gradient(90deg,var(--card),var(--line),var(--card));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}
+  @keyframes sh{to{background-position:-200% 0}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="mark" id="brand-mark" aria-hidden="true">N</div><div><b id="brand-name"></b><small id="brand-sub">OWNERS</small></div></div>
+  <div class="top-actions"><button class="icon-btn" id="refresh" type="button">Refresh</button></div>
+</header>
+<main id="main" aria-live="polite"><div class="skeleton"></div><div class="skeleton"></div></main>
+<nav id="tabs">
+  <button type="button" data-tab="Today" aria-current="page"><span aria-hidden="true">◉</span><b>Today</b></button>
+  <button type="button" data-tab="Stock"><span aria-hidden="true">▦</span><b>Stock</b></button>
+  <button type="button" data-tab="Purchases"><span aria-hidden="true">＋</span><b>Purchases</b></button>
+  <button type="button" data-tab="Team"><span aria-hidden="true">☷</span><b>Team</b></button>
+  <button type="button" data-tab="Profile"><span aria-hidden="true">☺</span><b>Profile</b></button>
+</nav>
+<script>
+var state = { tab: 'Today', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null };
+var STALE_MINUTES = 15;
+
+// ---------- language (English default; Arabic on request, remembered on this phone) ----------
+var I18N = {
+  en: {
+    owners: 'OWNERS', refresh: 'Refresh', switchTo: 'العربية', sections: 'Sections',
+    Today: 'Today', Stock: 'Stock', Purchases: 'Purchases', Team: 'Team', Profile: 'Profile',
+    account: 'Account', signedInAs: 'Signed in as {who}', appearance: 'Appearance', colours: 'Colours', businessColours: 'Business', lightDark: 'Light or dark',
+    m_business: 'Business default', m_light: 'Light', m_dark: 'Dark', m_auto: 'Automatic', language: 'Language',
+    changePassword: 'Change password', currentPassword: 'Current password', newPassword: 'New password (8+ characters)', savePassword: 'Save new password', passwordChanged: 'Password changed.',
+    signOut: 'Sign out', signIn: 'Sign in', username: 'Username', password: 'Password', signInNote: 'Use the username and password the business owner set for you on the laptop.',
+    connectTitle: 'Connect your business', connectNote: 'Open the install link from the laptop (Business setup, Owners phone app), or paste the business link here.', businessLink: 'Business link', connect: 'Connect', wrongLink: 'That is not a business link. Copy it again from the laptop.',
+    changeBusiness: 'Use another business', installApp: 'Install the app', installNote: 'Add it to your home screen: in Chrome tap ⋮ then Install app (iPhone: Share then Add to Home Screen).', install: 'Install',
+    noData: 'No data from the main laptop yet. It sends data every 2 minutes while the system is running and online.',
+    laptopUpdate: 'Laptop update {ago} · {time} Cairo',
+    stale: 'The main laptop has not sent an update since {time}. It may be off, asleep or offline. Figures below are from that time.',
+    justNow: 'just now', minAgo: '{n} min ago', hAgo: '{n} h ago', dAgo: '{n} days ago',
+    netSales: 'Net sales · business day {day}', orders: 'orders', average: 'average', discounts: 'discounts',
+    dayNote: 'Business day runs 10 AM–10 AM Cairo. Recorded sales only: not profit, and payment labels are not bank settlement.',
+    last14: 'Last 14 business days', chartLabel: 'Daily net sales for the last 14 business days', todayAxis: 'Today',
+    paymentsToday: 'Payments today (recorded)', nOrders: '{n} orders', noSalesToday: 'No sales yet today.',
+    topItems: 'Top items today', noItemsToday: 'No items sold yet today.',
+    recentOrders: 'Recent orders', noOrders: 'No orders recorded yet.', dineIn: 'Dine-in', takeaway: 'Takeaway',
+    cash: 'Cash', instapay: 'InstaPay', opay_visa: 'Card (OPay)',
+    lowItems: '{n} item(s) at or below minimum.', noLow: 'No low-stock flags.',
+    stockHelp: 'Tap an item to count it, add a delivery, record use or waste, or change its minimum. Changes are applied on the main laptop at its next sync (about 2 minutes).',
+    addItem: '+ Add new stock item', searchStock: 'Search stock', noMatch: 'No matching items.',
+    minimumOf: 'minimum {n} {unit}', update: 'Update {name}', changesFromPhones: 'Stock changes from phones', item: 'Item',
+    k_count: 'Counted', k_receive: 'Received', k_waste: 'Used / waste', k_minimum: 'New minimum', k_newItem: 'New item',
+    s_pending: 'Waiting for laptop', s_applied: 'Applied', s_rejected: 'Not accepted', s_imported: 'On laptop',
+    close: 'Close', newStockItem: 'New stock item', laptopRecord: 'Laptop record: {q} {unit} · minimum {p} {unit}',
+    t_count: 'Count', t_receive: 'Received', t_waste: 'Used / waste', t_minimum: 'Minimum',
+    h_count: 'How many {unit} are physically there right now? This replaces the laptop number.',
+    h_receive: 'How many {unit} arrived? This is added.',
+    h_waste: 'How many {unit} were used outside sales, spilled or thrown away? This is subtracted.',
+    h_minimum: 'Warn when stock is at or below this many {unit}.',
+    quantityUnit: 'Quantity ({unit})', reason: 'Reason', reasonHint: 'e.g. expired milk, spilled', noteOptional: 'Note (optional)',
+    itemName: 'Item name', unitLabel: 'Unit (e.g. kg, L, pcs, bottle)', categoryOptional: 'Category (optional)', categoryHint: 'e.g. Dairy, Packaging',
+    quantityNow: 'Quantity now', minimumBefore: 'Minimum before warning', sendToLaptop: 'Send to laptop', sending: 'Sending…',
+    stockSent: '{what} sent. It will be applied on the laptop at the next sync.', stockWhat: '{kind} {q} {unit} for {name}', newItemWhat: 'New item {name}',
+    retryStock: 'Press Send again to retry safely.',
+    newPurchase: 'New purchase', supplier: 'Supplier', invoiceDate: 'Invoice date', totalEgp: 'Total (EGP)', whatBought: 'What did you buy?',
+    receiptFile: 'Receipt photo or PDF', purchaseNote: 'Saved to the business Google Drive, then added to the laptop at its next sync. Photos are resized before upload.',
+    savePurchase: 'Save purchase', saving: 'Saving…', sentFromPhones: 'Sent from phones', laptopPurchases: 'Purchases on the laptop',
+    enteredOn: 'entered on {src}', src_laptop: 'laptop', src_phone: 'phone', viewReceipt: 'View receipt', receiptUploading: 'Receipt uploading from laptop…',
+    noPurchases: 'No purchases recorded yet.',
+    purchaseSaved: 'Purchase saved to Drive. It will be added to the laptop at the next sync. Inventory is not adjusted.',
+    retryPurchase: 'Your entries are kept; press Save again to retry safely.',
+    pdfTooBig: 'PDF must be under 10 MB', cannotRead: 'Could not read the file', badImage: 'That image format is not supported. Use a photo, PNG or PDF.',
+    receipt: 'Receipt', loadingReceipt: 'Loading receipt…', downloadPdf: 'Download PDF receipt',
+    recentShifts: 'Recent shifts', shiftIn: 'In {t}', shiftOut: 'out {t}', closed: 'Closed', onShift: 'On shift',
+    noShifts: 'No shifts clocked on the new POS yet.',
+    privacyNote: 'Salaries, payroll and passwords are never sent to Google. Manage staff, attendance rules and payroll on the main laptop.',
+    connection: 'Connection problem. Try again.', credit: 'Ninja — POS & Restaurant Management System', mode_light: 'Light mode', mode_dark: 'Dark mode', mode_auto: 'Automatic mode', mode_default: 'Business default mode'
+  },
+  ar: {
+    owners: 'الملّاك', refresh: 'تحديث', switchTo: 'English', sections: 'الأقسام',
+    Today: 'اليوم', Stock: 'المخزون', Purchases: 'المشتريات', Team: 'الفريق', Profile: 'حسابي',
+    account: 'الحساب', signedInAs: 'مسجّل الدخول باسم {who}', appearance: 'المظهر', colours: 'الألوان', businessColours: 'ألوان النشاط', lightDark: 'فاتح أو داكن',
+    m_business: 'حسب النشاط', m_light: 'فاتح', m_dark: 'داكن', m_auto: 'تلقائي', language: 'اللغة',
+    changePassword: 'تغيير كلمة المرور', currentPassword: 'كلمة المرور الحالية', newPassword: 'كلمة مرور جديدة (8 أحرف على الأقل)', savePassword: 'حفظ كلمة المرور', passwordChanged: 'تم تغيير كلمة المرور.',
+    signOut: 'تسجيل الخروج', signIn: 'تسجيل الدخول', username: 'اسم المستخدم', password: 'كلمة المرور', signInNote: 'استخدم اسم المستخدم وكلمة المرور اللذين حددهما المالك لك على اللابتوب.',
+    connectTitle: 'اربط نشاطك', connectNote: 'افتح رابط التثبيت من اللابتوب (إعدادات النشاط ← تطبيق الملّاك) أو الصق رابط النشاط هنا.', businessLink: 'رابط النشاط', connect: 'ربط', wrongLink: 'هذا ليس رابط نشاط. انسخه مرة أخرى من اللابتوب.',
+    changeBusiness: 'استخدام نشاط آخر', installApp: 'تثبيت التطبيق', installNote: 'أضفه إلى الشاشة الرئيسية: في كروم اضغط ⋮ ثم تثبيت التطبيق (آيفون: مشاركة ثم إضافة إلى الشاشة الرئيسية).', install: 'تثبيت',
+    noData: 'لا توجد بيانات من اللابتوب الرئيسي بعد. يرسل اللابتوب البيانات كل دقيقتين أثناء تشغيل النظام واتصاله بالإنترنت.',
+    laptopUpdate: 'آخر تحديث من اللابتوب {ago} · {time} بتوقيت القاهرة',
+    stale: 'لم يرسل اللابتوب الرئيسي أي تحديث منذ {time}. قد يكون مغلقًا أو في وضع السكون أو غير متصل. الأرقام أدناه من ذلك الوقت.',
+    justNow: 'الآن', minAgo: 'منذ {n} دقيقة', hAgo: 'منذ {n} ساعة', dAgo: 'منذ {n} يوم',
+    netSales: 'صافي المبيعات · يوم العمل {day}', orders: 'طلبات', average: 'المتوسط', discounts: 'الخصومات',
+    dayNote: 'يوم العمل من 10 صباحًا حتى 10 صباحًا بتوقيت القاهرة. هذه مبيعات مسجلة فقط وليست أرباحًا، وطريقة الدفع المسجلة لا تعني تسوية بنكية.',
+    last14: 'آخر 14 يوم عمل', chartLabel: 'صافي المبيعات اليومية لآخر 14 يوم عمل', todayAxis: 'اليوم',
+    paymentsToday: 'مدفوعات اليوم (المسجلة)', nOrders: '{n} طلبات', noSalesToday: 'لا توجد مبيعات اليوم بعد.',
+    topItems: 'الأكثر مبيعًا اليوم', noItemsToday: 'لم يُبع أي صنف اليوم بعد.',
+    recentOrders: 'أحدث الطلبات', noOrders: 'لا توجد طلبات مسجلة بعد.', dineIn: 'داخل المحل', takeaway: 'تيك أواي',
+    cash: 'نقدًا', instapay: 'إنستاباي', opay_visa: 'بطاقة (OPay)',
+    lowItems: '{n} صنف عند الحد الأدنى أو أقل.', noLow: 'لا توجد أصناف منخفضة.',
+    stockHelp: 'اضغط على أي صنف لجرده أو إضافة توريد أو تسجيل استهلاك أو هالك أو تغيير الحد الأدنى. تُطبق التغييرات على اللابتوب الرئيسي عند المزامنة التالية (حوالي دقيقتين).',
+    addItem: '+ إضافة صنف جديد', searchStock: 'ابحث في المخزون', noMatch: 'لا توجد أصناف مطابقة.',
+    minimumOf: 'الحد الأدنى {n} {unit}', update: 'تحديث {name}', changesFromPhones: 'تغييرات المخزون من الموبايل', item: 'صنف',
+    k_count: 'جرد', k_receive: 'توريد', k_waste: 'استهلاك / هالك', k_minimum: 'حد أدنى جديد', k_newItem: 'صنف جديد',
+    s_pending: 'في انتظار اللابتوب', s_applied: 'تم التطبيق', s_rejected: 'مرفوض', s_imported: 'على اللابتوب',
+    close: 'إغلاق', newStockItem: 'صنف مخزون جديد', laptopRecord: 'المسجل على اللابتوب: {q} {unit} · الحد الأدنى {p} {unit}',
+    t_count: 'جرد', t_receive: 'توريد', t_waste: 'استهلاك / هالك', t_minimum: 'الحد الأدنى',
+    h_count: 'كم {unit} موجود فعليًا الآن؟ سيحل هذا الرقم محل رقم اللابتوب.',
+    h_receive: 'كم {unit} وصل؟ ستتم إضافته.',
+    h_waste: 'كم {unit} استُهلك خارج المبيعات أو انسكب أو تم التخلص منه؟ سيتم خصمه.',
+    h_minimum: 'نبّهني عندما يصل المخزون إلى هذا العدد من {unit} أو أقل.',
+    quantityUnit: 'الكمية ({unit})', reason: 'السبب', reasonHint: 'مثال: لبن منتهي الصلاحية، انسكب', noteOptional: 'ملاحظة (اختياري)',
+    itemName: 'اسم الصنف', unitLabel: 'الوحدة (مثال: kg أو L أو pcs أو زجاجة)', categoryOptional: 'الفئة (اختياري)', categoryHint: 'مثال: ألبان، تغليف',
+    quantityNow: 'الكمية الحالية', minimumBefore: 'الحد الأدنى قبل التنبيه', sendToLaptop: 'إرسال إلى اللابتوب', sending: 'جارٍ الإرسال…',
+    stockSent: 'تم إرسال {what}. سيُطبق على اللابتوب عند المزامنة التالية.', stockWhat: '{kind} {q} {unit} لصنف {name}', newItemWhat: 'الصنف الجديد {name}',
+    retryStock: 'اضغط إرسال مرة أخرى لإعادة المحاولة بأمان.',
+    newPurchase: 'مشتريات جديدة', supplier: 'المورد', invoiceDate: 'تاريخ الفاتورة', totalEgp: 'الإجمالي (جنيه)', whatBought: 'ماذا اشتريت؟',
+    receiptFile: 'صورة الإيصال أو ملف PDF', purchaseNote: 'تُحفظ في Google Drive الخاص بالنشاط، ثم تُضاف إلى اللابتوب عند المزامنة التالية. يتم تصغير الصور قبل الرفع.',
+    savePurchase: 'حفظ المشتريات', saving: 'جارٍ الحفظ…', sentFromPhones: 'مرسلة من الموبايل', laptopPurchases: 'المشتريات على اللابتوب',
+    enteredOn: 'أُدخلت من {src}', src_laptop: 'اللابتوب', src_phone: 'الموبايل', viewReceipt: 'عرض الإيصال', receiptUploading: 'جارٍ رفع الإيصال من اللابتوب…',
+    noPurchases: 'لا توجد مشتريات مسجلة بعد.',
+    purchaseSaved: 'تم حفظ المشتريات في Drive. ستُضاف إلى اللابتوب عند المزامنة التالية. لا يتم تعديل المخزون.',
+    retryPurchase: 'بياناتك محفوظة؛ اضغط حفظ مرة أخرى لإعادة المحاولة بأمان.',
+    pdfTooBig: 'يجب أن يكون ملف PDF أقل من 10 ميجابايت', cannotRead: 'تعذرت قراءة الملف', badImage: 'صيغة الصورة غير مدعومة. استخدم صورة أو PNG أو PDF.',
+    receipt: 'الإيصال', loadingReceipt: 'جارٍ تحميل الإيصال…', downloadPdf: 'تنزيل إيصال PDF',
+    recentShifts: 'أحدث الورديات', shiftIn: 'دخول {t}', shiftOut: 'خروج {t}', closed: 'مغلقة', onShift: 'في الوردية',
+    noShifts: 'لم تُسجل أي ورديات على نظام الكاشير الجديد بعد.',
+    privacyNote: 'لا يتم إرسال الرواتب أو كشوف المرتبات أو كلمات المرور إلى Google أبدًا. إدارة الموظفين وقواعد الحضور والرواتب تتم على اللابتوب الرئيسي.',
+    connection: 'مشكلة في الاتصال. حاول مرة أخرى.', credit: 'نينجا — نظام نقاط البيع وإدارة المطاعم', mode_light: 'الوضع الفاتح', mode_dark: 'الوضع الداكن', mode_auto: 'وضع تلقائي', mode_default: 'الوضع الافتراضي للنشاط'
+  }
+};
+// Messages that come back from the Ninja backend or laptop (English) and their Arabic versions.
+var SERVER_AR = [
+  [/^This Google account is not an owner of this business\.?$/, 'حساب Google هذا ليس من حسابات ملّاك هذا النشاط.'],
+  [/^Owners app not linked yet.*$/, 'التطبيق غير مربوط بعد. يجب أن يفتحه المالك المسؤول أولًا.'],
+  [/^Sign-in expired.*$/, 'انتهت صلاحية تسجيل الدخول. أعد تحميل التطبيق.'],
+  [/^Sign-in (not valid|required)$/, 'تسجيل الدخول غير صالح. أعد تحميل التطبيق.'],
+  [/^Enter supplier, a valid invoice date and amount$/, 'أدخل المورد وتاريخ فاتورة صحيحًا والمبلغ'],
+  [/^Use a JPEG, PNG, WebP or PDF receipt$/, 'استخدم إيصالًا بصيغة JPEG أو PNG أو WebP أو PDF'],
+  [/^Receipt must be under 10 MB$/, 'يجب أن يكون الإيصال أقل من 10 ميجابايت'],
+  [/^Receipt not in Drive yet$/, 'الإيصال غير موجود في Drive بعد'],
+  [/^Enter a quantity of 0 or more$/, 'أدخل كمية صفر أو أكثر'],
+  [/^Enter a quantity above 0$/, 'أدخل كمية أكبر من صفر'],
+  [/^Say why the stock was used or wasted$/, 'اذكر سبب الاستهلاك أو الهالك'],
+  [/^Enter an item name and unit$/, 'أدخل اسم الصنف والوحدة'],
+  [/^Enter a starting quantity and minimum of 0 or more$/, 'أدخل كمية بداية وحدًا أدنى صفرًا أو أكثر'],
+  [/^Choose a stock item$/, 'اختر صنفًا من المخزون'],
+  [/^Reason is too long$/, 'السبب طويل جدًا'],
+  [/^Owner email not linked to an active owner on the laptop$/, 'البريد غير مربوط بمالك نشط على اللابتوب'],
+  [/^An item with this name already exists$/, 'يوجد صنف بهذا الاسم بالفعل'],
+  [/^Stock item not found on the laptop$/, 'الصنف غير موجود على اللابتوب'],
+  [/^Invalid .*$/, 'بيانات غير صحيحة'],
+  [/^Now (.+)$/, 'الآن $1'],
+  [/^Minimum set to (.+)$/, 'تم ضبط الحد الأدنى على $1'],
+  [/^Added (.+)$/, 'تمت إضافة $1'],
+  [/^Owners backend unavailable.*$/, 'النظام غير متاح حاليًا. حاول بعد قليل.'],
+  [/^Wrong username or password$/, 'اسم المستخدم أو كلمة المرور غير صحيحة'],
+  [/^Too many wrong passwords.*$/, 'محاولات خاطئة كثيرة. حاول بعد 15 دقيقة.'],
+  [/^Please sign in$/, 'سجّل الدخول من فضلك'],
+  [/^Current password is not correct$/, 'كلمة المرور الحالية غير صحيحة'],
+  [/^New password: at least 8 characters$/, 'كلمة المرور الجديدة: 8 أحرف على الأقل']
+];
+var lang = 'en';
+try { if (localStorage.getItem('ninja.lang') === 'ar') lang = 'ar'; } catch (e) {}
+function t(key, vars) { var s = (I18N[lang][key] !== undefined ? I18N[lang][key] : I18N.en[key]) || key; if (vars) Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); }); return s; }
+function tr(msg) { if (lang !== 'ar' || !msg) return msg; var m = String(msg); for (var i = 0; i < SERVER_AR.length; i++) if (SERVER_AR[i][0].test(m)) return m.replace(SERVER_AR[i][0], SERVER_AR[i][1]); return m; }
+// Names recorded as "English - عربي" show only the part for the chosen language.
+function nm(name) { var s = String(name || ''), parts = s.split(/\s+-\s+/); if (parts.length !== 2) return s; var ar = /[\u0600-\u06FF]/, a = parts.filter(function (p) { return ar.test(p); })[0], e = parts.filter(function (p) { return !ar.test(p); })[0]; return a && e ? (lang === 'ar' ? a : e) : s; }
+var UNIT_AR = { pcs: 'قطعة', g: 'جم', kg: 'كجم', ml: 'مل', L: 'لتر', bottle: 'زجاجة', can: 'علبة', pack: 'عبوة', box: 'صندوق', bag: 'كيس', portion: 'حصة' };
+function u(unit) { return lang === 'ar' && UNIT_AR[unit] ? UNIT_AR[unit] : unit; }
+
+// ---------- business brand (name, logo, colours, light/dark) ----------
+var brandTheme = { primary: '#6DBE45', mode: 'dark' }, logoCache = null, brandName = '';
+try { logoCache = JSON.parse(localStorage.getItem('ninja.logo') || 'null'); } catch (e) {}
+var THEMES = [['ninja', 'Ninja', '#6DBE45'], ['forest', 'Forest', '#2F7043'], ['mint', 'Mint', '#10B981'], ['espresso', 'Espresso', '#B07A4F'], ['gold', 'Gold', '#CBA56A'], ['saffron', 'Saffron', '#E0A526'], ['coral', 'Coral', '#F26B5B'], ['berry', 'Berry', '#C0266D'], ['ocean', 'Ocean', '#2F80ED'], ['midnight', 'Midnight', '#8B5CF6'], ['slate', 'Slate', '#64748B']];
+function deviceTheme() { try { return localStorage.getItem('ninja.theme'); } catch (e) { return null; } }
+function applyColour() { var mine = THEMES.filter(function (x) { return x[0] === deviceTheme(); })[0]; document.documentElement.style.setProperty('--green', mine ? mine[2] : brandTheme.primary); }
+function deviceMode() { try { var m = localStorage.getItem('ninja.mode'); return m === 'light' || m === 'dark' || m === 'auto' ? m : null; } catch (e) { return null; } }
+function applyMode() {
+  var m = deviceMode() || brandTheme.mode || 'dark';
+  if (m === 'auto') m = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  document.documentElement.dataset.mode = m;
+}
+function applyBrand(d) {
+  var p = d && d.snapshot && d.snapshot.profile;
+  if (p && p.theme) brandTheme = p.theme;
+  applyColour();
+  if (d && d.logo !== undefined) { logoCache = d.logo && d.logo.version ? d.logo : null; try { if (logoCache) localStorage.setItem('ninja.logo', JSON.stringify(logoCache)); else localStorage.removeItem('ninja.logo'); } catch (e) {} }
+  var mark = document.getElementById('brand-mark');
+  mark.textContent = '';
+  if (logoCache && logoCache.dataUrl) mark.appendChild(h('img', { src: logoCache.dataUrl, alt: '' })); else mark.textContent = ((p && p.name) || 'N').trim().charAt(0).toUpperCase();
+  mark.style.background = logoCache ? 'transparent' : '';
+  if (p && p.name) { brandName = p.name; document.getElementById('brand-name').textContent = p.name.toUpperCase(); document.title = brandName + ' · ' + (lang === 'ar' ? 'الملّاك' : 'Owners'); }
+  applyMode();
+}
+
+var LOCALE = function () { return lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB'; };
+function applyLanguage() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = (brandName ? brandName + ' · ' : '') + (lang === 'ar' ? 'الملّاك' : 'Owners');
+  document.getElementById('brand-sub').textContent = t('owners');
+  document.getElementById('refresh').textContent = t('refresh');
+  document.getElementById('tabs').setAttribute('aria-label', t('sections'));
+  document.querySelectorAll('nav button').forEach(function (b) { b.querySelector('b').textContent = t(b.dataset.tab); });
+}
+
+// ---------- helpers (all user text goes through textContent, never innerHTML) ----------
+function h(tag, attrs) {
+  var el = document.createElement(tag);
+  if (attrs) Object.keys(attrs).forEach(function (k) {
+    if (k === 'text') el.textContent = attrs[k];
+    else if (k === 'class') el.className = attrs[k];
+    else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), attrs[k]);
+    else if (attrs[k] !== null && attrs[k] !== undefined && attrs[k] !== false) el.setAttribute(k, attrs[k]);
+  });
+  for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c === null || c === undefined || c === false) continue; if (Array.isArray(c)) c.forEach(function (x) { if (x) el.appendChild(x); }); else el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); }
+  return el;
+}
+function payLabel(m) { return I18N.en[m] ? t(m) : String(m).replace(/_/g, ' '); }
+function money(n) { return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-EG', { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(n) || 0); }
+function utc(s) { if (!s) return null; return new Date(/Z$|[+-]\d\d:\d\d$/.test(s) ? s : String(s).replace(' ', 'T') + 'Z'); }
+function cairo(s, opts) { var d = utc(s); return d ? d.toLocaleString(LOCALE(), Object.assign({ timeZone: 'Africa/Cairo' }, opts || { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })) : ''; }
+function minutesAgo(s) { var d = utc(s); return d ? Math.max(0, Math.round((Date.now() - d.getTime()) / 60000)) : null; }
+function ago(m) { return m < 1 ? t('justNow') : m < 60 ? t('minAgo', { n: m }) : m < 1440 ? t('hAgo', { n: Math.round(m / 60) }) : t('dAgo', { n: Math.round(m / 1440) }); }
+function uuid() { return crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = crypto.getRandomValues(new Uint8Array(1))[0] % 16; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }); }
+function todayCairo() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(new Date()); }
+function arrow() { return lang === 'ar' ? ' ‹' : ' ›'; }
+var PWA = !(window.google && google.script && google.script.run);
+var BACKEND_URL_RE = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
+function kv(k, v) { try { if (arguments.length === 1) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
+if (PWA) { try { var qb = new URLSearchParams(location.search).get('b'); if (qb && BACKEND_URL_RE.test(qb)) { if (kv('ninja.backend') !== qb) { kv('ninja.token', null); kv('ninja.user', null); } kv('ninja.backend', qb); history.replaceState(null, '', location.pathname); } } catch (e) {} }
+function signedIn() { return !PWA || (kv('ninja.backend') && kv('ninja.token')); }
+function call(action, payload) {
+  if (!PWA) return new Promise(function (resolve, reject) { google.script.run.withSuccessHandler(resolve).withFailureHandler(function (e) { reject(new Error(tr((e && e.message) || t('connection')))); }).api(action, payload || null); });
+  var body = Object.assign({ source: 'app', action: action, token: kv('ninja.token') }, payload || {});
+  return fetch(kv('ninja.backend'), { method: 'POST', headers: { 'content-type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), redirect: 'follow' })
+    .then(function (r) { return r.json(); }, function () { throw new Error(t('connection')); })
+    .then(function (v) {
+      if (!v || !v.ok) {
+        var msg = (v && v.error) || t('connection');
+        if (msg === 'Please sign in' && action !== 'login') { kv('ninja.token', null); state.data = null; render(); }
+        throw new Error(tr(msg));
+      }
+      return v;
+    });
+}
+
+// ---------- data ----------
+function load() {
+  if (!signedIn()) { state.loading = false; render(); return Promise.resolve(); }
+  state.loading = !state.data; state.error = ''; render();
+  return call('snapshot', { logoVersion: logoCache ? logoCache.version : null }).then(function (d) { state.data = d; state.loading = false; applyBrand(d); render(); })
+    .catch(function (e) { state.error = e.message; state.loading = false; render(); });
+}
+
+// ---------- screens ----------
+function syncLine() {
+  var d = state.data; if (!d) return null;
+  if (!d.snapshot) return h('div', { class: 'banner err', text: t('noData') });
+  var m = minutesAgo(d.receivedAt);
+  var stale = m > STALE_MINUTES;
+  return [h('p', { class: 'sync' }, h('span', { class: 'dot' + (stale ? ' stale' : '') }), t('laptopUpdate', { ago: ago(m), time: cairo(d.receivedAt, { hour: '2-digit', minute: '2-digit' }) })),
+    stale ? h('div', { class: 'banner warn', text: t('stale', { time: cairo(d.receivedAt) }) }) : null];
+}
+
+function today() {
+  var s = state.data.snapshot, tt = s.today;
+  var max = Math.max.apply(null, s.daily.map(function (d) { return d.netSales; }).concat([1]));
+  return [
+    h('section', { class: 'card hero' }, h('span', { text: t('netSales', { day: s.businessDay }) }), h('strong', { text: money(tt.netSales) }),
+      h('div', { class: 'stats' }, h('div', null, h('b', { text: String(tt.orders) }), h('small', { text: t('orders') })), h('div', null, h('b', { text: money(tt.averageTicket) }), h('small', { text: t('average') })), h('div', null, h('b', { text: money(tt.discounts) }), h('small', { text: t('discounts') })))),
+    h('p', { class: 'note', text: t('dayNote') }),
+    h('section', { class: 'card' }, h('h2', { text: t('last14') }),
+      h('div', { class: 'bars', role: 'img', 'aria-label': t('chartLabel') }, s.daily.map(function (d, i) { return h('div', { class: i === s.daily.length - 1 ? 'today' : '', style: 'height:' + Math.max(2, Math.round(d.netSales / max * 100)) + '%', title: d.date + ': ' + money(d.netSales) }); })),
+      h('div', { class: 'axis' }, h('span', { text: s.daily[0].date.slice(5) }), h('span', { text: t('todayAxis') }))),
+    h('section', { class: 'card' }, h('h2', { text: t('paymentsToday') }), tt.payments.length ? tt.payments.map(function (p) { return h('div', { class: 'row' }, h('span', { text: payLabel(p.method) }, h('small', { text: t('nOrders', { n: p.orders }) })), h('strong', { text: money(p.total) })); }) : h('p', { class: 'empty', text: t('noSalesToday') })),
+    h('section', { class: 'card' }, h('h2', { text: t('topItems') }), tt.topItems.length ? tt.topItems.map(function (p) { return h('div', { class: 'row' }, h('span', { text: nm(p.name) + (p.sizeLabel ? ' · ' + p.sizeLabel : '') }, h('small', { text: money(p.total) })), h('strong', { class: 'num', text: '× ' + p.quantity })); }) : h('p', { class: 'empty', text: t('noItemsToday') })),
+    h('section', { class: 'card' }, h('h2', { text: t('recentOrders') }), s.recentOrders.length ? s.recentOrders.slice(0, 15).map(function (o) { return h('div', { class: 'row' }, h('span', null, h('span', { class: 'num', text: o.orderNumber.slice(0, 15) }), h('small', { text: cairo(o.createdAt) + ' · ' + (o.orderType === 'dine_in' ? t('dineIn') : t('takeaway')) + ' · ' + payLabel(o.paymentMethod) })), h('strong', { text: money(o.total) })); }) : h('p', { class: 'empty', text: t('noOrders') }))
+  ];
+}
+
+function kindLabel(k) { return t('k_' + k); }
+function stockStatus(status) { return h('span', { class: 'pill ' + (status === 'applied' ? 'imported' : status), text: t('s_' + status) }); }
+function describeChange(c) { return kindLabel(c.kind) + (c.kind === 'newItem' ? ': ' + nm(c.itemName) + ' · ' + c.quantity : ' ' + c.quantity) + (c.reason ? ' · ' + c.reason : ''); }
+
+function stock() {
+  var s = state.data.snapshot, q = state.stockFilter.toLowerCase();
+  var changes = state.data.phoneStock || [];
+  var pendingFor = function (id) { return changes.filter(function (c) { return c.status === 'pending' && c.itemId === id; }); };
+  var items = s.inventory.filter(function (i) { return !q || i.name.toLowerCase().indexOf(q) >= 0; }).sort(function (a, b) { return (b.quantity <= b.parLevel) - (a.quantity <= a.parLevel) || nm(a.name).localeCompare(nm(b.name)); });
+  var low = s.inventory.filter(function (i) { return i.quantity <= i.parLevel; }).length;
+  return [
+    state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
+    h('div', { class: 'banner ' + (low ? 'warn' : 'ok'), text: low ? t('lowItems', { n: low }) : t('noLow') }),
+    h('p', { class: 'note', text: t('stockHelp') }),
+    h('button', { type: 'button', class: 'primary', style: 'margin:0 0 12px', text: t('addItem'), onclick: function () { openStockPanel(null); } }),
+    h('input', { class: 'search', type: 'search', placeholder: t('searchStock'), 'aria-label': t('searchStock'), value: state.stockFilter, oninput: function (e) { state.stockFilter = e.target.value; var pos = e.target.selectionStart; render(); var el = document.querySelector('.search'); el.focus(); el.setSelectionRange(pos, pos); } }),
+    h('section', { class: 'card' }, items.length ? items.map(function (i) {
+      var isLow = i.quantity <= i.parLevel, waiting = pendingFor(i.id);
+      return h('button', { type: 'button', class: 'row item-row', 'aria-label': t('update', { name: nm(i.name) }), onclick: function () { openStockPanel(i); } },
+        h('span', { text: nm(i.name) }, h('small', { text: (i.category ? i.category + ' · ' : '') + t('minimumOf', { n: i.parLevel, unit: u(i.unit) }) }), waiting.length ? h('small', { class: 'gold', text: '⏳ ' + waiting.map(describeChange).join(' · ') }) : null),
+        h('strong', { class: isLow ? 'low' : '', text: i.quantity + ' ' + u(i.unit) + arrow() }));
+    }) : h('p', { class: 'empty', text: t('noMatch') })),
+    changes.length ? h('section', { class: 'card' }, h('h2', { text: t('changesFromPhones') }), changes.slice(0, 15).map(function (c) {
+      return h('div', { class: 'row' }, h('span', { text: nm(c.itemName) || t('item') }, h('small', { text: describeChange(c) + ' · ' + c.email.split('@')[0] + ' · ' + cairo(c.submittedAt) + (c.note ? ' · ' + tr(c.note) : '') })), stockStatus(c.status));
+    })) : null
+  ];
+}
+
+function openStockPanel(item) {
+  var id = uuid(), kind = item ? 'count' : 'newItem';
+  var overlay = h('div', { class: 'viewer sheet', role: 'dialog', 'aria-label': item ? t('update', { name: nm(item.name) }) : t('newStockItem') });
+  function close() { overlay.remove(); }
+  function field(label, name, attrs) { return h('label', null, label, h('input', Object.assign({ name: name }, attrs || {}))); }
+  function draw() {
+    overlay.textContent = '';
+    var form = h('form', { class: 'card', onsubmit: submit });
+    form.appendChild(h('div', { class: 'sheet-head' }, h('h2', { text: item ? nm(item.name) : t('newStockItem') }), h('button', { type: 'button', class: 'icon-btn', text: t('close'), onclick: close })));
+    if (item) {
+      form.appendChild(h('p', { class: 'note', text: t('laptopRecord', { q: item.quantity, p: item.parLevel, unit: u(item.unit) }) }));
+      form.appendChild(h('div', { class: 'segmented', role: 'tablist' }, ['count', 'receive', 'waste', 'minimum'].map(function (k) {
+        return h('button', { type: 'button', role: 'tab', 'aria-selected': String(kind === k), text: t('t_' + k), onclick: function () { kind = k; draw(); } });
+      })));
+      form.appendChild(h('p', { class: 'note', text: t('h_' + kind, { unit: u(item.unit) }) }));
+      form.appendChild(field(t('quantityUnit', { unit: u(item.unit) }), 'quantity', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: kind === 'minimum' ? String(item.parLevel) : '' }));
+      if (kind === 'waste') form.appendChild(field(t('reason'), 'reason', { required: 'required', maxlength: '200', placeholder: t('reasonHint') }));
+      else if (kind !== 'minimum') form.appendChild(field(t('noteOptional'), 'reason', { maxlength: '200' }));
+    } else {
+      form.appendChild(field(t('itemName'), 'itemName', { required: 'required', maxlength: '120', autocomplete: 'off' }));
+      form.appendChild(field(t('unitLabel'), 'unit', { required: 'required', maxlength: '20' }));
+      form.appendChild(field(t('categoryOptional'), 'category', { maxlength: '60', placeholder: t('categoryHint') }));
+      form.appendChild(field(t('quantityNow'), 'quantity', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required' }));
+      form.appendChild(field(t('minimumBefore'), 'parLevel', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: '0' }));
+    }
+    form.appendChild(h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' }));
+    form.appendChild(h('button', { class: 'primary', type: 'submit', text: t('sendToLaptop') }));
+    overlay.appendChild(form);
+    var first = form.querySelector('input'); if (first) setTimeout(function () { first.focus(); }, 50);
+  }
+  function submit(e) {
+    e.preventDefault();
+    var f = e.target, button = f.querySelector('button[type=submit]'), err = f.querySelector('.banner.err');
+    var change = { id: id, kind: kind, quantity: f.quantity.value === '' ? '' : Number(f.quantity.value), reason: f.reason ? f.reason.value : '' };
+    if (item) { change.itemId = item.id; change.itemName = item.name; }
+    else { change.name = f.itemName.value; change.unit = f.unit.value; change.category = f.category.value; change.parLevel = f.parLevel.value === '' ? '' : Number(f.parLevel.value); }
+    button.disabled = true; button.textContent = t('sending'); err.hidden = true;
+    call('stock', { change: change }).then(function () {
+      close();
+      state.message = t('stockSent', { what: item ? t('stockWhat', { kind: kindLabel(kind), q: change.quantity, unit: u(item.unit), name: nm(item.name) }) : t('newItemWhat', { name: change.name }) });
+      return load();
+    }).catch(function (x) {
+      // Same change ID is kept: sending again cannot apply it twice.
+      button.disabled = false; button.textContent = t('sendToLaptop'); err.hidden = false; err.textContent = x.message + ' ' + t('retryStock');
+    });
+  }
+  draw();
+  document.body.appendChild(overlay);
+}
+
+function statusPill(status) { return h('span', { class: 'pill ' + status, text: t('s_' + status) }); }
+
+function buildPurchaseForm() {
+  return h('form', { class: 'card', onsubmit: submitPurchase },
+    h('h2', { text: t('newPurchase') }),
+    h('label', null, t('supplier'), h('input', { name: 'supplier', required: 'required', maxlength: '200', autocomplete: 'off' })),
+    h('label', null, t('invoiceDate'), h('input', { name: 'purchasedAt', type: 'date', required: 'required', value: todayCairo() })),
+    h('label', null, t('totalEgp'), h('input', { name: 'total', type: 'number', inputmode: 'decimal', min: '0', max: '10000000', step: '0.01', required: 'required' })),
+    h('label', null, t('whatBought'), h('textarea', { name: 'description', maxlength: '2000' })),
+    h('label', null, t('receiptFile'), h('input', { name: 'receipt', type: 'file', accept: 'image/*,application/pdf' })),
+    h('p', { class: 'note', text: t('purchaseNote') }),
+    h('button', { class: 'primary', type: 'submit', text: t('savePurchase') }));
+}
+
+function purchases() {
+  var d = state.data, s = d.snapshot;
+  if (!state.purchaseId) { state.purchaseId = uuid(); state.form = null; }
+  // The same form element is reused across refreshes so typed values and the chosen photo survive
+  // (Android may reload data after the camera closes). It is rebuilt only when the language changes.
+  if (!state.form || state.formLang !== lang) { var old = state.form; state.form = buildPurchaseForm(); state.formLang = lang; if (old) ['supplier', 'purchasedAt', 'total', 'description'].forEach(function (n) { state.form[n].value = old[n].value; }); }
+  var phone = d.phonePurchases || [];
+  return [
+    state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
+    state.form,
+    phone.length ? h('section', { class: 'card' }, h('h2', { text: t('sentFromPhones') }), phone.map(function (p) {
+      return h('div', { class: 'row' }, h('span', { text: p.supplier }, h('small', { text: p.purchasedAt + ' · ' + p.email.split('@')[0] + (p.note ? ' · ' + tr(p.note) : '') }), statusPill(p.status)), h('strong', { text: money(p.total) }));
+    })) : null,
+    s ? h('section', { class: 'card' }, h('h2', { text: t('laptopPurchases') }), s.purchases.length ? s.purchases.map(function (p) {
+      var inDrive = d.receipts.indexOf(p.reference) >= 0;
+      return h('div', { class: 'row' }, h('span', { text: p.supplier },
+        h('small', { text: p.purchasedAt + ' · ' + t('enteredOn', { src: t('src_' + p.source) }) }),
+        p.hasReceipt ? (inDrive ? h('button', { type: 'button', class: 'link', text: t('viewReceipt'), onclick: function () { viewReceipt(p.reference); } }) : h('small', { text: t('receiptUploading') })) : null),
+        h('strong', { text: money(p.total) }));
+    }) : h('p', { class: 'empty', text: t('noPurchases') })) : null
+  ];
+}
+
+function team() {
+  var s = state.data.snapshot;
+  return [
+    h('section', { class: 'card' }, h('h2', { text: t('recentShifts') }), s.shifts.length ? s.shifts.map(function (x) {
+      return h('div', { class: 'row' }, h('span', { text: x.employeeName }, h('small', { text: t('shiftIn', { t: cairo(x.clockIn) }) + (x.clockOut ? ' · ' + t('shiftOut', { t: cairo(x.clockOut, { hour: '2-digit', minute: '2-digit' }) }) : '') })), h('strong', { class: x.clockOut ? '' : 'ok-txt', text: x.clockOut ? t('closed') : t('onShift') }));
+    }) : h('p', { class: 'empty', text: t('noShifts') })),
+    h('p', { class: 'note', text: t('privacyNote') })
+  ];
+}
+
+function authScreen() {
+  var logo = logoCache && logoCache.dataUrl ? h('img', { src: logoCache.dataUrl, alt: '' }) : (brandName || 'N').charAt(0);
+  var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
+  function fail(e) { err.hidden = false; err.textContent = e.message; }
+  if (!kv('ninja.backend')) return h('section', { class: 'auth' }, h('div', { class: 'mark-big' }, logo), h('h1', { text: t('connectTitle') }), h('p', { class: 'note', text: t('connectNote') }),
+    h('form', { class: 'card', onsubmit: function (e) { e.preventDefault(); var v = e.target.link.value.trim(); try { var u = new URL(v); v = u.searchParams.get('b') || v; } catch (x) {} if (!BACKEND_URL_RE.test(v)) return fail(new Error(t('wrongLink'))); kv('ninja.backend', v); render(); } },
+      h('label', null, t('businessLink'), h('input', { name: 'link', required: 'required', autocomplete: 'off', inputmode: 'url' })), err, h('button', { class: 'primary', type: 'submit', text: t('connect') })));
+  return h('section', { class: 'auth' }, h('div', { class: 'mark-big' }, logo), h('h1', { text: (brandName ? brandName + ' · ' : '') + t('signIn') }), h('p', { class: 'note', text: t('signInNote') }),
+    h('form', { class: 'card', onsubmit: function (e) {
+      e.preventDefault(); var f = e.target, b = f.querySelector('button[type=submit]'); b.disabled = true; err.hidden = true;
+      call('login', { username: f.username.value, password: f.password.value }).then(function (r) { kv('ninja.token', r.token); kv('ninja.user', r.username + '|' + r.email); render(); return load(); }).catch(function (x) { b.disabled = false; fail(x); });
+    } }, h('label', null, t('username'), h('input', { name: 'username', required: 'required', autocomplete: 'username', autocapitalize: 'none' })),
+      h('label', null, t('password'), h('input', { name: 'password', type: 'password', required: 'required', autocomplete: 'current-password' })), err,
+      h('button', { class: 'primary', type: 'submit', text: t('signIn') })),
+    h('button', { type: 'button', class: 'link', text: t('changeBusiness'), onclick: function () { kv('ninja.backend', null); render(); } }));
+}
+
+var installPrompt = null;
+window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installPrompt = e; if (state.tab === 'Profile') render(); });
+function seg(options, current, pick) { return h('div', { class: 'segmented', role: 'tablist', style: 'grid-template-columns:repeat(' + options.length + ',1fr)' }, options.map(function (o) { return h('button', { type: 'button', role: 'tab', 'aria-selected': String(current === o[0]), text: o[1], onclick: function () { pick(o[0]); } }); })); }
+function profile() {
+  var who = PWA ? (kv('ninja.user') || '').split('|') : [null, state.data && state.data.email];
+  var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
+  return [
+    state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
+    h('section', { class: 'card' }, h('h2', { text: t('account') }), h('p', { class: 'note', text: t('signedInAs', { who: [who[0], who[1]].filter(Boolean).join(' · ') || '—' }) }),
+      PWA ? h('button', { type: 'button', class: 'primary', text: t('signOut'), onclick: function () { call('logout').catch(function () {}).then(function () { kv('ninja.token', null); kv('ninja.user', null); state.data = null; state.tab = 'Today'; render(); }); } }) : null),
+    h('section', { class: 'card' }, h('h2', { text: t('appearance') }),
+      h('label', null, t('colours')), h('div', { class: 'swatches' }, [h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(!deviceTheme()), onclick: function () { kv('ninja.theme', null); applyColour(); render(); } }, h('i', { style: 'background:' + brandTheme.primary }), t('businessColours'))]
+        .concat(THEMES.map(function (x) { return h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(deviceTheme() === x[0]), onclick: function () { kv('ninja.theme', x[0]); applyColour(); render(); } }, h('i', { style: 'background:' + x[2] }), x[1]); }))),
+      h('label', null, t('lightDark')), seg([['business', t('m_business')], ['light', t('m_light')], ['dark', t('m_dark')], ['auto', t('m_auto')]], deviceMode() || 'business', function (m) { kv('ninja.mode', m === 'business' ? null : m); applyMode(); render(); }),
+      h('label', null, t('language')), seg([['en', 'English'], ['ar', 'العربية']], lang, function (l) { lang = l; kv('ninja.lang', l); applyLanguage(); render(); })),
+    PWA ? h('form', { class: 'card', onsubmit: function (e) {
+      e.preventDefault(); var f = e.target, b = f.querySelector('button[type=submit]'); b.disabled = true; err.hidden = true;
+      call('changePassword', { oldPassword: f.oldPassword.value, newPassword: f.newPassword.value }).then(function () { f.reset(); b.disabled = false; state.message = t('passwordChanged'); render(); }).catch(function (x) { b.disabled = false; err.hidden = false; err.textContent = x.message; });
+    } }, h('h2', { text: t('changePassword') }), h('label', null, t('currentPassword'), h('input', { name: 'oldPassword', type: 'password', required: 'required', autocomplete: 'current-password' })),
+      h('label', null, t('newPassword'), h('input', { name: 'newPassword', type: 'password', minlength: '8', required: 'required', autocomplete: 'new-password' })), err, h('button', { class: 'primary', type: 'submit', text: t('savePassword') })) : null,
+    PWA && !(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ? h('section', { class: 'card' }, h('h2', { text: t('installApp') }), h('p', { class: 'note', text: t('installNote') }),
+      installPrompt ? h('button', { type: 'button', class: 'primary', text: t('install'), onclick: function () { installPrompt.prompt(); installPrompt = null; } }) : null) : null
+  ];
+}
+
+function render() {
+  var main = document.getElementById('main');
+  main.textContent = '';
+  document.body.classList.toggle('signed-out', !signedIn());
+  if (!signedIn()) { main.appendChild(authScreen()); return; }
+  document.querySelectorAll('nav button').forEach(function (b) { if (b.dataset.tab === state.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  main.appendChild(h('h1', { text: t(state.tab) }));
+  if (state.error) main.appendChild(h('div', { class: 'banner err', role: 'alert', text: state.error }));
+  if (state.loading) { main.appendChild(h('div', { class: 'skeleton' })); main.appendChild(h('div', { class: 'skeleton' })); return; }
+  if (!state.data) return;
+  [].concat(syncLine() || []).forEach(function (x) { if (x) main.appendChild(x); });
+  if (state.tab === 'Profile') { [].concat(profile()).forEach(function (x) { if (x) main.appendChild(x); }); main.appendChild(h('p', { class: 'credit', text: t('credit') })); return; }
+  if (!state.data.snapshot && state.tab !== 'Purchases') return;
+  var screen = { Today: today, Stock: stock, Purchases: purchases, Team: team }[state.tab]();
+  [].concat(screen).forEach(function (x) { if (x) main.appendChild(x); });
+  main.appendChild(h('p', { class: 'credit', text: t('credit') }));
+}
+
+// ---------- purchases ----------
+function readFile(file) { return new Promise(function (res, rej) { var r = new FileReader(); r.onload = function () { res(r.result); }; r.onerror = function () { rej(new Error(t('cannotRead'))); }; r.readAsDataURL(file); }); }
+function shrinkImage(file) {
+  // Phone photos are large; resize to max 1600px JPEG so uploads are quick on mobile data.
+  return readFile(file).then(function (url) { return new Promise(function (res, rej) {
+    var img = new Image();
+    img.onload = function () { var scale = Math.min(1, 1600 / Math.max(img.width, img.height)); var c = document.createElement('canvas'); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', 0.82)); };
+    img.onerror = function () { rej(new Error(t('badImage'))); };
+    img.src = url; }); });
+}
+function submitPurchase(e) {
+  e.preventDefault();
+  if (state.busy) return;
+  var f = e.target, file = f.receipt.files[0];
+  var purchase = { id: state.purchaseId, supplier: f.supplier.value, purchasedAt: f.purchasedAt.value, total: f.total.value, description: f.description.value, receipt: null };
+  var button = f.querySelector('button[type=submit]');
+  function setBusy(on) { state.busy = on; button.disabled = on; button.textContent = on ? t('saving') : t('savePurchase'); }
+  setBusy(true); state.error = ''; state.message = ''; render();
+  var prep = !file ? Promise.resolve(null) : file.type === 'application/pdf'
+    ? (file.size > 10 * 1024 * 1024 ? Promise.reject(new Error(t('pdfTooBig'))) : readFile(file).then(function (u) { return { name: file.name, mimeType: 'application/pdf', base64: u.split(',')[1] }; }))
+    : shrinkImage(file).then(function (u) { return { name: file.name.replace(/\.[^.]+$/, '') + '.jpg', mimeType: 'image/jpeg', base64: u.split(',')[1] }; });
+  prep.then(function (receipt) { purchase.receipt = receipt; return call('purchase', { purchase: purchase }); })
+    .then(function () { setBusy(false); state.purchaseId = null; state.form = null; state.message = t('purchaseSaved'); return load(); })
+    .catch(function (err) {
+      // Same purchase ID and form are kept, so pressing Save again cannot create a duplicate.
+      setBusy(false); state.error = err.message + ' ' + t('retryPurchase'); render();
+    });
+}
+function viewReceipt(reference) {
+  var overlay = h('div', { class: 'viewer', role: 'dialog', 'aria-label': t('receipt') }, h('button', { class: 'icon-btn', type: 'button', text: t('close'), onclick: function () { overlay.remove(); } }), h('p', { class: 'note', text: t('loadingReceipt') }));
+  document.body.appendChild(overlay);
+  call('receipt', { reference: reference }).then(function (r) {
+    overlay.lastChild.remove();
+    var bytes = Uint8Array.from(atob(r.base64), function (c) { return c.charCodeAt(0); });
+    var url = URL.createObjectURL(new Blob([bytes], { type: r.mimeType }));
+    if (r.mimeType === 'application/pdf') overlay.appendChild(h('a', { href: url, download: r.name, class: 'primary', style: 'display:block;text-align:center;padding:14px;text-decoration:none', text: t('downloadPdf') }));
+    else overlay.appendChild(h('img', { src: url, alt: t('receipt') + ' ' + reference }));
+  }).catch(function (e) { overlay.lastChild.textContent = e.message; });
+}
+
+document.querySelectorAll('nav button').forEach(function (b) { b.addEventListener('click', function () { state.tab = b.dataset.tab; state.message = ''; render(); window.scrollTo(0, 0); }); });
+document.getElementById('refresh').addEventListener('click', load);
+if (window.matchMedia) window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyMode);
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && !state.busy && state.tab !== 'Purchases' && state.tab !== 'Profile') load(); });
+setInterval(function () { if (document.visibilityState === 'visible' && !state.busy && state.tab !== 'Purchases' && state.tab !== 'Profile') load(); }, 120000);
+applyLanguage();
+applyBrand(null);
+load();
+</script>
+</body>
+</html>
