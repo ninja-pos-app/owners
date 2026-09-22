@@ -137,7 +137,7 @@ var I18N = {
     stale: 'The main laptop has not sent an update since {time}. It may be off, asleep or offline. Figures below are from that time.',
     justNow: 'just now', minAgo: '{n} min ago', hAgo: '{n} h ago', dAgo: '{n} days ago',
     netSales: 'Net sales · business day {day}', orders: 'orders', average: 'average', discounts: 'discounts',
-    dayNote: 'Business day runs 10 AM–10 AM Cairo. Recorded sales only: not profit, and payment labels are not bank settlement.',
+    dayNote: 'Business day runs 10 AM-10 AM Cairo. Recorded sales only: not profit, and payment labels are not bank settlement.',
     last14: 'Last 14 business days', chartLabel: 'Daily net sales for the last 14 business days', todayAxis: 'Today',
     paymentsToday: 'Payments today (recorded)', nOrders: '{n} orders', noSalesToday: 'No sales yet today.',
     topItems: 'Top items today', noItemsToday: 'No items sold yet today.',
@@ -172,7 +172,7 @@ var I18N = {
     recentShifts: 'Recent shifts', shiftIn: 'In {t}', shiftOut: 'out {t}', closed: 'Closed', onShift: 'On shift',
     noShifts: 'No shifts clocked on the new POS yet.',
     privacyNote: 'Salaries, payroll and passwords are never sent to Google. Manage staff, attendance rules and payroll on the main laptop.',
-    connection: 'Connection problem. Try again.', credit: 'Ninja — POS & Restaurant Management System', mode_light: 'Light mode', mode_dark: 'Dark mode', mode_auto: 'Automatic mode', mode_default: 'Business default mode'
+    connection: 'Connection problem. Try again.', credit: 'Ninja - POS & Restaurant Management System', mode_light: 'Light mode', mode_dark: 'Dark mode', mode_auto: 'Automatic mode', mode_default: 'Business default mode'
   },
   ar: {
     owners: 'الملّاك', refresh: 'تحديث', switchTo: 'English', sections: 'الأقسام',
@@ -223,7 +223,7 @@ var I18N = {
     recentShifts: 'أحدث الورديات', shiftIn: 'دخول {t}', shiftOut: 'خروج {t}', closed: 'مغلقة', onShift: 'في الوردية',
     noShifts: 'لم تُسجل أي ورديات على نظام الكاشير الجديد بعد.',
     privacyNote: 'لا يتم إرسال الرواتب أو كشوف المرتبات أو كلمات المرور إلى Google أبدًا. إدارة الموظفين وقواعد الحضور والرواتب تتم على اللابتوب الرئيسي.',
-    connection: 'مشكلة في الاتصال. حاول مرة أخرى.', credit: 'نينجا — نظام نقاط البيع وإدارة المطاعم', mode_light: 'الوضع الفاتح', mode_dark: 'الوضع الداكن', mode_auto: 'وضع تلقائي', mode_default: 'الوضع الافتراضي للنشاط'
+    connection: 'مشكلة في الاتصال. حاول مرة أخرى.', credit: 'نينجا - نظام نقاط البيع وإدارة المطاعم', mode_light: 'الوضع الفاتح', mode_dark: 'الوضع الداكن', mode_auto: 'وضع تلقائي', mode_default: 'الوضع الافتراضي للنشاط'
   }
 };
 // Messages that come back from the Ninja backend or laptop (English) and their Arabic versions.
@@ -528,7 +528,7 @@ function profile() {
   var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
   return [
     state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
-    h('section', { class: 'card' }, h('h2', { text: t('account') }), h('p', { class: 'note', text: t('signedInAs', { who: [who[0], who[1]].filter(Boolean).join(' · ') || '—' }) }),
+    h('section', { class: 'card' }, h('h2', { text: t('account') }), h('p', { class: 'note', text: t('signedInAs', { who: [who[0], who[1]].filter(Boolean).join(' · ') || '-' }) }),
       PWA ? h('button', { type: 'button', class: 'primary', text: t('signOut'), onclick: function () { call('logout').catch(function () {}).then(function () { kv('ninja.token', null); kv('ninja.user', null); state.data = null; state.tab = 'Today'; render(); }); } }) : null),
     h('section', { class: 'card' }, h('h2', { text: t('appearance') }),
       h('label', null, t('colours')), h('div', { class: 'swatches' }, [h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(!deviceTheme()), onclick: function () { kv('ninja.theme', null); applyColour(); render(); } }, h('i', { style: 'background:' + brandTheme.primary }), t('businessColours'))]
