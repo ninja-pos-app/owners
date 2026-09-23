@@ -49,7 +49,15 @@
   .row:first-of-type{border-top:0}
   .row small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
   .row strong{white-space:nowrap;font-weight:700}
-  .low{color:var(--danger)} .ok-txt{color:var(--green)} .gold{color:var(--gold)}
+  .low{color:var(--danger)} .ok-txt{color:var(--green)} .gold{color:var(--gold)} .warn-txt{color:var(--amber)}
+  /* Payroll: a whole row is tappable, and KPI scores are big enough to hit with a thumb. */
+  button.row.tappable{width:100%;background:none;border:0;border-top:1px solid rgba(78,74,75,.6);color:inherit;font:inherit;text-align:inherit;cursor:pointer}
+  button.row.tappable:first-of-type{border-top:0}
+  .row.big strong{font-size:22px;color:var(--green)}
+  .kpi-pick{display:flex;gap:6px;flex-wrap:wrap}
+  .kpi-dot{min-width:34px;min-height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:inherit;font:inherit;font-weight:700;cursor:pointer}
+  .kpi-dot.on{background:var(--green);border-color:var(--green);color:#10240a}
+  button.ghost{width:100%;background:none;border:1px solid rgba(255,255,255,.16);border-radius:12px;color:inherit;font:inherit;padding:11px;margin-top:10px;cursor:pointer}
   .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:3px 8px;background:rgba(255,255,255,.08)}
   .pill.pending{background:rgba(233,185,73,.18);color:var(--amber)} .pill.imported{background:rgba(109,190,69,.18);color:var(--green)} .pill.rejected{background:rgba(240,113,103,.18);color:var(--danger)}
   .bars{display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:6px}
@@ -115,17 +123,28 @@
   <button type="button" data-tab="Stock"><span aria-hidden="true">▦</span><b>Stock</b></button>
   <button type="button" data-tab="Purchases"><span aria-hidden="true">＋</span><b>Purchases</b></button>
   <button type="button" data-tab="Team"><span aria-hidden="true">☷</span><b>Team</b></button>
+  <button type="button" data-tab="Payroll"><span aria-hidden="true">₤</span><b>Payroll</b></button>
   <button type="button" data-tab="Profile"><span aria-hidden="true">☺</span><b>Profile</b></button>
 </nav>
 <script>
-var state = { tab: 'Today', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null };
+var state = { tab: 'Today', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null, payKey: null, payData: null, payMonth: null, payWho: null, payError: '' };
 var STALE_MINUTES = 15;
 
 // ---------- language (English default; Arabic on request, remembered on this phone) ----------
 var I18N = {
   en: {
     owners: 'OWNERS', refresh: 'Refresh', switchTo: 'العربية', sections: 'Sections',
-    Today: 'Today', Stock: 'Stock', Purchases: 'Purchases', Team: 'Team', Profile: 'Profile',
+    Today: 'Today', Stock: 'Stock', Purchases: 'Purchases', Team: 'Team', Payroll: 'Payroll', Profile: 'Profile',
+    payrollOff: 'Payroll is not switched on yet. On the laptop, open Owners phone app and set a payroll passphrase.',
+    payrollLocked: 'Payroll is locked on this phone.', payrollPass: 'Payroll passphrase', unlock: 'Unlock', unlocking: 'Unlocking…',
+    payrollWrong: 'That passphrase does not match the one set on the laptop.',
+    payrollNote: 'Salaries are encrypted on the laptop. Google keeps them as bytes it cannot read, and only this passphrase opens them on your phone.',
+    rememberPhone: 'Stay unlocked on this phone', lockPayroll: 'Lock payroll on this phone',
+    month: 'Month', netPay: 'Net pay', baseSalary: 'Base salary', deductions: 'Deductions', bonuses: 'Bonuses', overtimePay: 'Overtime',
+    otHours: '{n} h', kpiBonusLabel: 'KPI bonus', excellence: 'Excellence bonus', daysWorked: 'Days worked', daysOffLabel: 'Days off',
+    noShowsLabel: 'No shows', lateDays: 'Late days', warningsLabel: 'Warnings', kpiScores: 'KPI scores', kpiSave: 'Save KPI scores',
+    kpiSaved: 'KPI scores sent. They appear here after the laptop syncs.', kpiWaiting: 'Waiting for the laptop', noPayrollMonth: 'Nothing recorded for this month yet.',
+    monthByMonth: 'Month by month', payDays: 'Attendance', backToTeam: 'All employees', kpiOutOf: 'out of 5',
     account: 'Account', signedInAs: 'Signed in as {who}', appearance: 'Appearance', colours: 'Colours', businessColours: 'Business', lightDark: 'Light or dark',
     m_business: 'Business default', m_light: 'Light', m_dark: 'Dark', m_auto: 'Automatic', language: 'Language',
     changePassword: 'Change password', currentPassword: 'Current password', newPassword: 'New password (8+ characters)', savePassword: 'Save new password', passwordChanged: 'Password changed.',
@@ -171,7 +190,7 @@ var I18N = {
     receipt: 'Receipt', loadingReceipt: 'Loading receipt…', downloadPdf: 'Download PDF receipt',
     recentShifts: 'Recent shifts', shiftIn: 'In {t}', shiftOut: 'out {t}', closed: 'Closed', onShift: 'On shift',
     noShifts: 'No shifts clocked on the new POS yet.',
-    privacyNote: 'Salaries, payroll and passwords are never sent to Google. Manage staff, attendance rules and payroll on the main laptop.',
+    privacyNote: 'Passwords are never sent to Google, and payroll travels encrypted: Google holds bytes it cannot read. Manage staff and attendance rules on the main laptop.',
     connection: 'Connection problem. Try again.', credit: 'Ninja - POS & Restaurant Management System', mode_light: 'Light mode', mode_dark: 'Dark mode', mode_auto: 'Automatic mode', mode_default: 'Business default mode'
   },
   ar: {
@@ -221,8 +240,19 @@ var I18N = {
     pdfTooBig: 'يجب أن يكون ملف PDF أقل من 10 ميجابايت', cannotRead: 'تعذرت قراءة الملف', badImage: 'صيغة الصورة غير مدعومة. استخدم صورة أو PNG أو PDF.',
     receipt: 'الإيصال', loadingReceipt: 'جارٍ تحميل الإيصال…', downloadPdf: 'تنزيل إيصال PDF',
     recentShifts: 'أحدث الورديات', shiftIn: 'دخول {t}', shiftOut: 'خروج {t}', closed: 'مغلقة', onShift: 'في الوردية',
+    Payroll: 'الرواتب',
+    payrollOff: 'الرواتب غير مفعّلة بعد. من اللابتوب، افتح تطبيق الهاتف للملاك واضبط عبارة مرور الرواتب.',
+    payrollLocked: 'الرواتب مقفلة على هذا الهاتف.', payrollPass: 'عبارة مرور الرواتب', unlock: 'فتح', unlocking: 'جارٍ الفتح…',
+    payrollWrong: 'عبارة المرور لا تطابق المضبوطة على اللابتوب.',
+    payrollNote: 'الرواتب مشفّرة على اللابتوب. تحتفظ Google ببيانات لا تستطيع قراءتها، ولا يفتحها على هاتفك سوى عبارة المرور هذه.',
+    rememberPhone: 'إبقاء الفتح على هذا الهاتف', lockPayroll: 'قفل الرواتب على هذا الهاتف',
+    month: 'الشهر', netPay: 'صافي الراتب', baseSalary: 'الراتب الأساسي', deductions: 'الخصومات', bonuses: 'المكافآت', overtimePay: 'الوقت الإضافي',
+    otHours: '{n} س', kpiBonusLabel: 'مكافأة الأداء', excellence: 'مكافأة التميز', daysWorked: 'أيام العمل', daysOffLabel: 'أيام الراحة',
+    noShowsLabel: 'أيام الغياب', lateDays: 'أيام التأخير', warningsLabel: 'الإنذارات', kpiScores: 'درجات الأداء', kpiSave: 'حفظ درجات الأداء',
+    kpiSaved: 'تم إرسال الدرجات. ستظهر هنا بعد مزامنة اللابتوب.', kpiWaiting: 'في انتظار اللابتوب', noPayrollMonth: 'لا يوجد تسجيل لهذا الشهر بعد.',
+    monthByMonth: 'شهرًا بشهر', payDays: 'الحضور', backToTeam: 'كل الموظفين', kpiOutOf: 'من 5',
     noShifts: 'لم تُسجل أي ورديات على نظام الكاشير الجديد بعد.',
-    privacyNote: 'لا يتم إرسال الرواتب أو كشوف المرتبات أو كلمات المرور إلى Google أبدًا. إدارة الموظفين وقواعد الحضور والرواتب تتم على اللابتوب الرئيسي.',
+    privacyNote: 'لا تُرسل كلمات المرور إلى Google أبدًا، والرواتب تُرسل مشفّرة: تحتفظ Google ببيانات لا تستطيع قراءتها. إدارة الموظفين وقواعد الحضور تتم على اللابتوب الرئيسي.',
     connection: 'مشكلة في الاتصال. حاول مرة أخرى.', credit: 'نينجا - نظام نقاط البيع وإدارة المطاعم', mode_light: 'الوضع الفاتح', mode_dark: 'الوضع الداكن', mode_auto: 'وضع تلقائي', mode_default: 'الوضع الافتراضي للنشاط'
   }
 };
@@ -348,7 +378,7 @@ function call(action, payload) {
 function load() {
   if (!signedIn()) { state.loading = false; render(); return Promise.resolve(); }
   state.loading = !state.data; state.error = ''; render();
-  return call('snapshot', { logoVersion: logoCache ? logoCache.version : null }).then(function (d) { state.data = d; state.loading = false; applyBrand(d); render(); })
+  return call('snapshot', { logoVersion: logoCache ? logoCache.version : null }).then(function (d) { state.data = d; state.loading = false; applyBrand(d); return refreshPayroll(); }).then(function () { render(); })
     .catch(function (e) { state.error = e.message; state.loading = false; render(); });
 }
 
@@ -558,9 +588,126 @@ function render() {
   [].concat(syncLine() || []).forEach(function (x) { if (x) main.appendChild(x); });
   if (state.tab === 'Profile') { [].concat(profile()).forEach(function (x) { if (x) main.appendChild(x); }); main.appendChild(h('p', { class: 'credit', text: t('credit') })); return; }
   if (!state.data.snapshot && state.tab !== 'Purchases') return;
-  var screen = { Today: today, Stock: stock, Purchases: purchases, Team: team }[state.tab]();
+  var screen = { Today: today, Stock: stock, Purchases: purchases, Team: team, Payroll: payroll }[state.tab]();
   [].concat(screen).forEach(function (x) { if (x) main.appendChild(x); });
   main.appendChild(h('p', { class: 'credit', text: t('credit') }));
+}
+
+// ---------- payroll (encrypted: only a phone with the passphrase can read it) ----------
+// The laptop seals salaries, deductions and KPI scores with a key made from the payroll passphrase. Google only
+// ever holds the sealed bytes. The same passphrase, typed here, makes the same key inside this browser.
+function b64ToBytes(v) { var raw = atob(String(v || '')); var out = new Uint8Array(raw.length); for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i); return out; }
+function bytesToB64(bytes) { var out = ''; var b = new Uint8Array(bytes); for (var i = 0; i < b.length; i++) out += String.fromCharCode(b[i]); return btoa(out); }
+function payrollKeyFrom(passphrase, kdf) {
+  return crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveKey']).then(function (material) {
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64ToBytes(kdf.salt), iterations: kdf.iterations || 250000, hash: 'SHA-256' },
+      material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  });
+}
+function openSealed(key, sealed) {
+  return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ToBytes(sealed.iv) }, key, b64ToBytes(sealed.data))
+    .then(function (buf) { return JSON.parse(new TextDecoder().decode(buf)); });
+}
+function sealWith(key, value) {
+  var iv = crypto.getRandomValues(new Uint8Array(12));
+  return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(JSON.stringify(value)))
+    .then(function (buf) { return { iv: bytesToB64(iv), data: bytesToB64(buf) }; });
+}
+function unlockPayroll(passphrase, remember) {
+  var sealed = state.data.snapshot.payroll;
+  state.busy = true; state.payError = ''; render();
+  return payrollKeyFrom(passphrase, sealed.kdf)
+    .then(function (key) { return openSealed(key, sealed).then(function (data) { state.payKey = key; state.payData = data; if (remember) kv('ninja.payroll', passphrase); }); })
+    .catch(function () { state.payError = t('payrollWrong'); })
+    .then(function () { state.busy = false; render(); });
+}
+// A fresh snapshot lands every couple of minutes; open it again with the key already in hand.
+function refreshPayroll() {
+  var sealed = state.data && state.data.snapshot && state.data.snapshot.payroll;
+  if (!sealed || !state.payKey) return Promise.resolve();
+  return openSealed(state.payKey, sealed).then(function (data) { state.payData = data; }, function () { state.payKey = null; state.payData = null; });
+}
+function sendKpi(employeeId, month, scores) {
+  var id = uuid();
+  state.busy = true; state.error = ''; state.message = ''; render();
+  return sealWith(state.payKey, { id: id, employeeId: employeeId, month: month, scores: scores, submittedAt: new Date().toISOString() })
+    .then(function (sealed) { return call('kpi', { change: { id: id, sealed: { v: 1, iv: sealed.iv, data: sealed.data, salt: state.data.snapshot.payroll.kdf.salt } } }); })
+    .then(function () { state.busy = false; state.message = t('kpiSaved'); return load(); })
+    .catch(function (e) { state.busy = false; state.error = e.message; render(); });
+}
+
+function payroll() {
+  var sealed = state.data.snapshot.payroll;
+  if (!sealed) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t('payrollOff') }))];
+  if (!state.payData) {
+    var form = h('form', { class: 'card', onsubmit: function (e) { e.preventDefault(); unlockPayroll(e.target.pass.value, e.target.remember.checked); } },
+      h('h2', { text: t('payrollLocked') }),
+      state.payError ? h('div', { class: 'banner err', role: 'alert', text: state.payError }) : null,
+      h('label', { text: t('payrollPass') }, h('input', { name: 'pass', type: 'password', autocomplete: 'off', required: 'required' })),
+      h('label', { class: 'check' }, h('input', { name: 'remember', type: 'checkbox', checked: 'checked' }), h('span', { text: t('rememberPhone') })),
+      h('button', { class: 'primary', type: 'submit', disabled: state.busy ? 'disabled' : null, text: state.busy ? t('unlocking') : t('unlock') }),
+      h('p', { class: 'note', text: t('payrollNote') }));
+    return [form];
+  }
+  var months = state.payData.months || [];
+  if (!months.length) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t('noPayrollMonth') })), lockButton()];
+  var monthKey = state.payMonth || months[0].month;
+  var month = months.filter(function (m) { return m.month === monthKey; })[0] || months[0];
+  var picker = h('section', { class: 'card' },
+    h('label', { text: t('month') }, h('select', { onchange: function (e) { state.payMonth = e.target.value; render(); } },
+      months.map(function (m) { return h('option', { value: m.month, selected: m.month === monthKey ? 'selected' : null, text: m.month }); }))));
+  if (state.payWho) {
+    var who = (month.employees || []).filter(function (e) { return e.id === state.payWho; })[0];
+    if (who) return [picker].concat(employeePay(who, month.month, months));
+  }
+  var list = h('section', { class: 'card' }, h('h2', { text: t('netPay') }),
+    (month.employees || []).length ? month.employees.map(function (e) {
+      return h('button', { class: 'row tappable', type: 'button', onclick: function () { state.payWho = e.id; state.message = ''; render(); window.scrollTo(0, 0); } },
+        h('span', { text: e.name }, h('small', { text: t('daysWorked') + ': ' + e.worked + (e.noShows ? ' - ' + t('noShowsLabel') + ': ' + e.noShows : '') })),
+        h('strong', { text: money(e.net) + arrow() }));
+    }) : h('p', { class: 'empty', text: t('noPayrollMonth') }));
+  return [picker, list, h('p', { class: 'note', text: t('payrollNote') }), lockButton()];
+}
+function lockButton() {
+  return h('button', { class: 'ghost', type: 'button', text: t('lockPayroll'), onclick: function () { kv('ninja.payroll', null); state.payKey = null; state.payData = null; state.payWho = null; render(); } });
+}
+function employeePay(e, monthKey, months) {
+  var rows = [['baseSalary', money(e.baseSalary)], ['deductions', '- ' + money(e.deductions)], ['bonuses', money(e.bonus)],
+    ['overtimePay', money(e.overtime) + ' - ' + t('otHours', { n: e.overtimeHours })], ['kpiBonusLabel', money(e.kpiBonus)], ['excellence', money(e.excellence)]];
+  var counts = [['daysWorked', e.worked], ['daysOffLabel', e.daysOff], ['noShowsLabel', e.noShows], ['lateDays', e.lateDays], ['warningsLabel', e.warnings]];
+  var categories = state.payData.categories || [];
+  var picked = categories.map(function (c, i) { return Number((e.kpi || [])[i]) || 0; });
+  var kpiCard = h('section', { class: 'card' }, h('h2', { text: t('kpiScores') }),
+    categories.map(function (c, i) {
+      var value = h('strong', { text: picked[i] + ' / 5' });
+      return h('div', { class: 'row' }, h('span', { text: c.name }, h('small', { text: t('kpiOutOf') })),
+        h('span', { class: 'kpi-pick' }, [0, 1, 2, 3, 4, 5].map(function (n) {
+          return h('button', { type: 'button', class: 'kpi-dot' + (picked[i] === n ? ' on' : ''), text: String(n), onclick: function (ev) {
+            picked[i] = n; value.textContent = n + ' / 5';
+            var group = ev.target.parentNode.childNodes;
+            for (var j = 0; j < group.length; j++) group[j].className = 'kpi-dot' + (Number(group[j].textContent) === n ? ' on' : '');
+          } });
+        })), value);
+    }),
+    categories.length ? h('button', { class: 'primary', type: 'button', disabled: state.busy ? 'disabled' : null, text: state.busy ? t('saving') : t('kpiSave'), onclick: function () { sendKpi(e.id, monthKey, picked); } }) : h('p', { class: 'empty', text: t('noPayrollMonth') }));
+  var history = h('section', { class: 'card' }, h('h2', { text: t('monthByMonth') }),
+    months.map(function (m) {
+      var mine = (m.employees || []).filter(function (x) { return x.id === e.id; })[0];
+      return mine ? h('div', { class: 'row' }, h('span', { text: m.month }, h('small', { text: t('daysWorked') + ': ' + mine.worked })), h('strong', { text: money(mine.net) })) : null;
+    }).filter(Boolean));
+  var days = h('section', { class: 'card' }, h('h2', { text: t('payDays') }),
+    (e.days || []).length ? e.days.map(function (d) {
+      var detail = [d.checkIn && (d.checkIn + (d.checkOut ? ' - ' + d.checkOut : '')), d.tier, d.otHrs ? t('otHours', { n: d.otHrs }) : '', d.warning].filter(Boolean).join(' - ');
+      return h('div', { class: 'row' }, h('span', { text: d.date }, h('small', { text: detail })), h('strong', { class: d.deduction ? 'warn-txt' : '', text: d.deduction ? '- ' + money(d.deduction) : d.bonus ? money(d.bonus) : '' }));
+    }) : h('p', { class: 'empty', text: t('noPayrollMonth') }));
+  return [
+    h('button', { class: 'ghost', type: 'button', text: t('backToTeam'), onclick: function () { state.payWho = null; state.message = ''; render(); } }),
+    h('section', { class: 'card' }, h('h2', { text: e.name }),
+      h('div', { class: 'row big' }, h('span', { text: t('netPay') }), h('strong', { text: money(e.net) })),
+      rows.map(function (r) { return h('div', { class: 'row' }, h('span', { text: t(r[0]) }), h('strong', { text: r[1] })); }),
+      counts.map(function (r) { return h('div', { class: 'row' }, h('span', { text: t(r[0]) }), h('strong', { text: String(r[1]) })); })),
+    kpiCard, days, history, lockButton()
+  ];
 }
 
 // ---------- purchases ----------
@@ -610,7 +757,11 @@ document.addEventListener('visibilitychange', function () { if (document.visibil
 setInterval(function () { if (document.visibilityState === 'visible' && !state.busy && state.tab !== 'Purchases' && state.tab !== 'Profile') load(); }, 120000);
 applyLanguage();
 applyBrand(null);
-load();
+// Stay unlocked on this phone if the owner asked for that: the passphrase is kept here, never at Google.
+load().then(function () {
+  var saved = kv('ninja.payroll');
+  if (saved && state.data && state.data.snapshot && state.data.snapshot.payroll && !state.payData) return unlockPayroll(saved, false);
+});
 </script>
 </body>
 </html>
