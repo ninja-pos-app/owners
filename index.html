@@ -54,6 +54,11 @@
   button.row.tappable{width:100%;background:none;border:0;border-top:1px solid rgba(78,74,75,.6);color:inherit;font:inherit;text-align:inherit;cursor:pointer}
   button.row.tappable:first-of-type{border-top:0}
   .row.big strong{font-size:22px;color:var(--green)}
+  .segmented{display:flex;gap:6px;margin:0 0 12px;background:rgba(255,255,255,.05);border-radius:12px;padding:4px}
+  .segmented button{flex:1;padding:9px 4px;border:0;border-radius:9px;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+  .segmented button.on{background:var(--green);color:#10240a}
+  .minibar{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.08);margin:0 10px;overflow:hidden}
+  .minibar i{display:block;height:100%;background:var(--green);border-radius:99px}
   .kpi-pick{display:flex;gap:6px;flex-wrap:wrap}
   .kpi-dot{min-width:34px;min-height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:inherit;font:inherit;font-weight:700;cursor:pointer}
   .kpi-dot.on{background:var(--green);border-color:var(--green);color:#10240a}
@@ -119,23 +124,27 @@
 </header>
 <main id="main" aria-live="polite"><div class="skeleton"></div><div class="skeleton"></div></main>
 <nav id="tabs">
-  <button type="button" data-tab="Today" aria-current="page"><span aria-hidden="true">◉</span><b>Today</b></button>
+  <button type="button" data-tab="Reports" aria-current="page"><span aria-hidden="true">◉</span><b>Reports</b></button>
   <button type="button" data-tab="Stock"><span aria-hidden="true">▦</span><b>Stock</b></button>
-  <button type="button" data-tab="Purchases"><span aria-hidden="true">＋</span><b>Purchases</b></button>
   <button type="button" data-tab="Team"><span aria-hidden="true">☷</span><b>Team</b></button>
   <button type="button" data-tab="Payroll"><span aria-hidden="true">₤</span><b>Payroll</b></button>
   <button type="button" data-tab="Profile"><span aria-hidden="true">☺</span><b>Profile</b></button>
 </nav>
 <script>
-var state = { tab: 'Today', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null, payKey: null, payData: null, payMonth: null, payWho: null, payError: '' };
+var state = { tab: 'Reports', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null, payKey: null, payData: null, payMonth: null, payWho: null, payError: '', stockView: 'items', period: 'today' };
 var STALE_MINUTES = 15;
 
 // ---------- language (English default; Arabic on request, remembered on this phone) ----------
 var I18N = {
   en: {
     owners: 'OWNERS', refresh: 'Refresh', switchTo: 'العربية', sections: 'Sections',
-    Today: 'Today', Stock: 'Stock', Purchases: 'Purchases', Team: 'Team', Payroll: 'Payroll', Profile: 'Profile',
+    Today: 'Today', Reports: 'Reports', Stock: 'Stock', Purchases: 'Purchases', Team: 'Team', Payroll: 'Payroll', Profile: 'Profile',
+    stockItems: 'Items', invoices: 'Invoices',
+    p_today: 'Today', p_month: 'This month', p_last: 'Last month',
+    monthSales: 'Net sales - {m}', refundsGiven: 'Refunds', monthOrders: 'Orders', noMonthData: 'No sales recorded in this month.',
+    sixMonths: 'Last 6 months', paymentsPeriod: 'How they paid', topPeriod: 'Best sellers',
     payrollOff: 'Payroll is not switched on yet. On the laptop, open Owners phone app and set a payroll passphrase.',
+    payrollNobody: 'Nobody is on attendance and payroll yet. On the laptop, open People & permissions and add each person with a monthly salary.',
     payrollLocked: 'Payroll is locked on this phone.', payrollPass: 'Payroll passphrase', unlock: 'Unlock', unlocking: 'Unlocking…',
     payrollWrong: 'That passphrase does not match the one set on the laptop.',
     payrollNote: 'Salaries are encrypted on the laptop. Google keeps them as bytes it cannot read, and only this passphrase opens them on your phone.',
@@ -240,8 +249,13 @@ var I18N = {
     pdfTooBig: 'يجب أن يكون ملف PDF أقل من 10 ميجابايت', cannotRead: 'تعذرت قراءة الملف', badImage: 'صيغة الصورة غير مدعومة. استخدم صورة أو PNG أو PDF.',
     receipt: 'الإيصال', loadingReceipt: 'جارٍ تحميل الإيصال…', downloadPdf: 'تنزيل إيصال PDF',
     recentShifts: 'أحدث الورديات', shiftIn: 'دخول {t}', shiftOut: 'خروج {t}', closed: 'مغلقة', onShift: 'في الوردية',
-    Payroll: 'الرواتب',
+    Payroll: 'الرواتب', Reports: 'التقارير',
+    stockItems: 'الأصناف', invoices: 'الفواتير',
+    p_today: 'اليوم', p_month: 'هذا الشهر', p_last: 'الشهر الماضي',
+    monthSales: 'صافي المبيعات - {m}', refundsGiven: 'المرتجعات', monthOrders: 'الطلبات', noMonthData: 'لا توجد مبيعات مسجلة في هذا الشهر.',
+    sixMonths: 'آخر 6 أشهر', paymentsPeriod: 'طرق الدفع', topPeriod: 'الأكثر مبيعًا',
     payrollOff: 'الرواتب غير مفعّلة بعد. من اللابتوب، افتح تطبيق الهاتف للملاك واضبط عبارة مرور الرواتب.',
+    payrollNobody: 'لا يوجد موظفون في الحضور والرواتب بعد. من اللابتوب، افتح "الأشخاص والصلاحيات" وأضف كل موظف براتب شهري.',
     payrollLocked: 'الرواتب مقفلة على هذا الهاتف.', payrollPass: 'عبارة مرور الرواتب', unlock: 'فتح', unlocking: 'جارٍ الفتح…',
     payrollWrong: 'عبارة المرور لا تطابق المضبوطة على اللابتوب.',
     payrollNote: 'الرواتب مشفّرة على اللابتوب. تحتفظ Google ببيانات لا تستطيع قراءتها، ولا يفتحها على هاتفك سوى عبارة المرور هذه.',
@@ -392,6 +406,41 @@ function syncLine() {
     stale ? h('div', { class: 'banner warn', text: t('stale', { time: cairo(d.receivedAt) }) }) : null];
 }
 
+function segmented(options, current, pick) {
+  return h('div', { class: 'segmented', role: 'tablist' }, options.map(function (o) {
+    return h('button', { type: 'button', role: 'tab', class: o.id === current ? 'on' : '', 'aria-selected': o.id === current ? 'true' : 'false', text: o.label, onclick: function () { pick(o.id); } });
+  }));
+}
+function reports() {
+  var s = state.data.snapshot;
+  var picker = segmented([{ id: 'today', label: t('p_today') }, { id: 'month', label: t('p_month') }, { id: 'last', label: t('p_last') }],
+    state.period, function (id) { state.period = id; render(); window.scrollTo(0, 0); });
+  if (state.period === 'today') return [picker].concat(today());
+  var months = s.months || [];
+  var m = months[state.period === 'month' ? 0 : 1];
+  if (!m) return [picker, h('section', { class: 'card' }, h('p', { class: 'empty', text: t('noMonthData') }))];
+  var max = Math.max.apply(null, months.map(function (x) { return x.netSales; }).concat([1]));
+  return [picker,
+    h('section', { class: 'card hero' }, h('span', { text: t('monthSales', { m: m.month }) }), h('strong', { text: money(m.netSales) }),
+      h('div', { class: 'stats' },
+        h('div', null, h('b', { text: String(m.orders) }), h('small', { text: t('monthOrders') })),
+        h('div', null, h('b', { text: money(m.averageTicket) }), h('small', { text: t('average') })),
+        h('div', null, h('b', { text: money(m.refunds) }), h('small', { text: t('refundsGiven') })))),
+    m.orders ? h('section', { class: 'card' }, h('h2', { text: t('paymentsPeriod') }), m.payments.map(function (x) {
+      return h('div', { class: 'row' }, h('span', { text: payLabel(x.method) }), h('strong', { text: money(x.total) }));
+    })) : h('section', { class: 'card' }, h('p', { class: 'empty', text: t('noMonthData') })),
+    m.topItems.length ? h('section', { class: 'card' }, h('h2', { text: t('topPeriod') }), m.topItems.map(function (x) {
+      return h('div', { class: 'row' }, h('span', { text: nm(x.name) + (x.sizeLabel ? ' · ' + x.sizeLabel : '') }, h('small', { text: money(x.total) })), h('strong', { class: 'num', text: '× ' + x.quantity }));
+    })) : null,
+    h('section', { class: 'card' }, h('h2', { text: t('sixMonths') }), months.slice().reverse().map(function (x) {
+      return h('div', { class: 'row' }, h('span', { text: x.month }, h('small', { text: x.orders + ' · ' + t('monthOrders') })),
+        h('span', { class: 'minibar' }, h('i', { style: 'width:' + Math.max(2, Math.round(x.netSales / max * 100)) + '%' })),
+        h('strong', { text: money(x.netSales) }));
+    })),
+    h('p', { class: 'note', text: t('dayNote') })
+  ];
+}
+
 function today() {
   var s = state.data.snapshot, tt = s.today;
   var max = Math.max.apply(null, s.daily.map(function (d) { return d.netSales; }).concat([1]));
@@ -411,6 +460,12 @@ function today() {
 function kindLabel(k) { return t('k_' + k); }
 function stockStatus(status) { return h('span', { class: 'pill ' + (status === 'applied' ? 'imported' : status), text: t('s_' + status) }); }
 function describeChange(c) { return kindLabel(c.kind) + (c.kind === 'newItem' ? ': ' + nm(c.itemName) + ' · ' + c.quantity : ' ' + c.quantity) + (c.reason ? ' · ' + c.reason : ''); }
+
+function stockAndPurchases() {
+  var picker = segmented([{ id: 'items', label: t('stockItems') }, { id: 'invoices', label: t('invoices') }],
+    state.stockView, function (id) { state.stockView = id; state.message = ''; render(); window.scrollTo(0, 0); });
+  return [picker].concat(state.stockView === 'invoices' ? purchases() : stock());
+}
 
 function stock() {
   var s = state.data.snapshot, q = state.stockFilter.toLowerCase();
@@ -587,8 +642,8 @@ function render() {
   if (!state.data) return;
   [].concat(syncLine() || []).forEach(function (x) { if (x) main.appendChild(x); });
   if (state.tab === 'Profile') { [].concat(profile()).forEach(function (x) { if (x) main.appendChild(x); }); main.appendChild(h('p', { class: 'credit', text: t('credit') })); return; }
-  if (!state.data.snapshot && state.tab !== 'Purchases') return;
-  var screen = { Today: today, Stock: stock, Purchases: purchases, Team: team, Payroll: payroll }[state.tab]();
+  if (!state.data.snapshot && !(state.tab === 'Stock' && state.stockView === 'invoices')) return;
+  var screen = { Reports: reports, Stock: stockAndPurchases, Team: team, Payroll: payroll }[state.tab]();
   [].concat(screen).forEach(function (x) { if (x) main.appendChild(x); });
   main.appendChild(h('p', { class: 'credit', text: t('credit') }));
 }
@@ -638,7 +693,7 @@ function sendKpi(employeeId, month, scores) {
 
 function payroll() {
   var sealed = state.data.snapshot.payroll;
-  if (!sealed) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t('payrollOff') }))];
+  if (!sealed || sealed.empty) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t(sealed && sealed.empty ? 'payrollNobody' : 'payrollOff') }))];
   if (!state.payData) {
     var form = h('form', { class: 'card', onsubmit: function (e) { e.preventDefault(); unlockPayroll(e.target.pass.value, e.target.remember.checked); } },
       h('h2', { text: t('payrollLocked') }),
@@ -753,8 +808,9 @@ function viewReceipt(reference) {
 document.querySelectorAll('nav button').forEach(function (b) { b.addEventListener('click', function () { state.tab = b.dataset.tab; state.message = ''; render(); window.scrollTo(0, 0); }); });
 document.getElementById('refresh').addEventListener('click', load);
 if (window.matchMedia) window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyMode);
-document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && !state.busy && state.tab !== 'Purchases' && state.tab !== 'Profile') load(); });
-setInterval(function () { if (document.visibilityState === 'visible' && !state.busy && state.tab !== 'Purchases' && state.tab !== 'Profile') load(); }, 120000);
+function busyScreen() { return state.busy || state.tab === 'Profile' || (state.tab === 'Stock' && state.stockView === 'invoices'); }
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && !busyScreen()) load(); });
+setInterval(function () { if (document.visibilityState === 'visible' && !busyScreen()) load(); }, 120000);
 applyLanguage();
 applyBrand(null);
 // Stay unlocked on this phone if the owner asked for that: the passphrase is kept here, never at Google.
