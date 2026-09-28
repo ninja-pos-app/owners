@@ -149,6 +149,7 @@ var I18N = {
     payrollWrong: 'That passphrase does not match the one set on the laptop.',
     payrollNote: 'Salaries are encrypted on the laptop. Google keeps them as bytes it cannot read, and only this passphrase opens them on your phone.',
     rememberPhone: 'Stay unlocked on this phone', lockPayroll: 'Lock payroll on this phone',
+    lateOnly: 'of which late arrival', earlyOnly: 'of which early leave',
     month: 'Month', netPay: 'Net pay', baseSalary: 'Base salary', deductions: 'Deductions', bonuses: 'Bonuses', overtimePay: 'Overtime',
     otHours: '{n} h', kpiBonusLabel: 'KPI bonus', excellence: 'Excellence bonus', daysWorked: 'Days worked', daysOffLabel: 'Days off',
     noShowsLabel: 'No shows', lateDays: 'Late days', warningsLabel: 'Warnings', kpiScores: 'KPI scores', kpiSave: 'Save KPI scores',
@@ -175,10 +176,12 @@ var I18N = {
     stockHelp: 'Tap an item to count it, add a delivery, record use or waste, or change its minimum. Changes are applied on the main laptop at its next sync (about 2 minutes).',
     addItem: '+ Add new stock item', searchStock: 'Search stock', noMatch: 'No matching items.',
     minimumOf: 'minimum {n} {unit}', update: 'Update {name}', changesFromPhones: 'Stock changes from phones', item: 'Item',
-    k_count: 'Counted', k_receive: 'Received', k_waste: 'Used / waste', k_minimum: 'New minimum', k_newItem: 'New item',
+    k_count: 'Counted', k_receive: 'Received', k_waste: 'Used / waste', k_minimum: 'New minimum', k_newItem: 'New item', k_price: 'New price',
     s_pending: 'Waiting for laptop', s_applied: 'Applied', s_rejected: 'Not accepted', s_imported: 'On laptop',
     close: 'Close', newStockItem: 'New stock item', laptopRecord: 'Laptop record: {q} {unit} · minimum {p} {unit}',
-    t_count: 'Count', t_receive: 'Received', t_waste: 'Used / waste', t_minimum: 'Minimum',
+    t_count: 'Count', t_receive: 'Received', t_waste: 'Used / waste', t_minimum: 'Minimum', t_price: 'Price',
+    h_price: 'What you paid for the pack, and how much came in it. Ninja works out the cost per {unit}.',
+    packPaid: 'What the pack cost (EGP)', packHeld: 'How much was in it ({unit})', costPer: '{price} EGP per {size} {unit}', noPrice: 'no price yet',
     h_count: 'How many {unit} are physically there right now? This replaces the laptop number.',
     h_receive: 'How many {unit} arrived? This is added.',
     h_waste: 'How many {unit} were used outside sales, spilled or thrown away? This is subtracted.',
@@ -226,10 +229,12 @@ var I18N = {
     stockHelp: 'اضغط على أي صنف لجرده أو إضافة توريد أو تسجيل استهلاك أو هالك أو تغيير الحد الأدنى. تُطبق التغييرات على اللابتوب الرئيسي عند المزامنة التالية (حوالي دقيقتين).',
     addItem: '+ إضافة صنف جديد', searchStock: 'ابحث في المخزون', noMatch: 'لا توجد أصناف مطابقة.',
     minimumOf: 'الحد الأدنى {n} {unit}', update: 'تحديث {name}', changesFromPhones: 'تغييرات المخزون من الموبايل', item: 'صنف',
-    k_count: 'جرد', k_receive: 'توريد', k_waste: 'استهلاك / هالك', k_minimum: 'حد أدنى جديد', k_newItem: 'صنف جديد',
+    k_count: 'جرد', k_receive: 'توريد', k_waste: 'استهلاك / هالك', k_minimum: 'حد أدنى جديد', k_newItem: 'صنف جديد', k_price: 'سعر جديد',
     s_pending: 'في انتظار اللابتوب', s_applied: 'تم التطبيق', s_rejected: 'مرفوض', s_imported: 'على اللابتوب',
     close: 'إغلاق', newStockItem: 'صنف مخزون جديد', laptopRecord: 'المسجل على اللابتوب: {q} {unit} · الحد الأدنى {p} {unit}',
-    t_count: 'جرد', t_receive: 'توريد', t_waste: 'استهلاك / هالك', t_minimum: 'الحد الأدنى',
+    t_count: 'جرد', t_receive: 'توريد', t_waste: 'استهلاك / هالك', t_minimum: 'الحد الأدنى', t_price: 'السعر',
+    h_price: 'كم دفعت في العبوة، وكم كان بداخلها. ننجا يحسب تكلفة كل {unit}.',
+    packPaid: 'سعر العبوة (جنيه)', packHeld: 'الكمية داخلها ({unit})', costPer: '{price} جنيه لكل {size} {unit}', noPrice: 'لا يوجد سعر بعد',
     h_count: 'كم {unit} موجود فعليًا الآن؟ سيحل هذا الرقم محل رقم اللابتوب.',
     h_receive: 'كم {unit} وصل؟ ستتم إضافته.',
     h_waste: 'كم {unit} استُهلك خارج المبيعات أو انسكب أو تم التخلص منه؟ سيتم خصمه.',
@@ -260,6 +265,7 @@ var I18N = {
     payrollWrong: 'عبارة المرور لا تطابق المضبوطة على اللابتوب.',
     payrollNote: 'الرواتب مشفّرة على اللابتوب. تحتفظ Google ببيانات لا تستطيع قراءتها، ولا يفتحها على هاتفك سوى عبارة المرور هذه.',
     rememberPhone: 'إبقاء الفتح على هذا الهاتف', lockPayroll: 'قفل الرواتب على هذا الهاتف',
+    lateOnly: 'منها تأخير الحضور', earlyOnly: 'منها الانصراف المبكر',
     month: 'الشهر', netPay: 'صافي الراتب', baseSalary: 'الراتب الأساسي', deductions: 'الخصومات', bonuses: 'المكافآت', overtimePay: 'الوقت الإضافي',
     otHours: '{n} س', kpiBonusLabel: 'مكافأة الأداء', excellence: 'مكافأة التميز', daysWorked: 'أيام العمل', daysOffLabel: 'أيام الراحة',
     noShowsLabel: 'أيام الغياب', lateDays: 'أيام التأخير', warningsLabel: 'الإنذارات', kpiScores: 'درجات الأداء', kpiSave: 'حفظ درجات الأداء',
@@ -482,7 +488,7 @@ function stock() {
     h('section', { class: 'card' }, items.length ? items.map(function (i) {
       var isLow = i.quantity <= i.parLevel, waiting = pendingFor(i.id);
       return h('button', { type: 'button', class: 'row item-row', 'aria-label': t('update', { name: nm(i.name) }), onclick: function () { openStockPanel(i); } },
-        h('span', { text: nm(i.name) }, h('small', { text: (i.category ? i.category + ' · ' : '') + t('minimumOf', { n: i.parLevel, unit: u(i.unit) }) }), waiting.length ? h('small', { class: 'gold', text: '⏳ ' + waiting.map(describeChange).join(' · ') }) : null),
+        h('span', { text: nm(i.name) }, h('small', { text: (i.category ? i.category + ' · ' : '') + t('minimumOf', { n: i.parLevel, unit: u(i.unit) }) + ' · ' + (i.packPrice ? t('costPer', { price: i.packPrice, size: i.packSize, unit: u(i.unit) }) : t('noPrice')) }), waiting.length ? h('small', { class: 'gold', text: '⏳ ' + waiting.map(describeChange).join(' · ') }) : null),
         h('strong', { class: isLow ? 'low' : '', text: i.quantity + ' ' + u(i.unit) + arrow() }));
     }) : h('p', { class: 'empty', text: t('noMatch') })),
     changes.length ? h('section', { class: 'card' }, h('h2', { text: t('changesFromPhones') }), changes.slice(0, 15).map(function (c) {
@@ -502,13 +508,19 @@ function openStockPanel(item) {
     form.appendChild(h('div', { class: 'sheet-head' }, h('h2', { text: item ? nm(item.name) : t('newStockItem') }), h('button', { type: 'button', class: 'icon-btn', text: t('close'), onclick: close })));
     if (item) {
       form.appendChild(h('p', { class: 'note', text: t('laptopRecord', { q: item.quantity, p: item.parLevel, unit: u(item.unit) }) }));
-      form.appendChild(h('div', { class: 'segmented', role: 'tablist' }, ['count', 'receive', 'waste', 'minimum'].map(function (k) {
+      form.appendChild(h('div', { class: 'segmented', role: 'tablist' }, ['count', 'receive', 'waste', 'minimum', 'price'].map(function (k) {
         return h('button', { type: 'button', role: 'tab', 'aria-selected': String(kind === k), text: t('t_' + k), onclick: function () { kind = k; draw(); } });
       })));
       form.appendChild(h('p', { class: 'note', text: t('h_' + kind, { unit: u(item.unit) }) }));
-      form.appendChild(field(t('quantityUnit', { unit: u(item.unit) }), 'quantity', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: kind === 'minimum' ? String(item.parLevel) : '' }));
-      if (kind === 'waste') form.appendChild(field(t('reason'), 'reason', { required: 'required', maxlength: '200', placeholder: t('reasonHint') }));
-      else if (kind !== 'minimum') form.appendChild(field(t('noteOptional'), 'reason', { maxlength: '200' }));
+      if (kind === 'price') {
+        form.appendChild(field(t('packPaid'), 'packPrice', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: item.packPrice ? String(item.packPrice) : '' }));
+        form.appendChild(field(t('packHeld', { unit: u(item.unit) }), 'packSize', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: item.packSize ? String(item.packSize) : '' }));
+        form.appendChild(field(t('noteOptional'), 'reason', { maxlength: '200' }));
+      } else {
+        form.appendChild(field(t('quantityUnit', { unit: u(item.unit) }), 'quantity', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: kind === 'minimum' ? String(item.parLevel) : '' }));
+        if (kind === 'waste') form.appendChild(field(t('reason'), 'reason', { required: 'required', maxlength: '200', placeholder: t('reasonHint') }));
+        else if (kind !== 'minimum') form.appendChild(field(t('noteOptional'), 'reason', { maxlength: '200' }));
+      }
     } else {
       form.appendChild(field(t('itemName'), 'itemName', { required: 'required', maxlength: '120', autocomplete: 'off' }));
       form.appendChild(field(t('unitLabel'), 'unit', { required: 'required', maxlength: '20' }));
@@ -524,13 +536,14 @@ function openStockPanel(item) {
   function submit(e) {
     e.preventDefault();
     var f = e.target, button = f.querySelector('button[type=submit]'), err = f.querySelector('.banner.err');
-    var change = { id: id, kind: kind, quantity: f.quantity.value === '' ? '' : Number(f.quantity.value), reason: f.reason ? f.reason.value : '' };
+    var change = { id: id, kind: kind, quantity: f.quantity ? (f.quantity.value === '' ? '' : Number(f.quantity.value)) : '', reason: f.reason ? f.reason.value : '' };
+    if (kind === 'price') { change.packPrice = f.packPrice.value === '' ? '' : Number(f.packPrice.value); change.packSize = f.packSize.value === '' ? '' : Number(f.packSize.value); }
     if (item) { change.itemId = item.id; change.itemName = item.name; }
     else { change.name = f.itemName.value; change.unit = f.unit.value; change.category = f.category.value; change.parLevel = f.parLevel.value === '' ? '' : Number(f.parLevel.value); }
     button.disabled = true; button.textContent = t('sending'); err.hidden = true;
     call('stock', { change: change }).then(function () {
       close();
-      state.message = t('stockSent', { what: item ? t('stockWhat', { kind: kindLabel(kind), q: change.quantity, unit: u(item.unit), name: nm(item.name) }) : t('newItemWhat', { name: change.name }) });
+      state.message = t('stockSent', { what: item ? t('stockWhat', { kind: kindLabel(kind), q: kind === 'price' ? change.packPrice : change.quantity, unit: kind === 'price' ? 'EGP' : u(item.unit), name: nm(item.name) }) : t('newItemWhat', { name: change.name }) });
       return load();
     }).catch(function (x) {
       // Same change ID is kept: sending again cannot apply it twice.
@@ -727,8 +740,10 @@ function lockButton() {
   return h('button', { class: 'ghost', type: 'button', text: t('lockPayroll'), onclick: function () { kv('ninja.payroll', null); state.payKey = null; state.payData = null; state.payWho = null; render(); } });
 }
 function employeePay(e, monthKey, months) {
-  var rows = [['baseSalary', money(e.baseSalary)], ['deductions', '- ' + money(e.deductions)], ['bonuses', money(e.bonus)],
-    ['overtimePay', money(e.overtime) + ' - ' + t('otHours', { n: e.overtimeHours })], ['kpiBonusLabel', money(e.kpiBonus)], ['excellence', money(e.excellence)]];
+  var rows = [['baseSalary', money(e.baseSalary)], ['deductions', '- ' + money(e.deductions)]];
+  if (e.earlyDeductions) { rows.push(['lateOnly', '- ' + money(e.lateDeductions)]); rows.push(['earlyOnly', '- ' + money(e.earlyDeductions)]); }
+  rows = rows.concat([['bonuses', money(e.bonus)],
+    ['overtimePay', money(e.overtime) + ' - ' + t('otHours', { n: e.overtimeHours })], ['kpiBonusLabel', money(e.kpiBonus)], ['excellence', money(e.excellence)]]);
   var counts = [['daysWorked', e.worked], ['daysOffLabel', e.daysOff], ['noShowsLabel', e.noShows], ['lateDays', e.lateDays], ['warningsLabel', e.warnings]];
   var categories = state.payData.categories || [];
   var picked = categories.map(function (c, i) { return Number((e.kpi || [])[i]) || 0; });
