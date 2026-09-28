@@ -170,6 +170,15 @@ var I18N = {
     last14: 'Last 14 business days', chartLabel: 'Daily net sales for the last 14 business days', todayAxis: 'Today',
     paymentsToday: 'Payments today (recorded)', nOrders: '{n} orders', noSalesToday: 'No sales yet today.',
     topItems: 'Top items today', noItemsToday: 'No items sold yet today.',
+    notifications: 'Notifications', notifyClock: 'Tell me when someone clocks in or out',
+    notifyOn: 'On for this phone', notifyOff: 'Off for this phone', notifyAsk: 'Turn on',
+    notifyStop: 'Turn off', notifyBlocked: 'Notifications are blocked for this app in the phone settings.',
+    notifyUnsupported: 'This phone cannot show notifications. On iPhone, add the app to the Home Screen first.',
+    notifyNotSetUp: 'Not switched on for the business yet. An owner turns it on in Ninja on the laptop.',
+    notifyLate: 'Arrives within about 2 minutes, and only while the laptop is on and online.',
+    drawer: 'Cash drawer', drawerOpen: 'Open since {when}', drawerFloat: 'started with {n}',
+    drawerExpected: 'Should hold', drawerCounted: 'Counted', drawerShort: 'Short by {n}', drawerOver: 'Over by {n}',
+    drawerExact: 'Matched exactly', drawerNone: 'No drawer counts yet.', drawerClosedBy: 'closed by {who}',
     recentOrders: 'Recent orders', noOrders: 'No orders recorded yet.', dineIn: 'Dine-in', takeaway: 'Takeaway',
     cash: 'Cash', instapay: 'InstaPay', opay_visa: 'Card (OPay)',
     lowItems: '{n} item(s) at or below minimum.', noLow: 'No low-stock flags.',
@@ -223,6 +232,15 @@ var I18N = {
     last14: 'آخر 14 يوم عمل', chartLabel: 'صافي المبيعات اليومية لآخر 14 يوم عمل', todayAxis: 'اليوم',
     paymentsToday: 'مدفوعات اليوم (المسجلة)', nOrders: '{n} طلبات', noSalesToday: 'لا توجد مبيعات اليوم بعد.',
     topItems: 'الأكثر مبيعًا اليوم', noItemsToday: 'لم يُبع أي صنف اليوم بعد.',
+    notifications: 'الإشعارات', notifyClock: 'نبّهني عند تسجيل الحضور أو الانصراف',
+    notifyOn: 'مفعّلة على هذا الهاتف', notifyOff: 'غير مفعّلة على هذا الهاتف', notifyAsk: 'تفعيل',
+    notifyStop: 'إيقاف', notifyBlocked: 'الإشعارات محظورة لهذا التطبيق من إعدادات الهاتف.',
+    notifyUnsupported: 'هذا الهاتف لا يدعم الإشعارات. على الآيفون أضف التطبيق إلى الشاشة الرئيسية أولًا.',
+    notifyNotSetUp: 'لم تُفعَّل للمحل بعد. يفعّلها أحد الملاك من ننجا على اللابتوب.',
+    notifyLate: 'تصل خلال دقيقتين تقريبًا، وفقط عندما يكون اللابتوب يعمل ومتصلًا بالإنترنت.',
+    drawer: 'درج النقدية', drawerOpen: 'مفتوح منذ {when}', drawerFloat: 'بدأ بـ {n}',
+    drawerExpected: 'المفروض به', drawerCounted: 'الفعلي', drawerShort: 'عجز {n}', drawerOver: 'زيادة {n}',
+    drawerExact: 'مطابق تمامًا', drawerNone: 'لا يوجد جرد للدرج بعد.', drawerClosedBy: 'أغلقه {who}',
     recentOrders: 'أحدث الطلبات', noOrders: 'لا توجد طلبات مسجلة بعد.', dineIn: 'داخل المحل', takeaway: 'تيك أواي',
     cash: 'نقدًا', instapay: 'إنستاباي', opay_visa: 'بطاقة (OPay)',
     lowItems: '{n} صنف عند الحد الأدنى أو أقل.', noLow: 'لا توجد أصناف منخفضة.',
@@ -458,6 +476,13 @@ function today() {
       h('div', { class: 'bars', role: 'img', 'aria-label': t('chartLabel') }, s.daily.map(function (d, i) { return h('div', { class: i === s.daily.length - 1 ? 'today' : '', style: 'height:' + Math.max(2, Math.round(d.netSales / max * 100)) + '%', title: d.date + ': ' + money(d.netSales) }); })),
       h('div', { class: 'axis' }, h('span', { text: s.daily[0].date.slice(5) }), h('span', { text: t('todayAxis') }))),
     h('section', { class: 'card' }, h('h2', { text: t('paymentsToday') }), tt.payments.length ? tt.payments.map(function (p) { return h('div', { class: 'row' }, h('span', { text: payLabel(p.method) }, h('small', { text: t('nOrders', { n: p.orders }) })), h('strong', { text: money(p.total) })); }) : h('p', { class: 'empty', text: t('noSalesToday') })),
+    h('section', { class: 'card' }, h('h2', { text: t('drawer') }), (s.drawers || []).length ? (s.drawers || []).slice(0, 7).map(function (d) {
+      if (d.status === 'open') return h('div', { class: 'row' }, h('span', { text: t('drawerOpen', { when: cairo(d.openedAt) }) }, h('small', { text: t('drawerFloat', { n: money(d.openingFloat) }) })), h('strong', { class: 'gold', text: '⏳' }));
+      var diff = Number(d.difference || 0), exact = Math.abs(diff) < 0.005;
+      return h('div', { class: 'row' },
+        h('span', { text: cairo(d.closedAt) }, h('small', { text: t('drawerExpected') + ' ' + money(d.expected) + ' · ' + t('drawerCounted') + ' ' + money(d.counted) + (d.closedBy ? ' · ' + t('drawerClosedBy', { who: nm(d.closedBy) }) : '') })),
+        h('strong', { class: exact ? '' : 'low', text: exact ? t('drawerExact') : (diff < 0 ? t('drawerShort', { n: money(-diff) }) : t('drawerOver', { n: money(diff) })) }));
+    }) : h('p', { class: 'empty', text: t('drawerNone') })),
     h('section', { class: 'card' }, h('h2', { text: t('topItems') }), tt.topItems.length ? tt.topItems.map(function (p) { return h('div', { class: 'row' }, h('span', { text: nm(p.name) + (p.sizeLabel ? ' · ' + p.sizeLabel : '') }, h('small', { text: money(p.total) })), h('strong', { class: 'num', text: '× ' + p.quantity })); }) : h('p', { class: 'empty', text: t('noItemsToday') })),
     h('section', { class: 'card' }, h('h2', { text: t('recentOrders') }), s.recentOrders.length ? s.recentOrders.slice(0, 15).map(function (o) { return h('div', { class: 'row' }, h('span', null, h('span', { class: 'num', text: o.orderNumber.slice(0, 15) }), h('small', { text: cairo(o.createdAt) + ' · ' + (o.orderType === 'dine_in' ? t('dineIn') : t('takeaway')) + ' · ' + payLabel(o.paymentMethod) })), h('strong', { text: money(o.total) })); }) : h('p', { class: 'empty', text: t('noOrders') }))
   ];
@@ -619,6 +644,39 @@ function authScreen() {
 }
 
 var installPrompt = null;
+// base64url to the byte array the browser wants for a push key.
+function pushKeyBytes(k) {
+  var pad = '='.repeat((4 - k.length % 4) % 4), raw = atob((k + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  var out = new Uint8Array(raw.length);
+  for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+function pushSupported() { return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; }
+function pushState() {
+  if (!pushSupported()) return Promise.resolve('unsupported');
+  if (Notification.permission === 'denied') return Promise.resolve('blocked');
+  return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+    .then(function (sub) { return sub ? 'on' : 'off'; }).catch(function () { return 'off'; });
+}
+function pushTurnOn(key) {
+  return Notification.requestPermission().then(function (p) {
+    if (p !== 'granted') throw new Error(t('notifyBlocked'));
+    return navigator.serviceWorker.ready;
+  }).then(function (reg) {
+    return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: pushKeyBytes(key) });
+  }).then(function (sub) {
+    var j = sub.toJSON();
+    return call('pushSubscribe', { endpoint: sub.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth });
+  });
+}
+function pushTurnOff() {
+  return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+    .then(function (sub) {
+      if (!sub) return null;
+      var endpoint = sub.endpoint;
+      return sub.unsubscribe().then(function () { return call('pushUnsubscribe', { endpoint: endpoint }); });
+    });
+}
 window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installPrompt = e; if (state.tab === 'Profile') render(); });
 function seg(options, current, pick) { return h('div', { class: 'segmented', role: 'tablist', style: 'grid-template-columns:repeat(' + options.length + ',1fr)' }, options.map(function (o) { return h('button', { type: 'button', role: 'tab', 'aria-selected': String(current === o[0]), text: o[1], onclick: function () { pick(o[0]); } }); })); }
 function profile() {
@@ -628,6 +686,31 @@ function profile() {
     state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
     h('section', { class: 'card' }, h('h2', { text: t('account') }), h('p', { class: 'note', text: t('signedInAs', { who: [who[0], who[1]].filter(Boolean).join(' · ') || '-' }) }),
       PWA ? h('button', { type: 'button', class: 'primary', text: t('signOut'), onclick: function () { call('logout').catch(function () {}).then(function () { kv('ninja.token', null); kv('ninja.user', null); state.data = null; state.tab = 'Today'; render(); }); } }) : null),
+    h('section', { class: 'card' }, h('h2', { text: t('notifications') }),
+      h('p', { class: 'note', text: t('notifyClock') }),
+      (function () {
+        var key = state.data && state.data.snapshot && state.data.snapshot.pushKey;
+        if (!pushSupported()) return h('p', { class: 'note', text: t('notifyUnsupported') });
+        if (!key) return h('p', { class: 'note', text: t('notifyNotSetUp') });
+        var box = h('div', null, h('p', { class: 'note', text: '…' }));
+        var draw = function () {
+          pushState().then(function (st) {
+            box.textContent = '';
+            if (st === 'blocked') { box.appendChild(h('p', { class: 'note', text: t('notifyBlocked') })); return; }
+            box.appendChild(h('p', { class: 'note', text: st === 'on' ? t('notifyOn') : t('notifyOff') }));
+            box.appendChild(h('button', { type: 'button', class: st === 'on' ? '' : 'primary', text: st === 'on' ? t('notifyStop') : t('notifyAsk'),
+              onclick: function (e) {
+                var b = e.target; b.disabled = true;
+                (st === 'on' ? pushTurnOff() : pushTurnOn(key)).then(draw).catch(function (x) {
+                  b.disabled = false; err.hidden = false; err.textContent = x.message;
+                });
+              } }));
+            box.appendChild(h('p', { class: 'note', text: t('notifyLate') }));
+          });
+        };
+        draw();
+        return box;
+      })()),
     h('section', { class: 'card' }, h('h2', { text: t('appearance') }),
       h('label', null, t('colours')), h('div', { class: 'swatches' }, [h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(!deviceTheme()), onclick: function () { kv('ninja.theme', null); applyColour(); render(); } }, h('i', { style: 'background:' + brandTheme.primary }), t('businessColours'))]
         .concat(THEMES.map(function (x) { return h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(deviceTheme() === x[0]), onclick: function () { kv('ninja.theme', x[0]); applyColour(); render(); } }, h('i', { style: 'background:' + x[2] }), x[1]); }))),
