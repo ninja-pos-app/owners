@@ -103,6 +103,9 @@
   .lang-btn{font-family:Cairo,Montserrat,sans-serif}
   html[lang=ar] .lang-btn{font-family:Montserrat,sans-serif}
   .num{unicode-bidi:isolate;direction:ltr;display:inline-block}
+  .kind-row{display:flex;align-items:flex-start;gap:9px;margin:9px 0}
+  .kind-row input{width:20px;height:20px;flex:0 0 auto;margin:1px 0 0}
+  .kind-row label{font-size:14px;line-height:1.45;font-weight:500}
   .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:8px}
   .swatch{border:2px solid var(--line);border-radius:12px;background:var(--field);color:var(--white);padding:8px 4px;font-size:11px;font-weight:700;min-height:64px}
   .swatch i{display:block;width:26px;height:26px;border-radius:50%;margin:0 auto 6px}
@@ -171,6 +174,9 @@ var I18N = {
     paymentsToday: 'Payments today (recorded)', nOrders: '{n} orders', noSalesToday: 'No sales yet today.',
     topItems: 'Top items today', noItemsToday: 'No items sold yet today.',
     notifications: 'Notifications', notifyClock: 'Tell me when someone clocks in or out',
+    notifyWhat: 'What to tell me about', notifyKindClock: 'Someone clocks in or out',
+    notifyKindDay: 'The day is closed (sales, profit and the cash count)', notifyKindStock: 'Something is out of stock or running low',
+    notifyKindNone: 'Choose at least one, or turn notifications off.', notifyKindSaved: 'Saved.',
     notifyOn: 'On for this phone', notifyOff: 'Off for this phone', notifyAsk: 'Turn on',
     notifyStop: 'Turn off', notifyBlocked: 'Notifications are blocked for this app in the phone settings.',
     notifyUnsupported: 'This phone cannot show notifications. On iPhone, add the app to the Home Screen first.',
@@ -233,10 +239,13 @@ var I18N = {
     paymentsToday: 'مدفوعات اليوم (المسجلة)', nOrders: '{n} طلبات', noSalesToday: 'لا توجد مبيعات اليوم بعد.',
     topItems: 'الأكثر مبيعًا اليوم', noItemsToday: 'لم يُبع أي صنف اليوم بعد.',
     notifications: 'الإشعارات', notifyClock: 'نبّهني عند تسجيل الحضور أو الانصراف',
+    notifyWhat: 'أخبرني عن', notifyKindClock: 'تسجيل الحضور أو الانصراف',
+    notifyKindDay: 'إقفال اليوم (المبيعات والأرباح وجرد الكاش)', notifyKindStock: 'صنف خلص أو قارب على الخلاص',
+    notifyKindNone: 'اختر نوعًا واحدًا على الأقل، أو أوقف الإشعارات.', notifyKindSaved: 'تم الحفظ.',
     notifyOn: 'مفعّلة على هذا الهاتف', notifyOff: 'غير مفعّلة على هذا الهاتف', notifyAsk: 'تفعيل',
     notifyStop: 'إيقاف', notifyBlocked: 'الإشعارات محظورة لهذا التطبيق من إعدادات الهاتف.',
     notifyUnsupported: 'هذا الهاتف لا يدعم الإشعارات. على الآيفون أضف التطبيق إلى الشاشة الرئيسية أولًا.',
-    notifyNotSetUp: 'لم تُفعَّل للمحل بعد. يفعّلها أحد الملاك من ننجا على اللابتوب.',
+    notifyNotSetUp: 'لم تُفعَّل للمحل بعد. يفعّلها أحد الملاك من نينجا على اللابتوب.',
     notifyLate: 'تصل خلال دقيقتين تقريبًا، وفقط عندما يكون اللابتوب يعمل ومتصلًا بالإنترنت.',
     drawer: 'درج النقدية', drawerOpen: 'مفتوح منذ {when}', drawerFloat: 'بدأ بـ {n}',
     drawerExpected: 'المفروض به', drawerCounted: 'الفعلي', drawerShort: 'عجز {n}', drawerOver: 'زيادة {n}',
@@ -251,7 +260,7 @@ var I18N = {
     s_pending: 'في انتظار اللابتوب', s_applied: 'تم التطبيق', s_rejected: 'مرفوض', s_imported: 'على اللابتوب',
     close: 'إغلاق', newStockItem: 'صنف مخزون جديد', laptopRecord: 'المسجل على اللابتوب: {q} {unit} · الحد الأدنى {p} {unit}',
     t_count: 'جرد', t_receive: 'توريد', t_waste: 'استهلاك / هالك', t_minimum: 'الحد الأدنى', t_price: 'السعر',
-    h_price: 'كم دفعت في العبوة، وكم كان بداخلها. ننجا يحسب تكلفة كل {unit}.',
+    h_price: 'كم دفعت في العبوة، وكم كان بداخلها. نينجا يحسب تكلفة كل {unit}.',
     packPaid: 'سعر العبوة (جنيه)', packHeld: 'الكمية داخلها ({unit})', costPer: '{price} جنيه لكل {size} {unit}', noPrice: 'لا يوجد سعر بعد',
     h_count: 'كم {unit} موجود فعليًا الآن؟ سيحل هذا الرقم محل رقم اللابتوب.',
     h_receive: 'كم {unit} وصل؟ ستتم إضافته.',
@@ -658,6 +667,18 @@ function pushState() {
   return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
     .then(function (sub) { return sub ? 'on' : 'off'; }).catch(function () { return 'off'; });
 }
+var PUSH_KINDS = ['clock', 'day', 'stock'];
+function myKinds() {
+  var raw = kv('ninja.notifyKinds');
+  if (!raw) return PUSH_KINDS.slice();
+  var asked = raw.split(',').filter(function (x) { return PUSH_KINDS.indexOf(x) >= 0; });
+  return asked;
+}
+function setMyKinds(kinds) {
+  kv('ninja.notifyKinds', kinds.join(','));
+  return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+    .then(function (sub) { return sub ? call('pushKinds', { endpoint: sub.endpoint, kinds: kinds }) : null; });
+}
 function pushTurnOn(key) {
   return Notification.requestPermission().then(function (p) {
     if (p !== 'granted') throw new Error(t('notifyBlocked'));
@@ -666,7 +687,7 @@ function pushTurnOn(key) {
     return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: pushKeyBytes(key) });
   }).then(function (sub) {
     var j = sub.toJSON();
-    return call('pushSubscribe', { endpoint: sub.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth });
+    return call('pushSubscribe', { endpoint: sub.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, kinds: myKinds() });
   });
 }
 function pushTurnOff() {
@@ -705,6 +726,22 @@ function profile() {
                   b.disabled = false; err.hidden = false; err.textContent = x.message;
                 });
               } }));
+            if (st === 'on') {
+              box.appendChild(h('label', { class: 'note', text: t('notifyWhat') }));
+              PUSH_KINDS.forEach(function (kind) {
+                var id = 'notify-kind-' + kind;
+                var input = h('input', { type: 'checkbox', id: id });
+                input.checked = myKinds().indexOf(kind) >= 0;
+                input.onchange = function () {
+                  var picked = PUSH_KINDS.filter(function (k) { var el = document.getElementById('notify-kind-' + k); return el && el.checked; });
+                  if (!picked.length) { input.checked = true; err.hidden = false; err.textContent = t('notifyKindNone'); return; }
+                  err.hidden = true;
+                  setMyKinds(picked).then(function () { state.message = t('notifyKindSaved'); })
+                    .catch(function (x) { err.hidden = false; err.textContent = x.message; });
+                };
+                box.appendChild(h('div', { class: 'kind-row' }, input, h('label', { for: id, text: t('notifyKind' + kind.charAt(0).toUpperCase() + kind.slice(1)) })));
+              });
+            }
             box.appendChild(h('p', { class: 'note', text: t('notifyLate') }));
           });
         };
