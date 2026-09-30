@@ -103,6 +103,7 @@
   .lang-btn{font-family:Cairo,Montserrat,sans-serif}
   html[lang=ar] .lang-btn{font-family:Montserrat,sans-serif}
   .num{unicode-bidi:isolate;direction:ltr;display:inline-block}
+  .form-sub{font-size:15px;margin:18px 0 2px}
   .kind-row{display:flex;align-items:flex-start;gap:9px;margin:9px 0}
   .kind-row input{width:20px;height:20px;flex:0 0 auto;margin:1px 0 0}
   .kind-row label{font-size:14px;line-height:1.45;font-weight:500}
@@ -204,6 +205,11 @@ var I18N = {
     quantityUnit: 'Quantity ({unit})', reason: 'Reason', reasonHint: 'e.g. expired milk, spilled', noteOptional: 'Note (optional)',
     itemName: 'Item name', unitLabel: 'Unit (e.g. kg, L, pcs, bottle)', categoryOptional: 'Category (optional)', categoryHint: 'e.g. Dairy, Packaging',
     quantityNow: 'Quantity now', minimumBefore: 'Minimum before warning', sendToLaptop: 'Send to laptop', sending: 'Sending…',
+    costTitle: 'What it costs', costHint: 'From the receipt: what one pack cost and how much was in it. Ninja works out the cost of each unit. You can leave both empty and add them later.',
+    packHeldNew: 'How much was in the pack (in the unit above)',
+    sellTitle: 'Selling price', sellHint: 'Only for things you sell as they are, like a can, a bottle or a snack. It goes on the menu, and each sale takes 1 out of stock. Leave it empty for ingredients.',
+    sellPrice: 'Selling price (EGP)', menuCategory: 'Menu section (optional)', menuCategoryHint: 'e.g. Soft Drinks, Snacks',
+    bothPack: 'Fill in both the pack price and how much was in it, or leave both empty.',
     stockSent: '{what} sent. It will be applied on the laptop at the next sync.', stockWhat: '{kind} {q} {unit} for {name}', newItemWhat: 'New item {name}',
     retryStock: 'Press Send again to retry safely.',
     newPurchase: 'New purchase', supplier: 'Supplier', invoiceDate: 'Invoice date', totalEgp: 'Total (EGP)', whatBought: 'What did you buy?',
@@ -269,6 +275,11 @@ var I18N = {
     quantityUnit: 'الكمية ({unit})', reason: 'السبب', reasonHint: 'مثال: لبن منتهي الصلاحية، انسكب', noteOptional: 'ملاحظة (اختياري)',
     itemName: 'اسم الصنف', unitLabel: 'الوحدة (مثال: kg أو L أو pcs أو زجاجة)', categoryOptional: 'الفئة (اختياري)', categoryHint: 'مثال: ألبان، تغليف',
     quantityNow: 'الكمية الحالية', minimumBefore: 'الحد الأدنى قبل التنبيه', sendToLaptop: 'إرسال إلى اللابتوب', sending: 'جارٍ الإرسال…',
+    costTitle: 'التكلفة', costHint: 'من الفاتورة: سعر العبوة الواحدة وكان فيها كام. نينجا يحسب تكلفة كل وحدة. ممكن تسيبهم فاضيين وتضيفهم بعدين.',
+    packHeldNew: 'الكمية اللي كانت في العبوة (بالوحدة اللي فوق)',
+    sellTitle: 'سعر البيع', sellHint: 'للحاجات اللي بتتباع زي ما هي بس، زي كانز أو زجاجة أو سناك. هتتضاف للمنيو، وكل بيع يخصم 1 من المخزون. سيبه فاضي للمكونات.',
+    sellPrice: 'سعر البيع (جنيه)', menuCategory: 'قسم المنيو (اختياري)', menuCategoryHint: 'مثال: مشروبات غازية، سناكس',
+    bothPack: 'اكتب سعر العبوة والكمية اللي فيها مع بعض، أو سيبهم فاضيين.',
     stockSent: 'تم إرسال {what}. سيُطبق على اللابتوب عند المزامنة التالية.', stockWhat: '{kind} {q} {unit} لصنف {name}', newItemWhat: 'الصنف الجديد {name}',
     retryStock: 'اضغط إرسال مرة أخرى لإعادة المحاولة بأمان.',
     newPurchase: 'مشتريات جديدة', supplier: 'المورد', invoiceDate: 'تاريخ الفاتورة', totalEgp: 'الإجمالي (جنيه)', whatBought: 'ماذا اشتريت؟',
@@ -561,6 +572,14 @@ function openStockPanel(item) {
       form.appendChild(field(t('categoryOptional'), 'category', { maxlength: '60', placeholder: t('categoryHint') }));
       form.appendChild(field(t('quantityNow'), 'quantity', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required' }));
       form.appendChild(field(t('minimumBefore'), 'parLevel', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: '0' }));
+      form.appendChild(h('h3', { class: 'form-sub', text: t('costTitle') }));
+      form.appendChild(h('p', { class: 'note', text: t('costHint') }));
+      form.appendChild(field(t('packPaid'), 'packPrice', { type: 'number', inputmode: 'decimal', min: '0', step: 'any' }));
+      form.appendChild(field(t('packHeldNew'), 'packSize', { type: 'number', inputmode: 'decimal', min: '0', step: 'any' }));
+      form.appendChild(h('h3', { class: 'form-sub', text: t('sellTitle') }));
+      form.appendChild(h('p', { class: 'note', text: t('sellHint') }));
+      form.appendChild(field(t('sellPrice'), 'sellPrice', { type: 'number', inputmode: 'decimal', min: '0', step: 'any' }));
+      form.appendChild(field(t('menuCategory'), 'menuCategory', { maxlength: '60', placeholder: t('menuCategoryHint') }));
     }
     form.appendChild(h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' }));
     form.appendChild(h('button', { class: 'primary', type: 'submit', text: t('sendToLaptop') }));
@@ -573,7 +592,13 @@ function openStockPanel(item) {
     var change = { id: id, kind: kind, quantity: f.quantity ? (f.quantity.value === '' ? '' : Number(f.quantity.value)) : '', reason: f.reason ? f.reason.value : '' };
     if (kind === 'price') { change.packPrice = f.packPrice.value === '' ? '' : Number(f.packPrice.value); change.packSize = f.packSize.value === '' ? '' : Number(f.packSize.value); }
     if (item) { change.itemId = item.id; change.itemName = item.name; }
-    else { change.name = f.itemName.value; change.unit = f.unit.value; change.category = f.category.value; change.parLevel = f.parLevel.value === '' ? '' : Number(f.parLevel.value); }
+    else {
+      change.name = f.itemName.value; change.unit = f.unit.value; change.category = f.category.value; change.parLevel = f.parLevel.value === '' ? '' : Number(f.parLevel.value);
+      // Cost: both numbers or neither, checked here so the owner hears it before anything is sent.
+      if ((f.packPrice.value === '') !== (f.packSize.value === '')) { err.hidden = false; err.textContent = t('bothPack'); return; }
+      if (f.packPrice.value !== '') { change.packPrice = Number(f.packPrice.value); change.packSize = Number(f.packSize.value); }
+      if (f.sellPrice.value !== '') { change.sellPrice = Number(f.sellPrice.value); change.menuCategory = f.menuCategory.value; }
+    }
     button.disabled = true; button.textContent = t('sending'); err.hidden = true;
     call('stock', { change: change }).then(function () {
       close();
