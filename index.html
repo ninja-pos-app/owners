@@ -239,7 +239,11 @@
   main.anim-slide>*{animation:slide .32s var(--ease) both}
   main.anim-back>*{animation:slideback .32s var(--ease) both}
   .viewer{animation:fade .2s ease both}
-  .sheet form{animation:up .34s var(--ease) both}
+  /* A form taller than the phone (the new stock item one is) scrolls inside itself. Pinned to the bottom with
+     nothing to scroll, its top used to sit above the screen where no finger could reach it. */
+  .sheet{overflow:hidden}
+  .sheet form{animation:up .34s var(--ease) both;max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .sheet-head{position:sticky;top:-18px;z-index:2;background:var(--card);margin:-18px -16px 0;padding:16px 16px 10px}
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
