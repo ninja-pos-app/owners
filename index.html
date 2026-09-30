@@ -182,6 +182,9 @@
   nav button[aria-current=page] b{max-width:110px;opacity:1;margin-inline-start:8px}
   .ic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none}
   .ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  select{display:block;width:100%;margin-top:6px;padding:12px 40px 12px 12px;min-height:48px;border:1px solid transparent;border-radius:14px;background:var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/18px;color:var(--white);font:inherit;font-size:16px;-webkit-appearance:none;appearance:none}
+  html[dir=rtl] select{padding:12px 12px 12px 40px;background-position:left 12px center}
+  select:focus{outline:2px solid var(--green)}
   /* Switches: every tick-box in the app is a sliding switch */
   input[type=checkbox]{-webkit-appearance:none;appearance:none;display:inline-block;width:48px;height:28px;min-width:48px;margin:0;padding:0;border:0;border-radius:99px;background:rgba(127,127,127,.32);position:relative;flex:none;cursor:pointer;transition:background .25s var(--ease)}
   input[type=checkbox]::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .25s var(--ease)}
@@ -318,10 +321,12 @@ var I18N = {
     stockHelp: 'Tap an item to count it, add a delivery, record use or waste, or change its minimum. Changes are applied on the main laptop at its next sync (about 2 minutes).',
     addItem: '+ Add new stock item', searchStock: 'Search stock', noMatch: 'No matching items.',
     minimumOf: 'minimum {n} {unit}', update: 'Update {name}', changesFromPhones: 'Stock changes from phones', item: 'Item',
-    k_count: 'Counted', k_receive: 'Received', k_waste: 'Used / waste', k_minimum: 'New minimum', k_newItem: 'New item', k_price: 'New price',
+    k_count: 'Counted', k_receive: 'Received', k_waste: 'Used / waste', k_minimum: 'New minimum', k_newItem: 'New item', k_price: 'New cost', k_sellPrice: 'Selling price',
     s_pending: 'Waiting for laptop', s_applied: 'Applied', s_rejected: 'Not accepted', s_imported: 'On laptop',
     close: 'Close', newStockItem: 'New stock item', laptopRecord: 'Laptop record: {q} {unit} · minimum {p} {unit}',
-    t_count: 'Count', t_receive: 'Received', t_waste: 'Used / waste', t_minimum: 'Minimum', t_price: 'Price',
+    t_count: 'Count', t_receive: 'Received', t_waste: 'Used / waste', t_minimum: 'Minimum', t_price: 'Cost', t_sellPrice: 'Selling price',
+    sellNow: 'On the till as {name}, selling for {price}.', sellNotYet: 'Not on the till yet. Give it a selling price and it goes on the menu, sold as it is: each sale takes 1 out of stock.',
+    sellIngredient: 'This is an ingredient of menu items, so it has no selling price of its own. Change those items’ prices under Menu on the laptop.', sellsFor: 'sells for {price}',
     h_price: 'What you paid for the pack, and how much came in it. Ninja works out the cost per {unit}.',
     packPaid: 'What the pack cost (EGP)', packHeld: 'How much was in it ({unit})', costPer: '{price} EGP per {size} {unit}', noPrice: 'no price yet',
     h_count: 'How many {unit} are physically there right now? This replaces the laptop number.',
@@ -329,12 +334,12 @@ var I18N = {
     h_waste: 'How many {unit} were used outside sales, spilled or thrown away? This is subtracted.',
     h_minimum: 'Warn when stock is at or below this many {unit}.',
     quantityUnit: 'Quantity ({unit})', reason: 'Reason', reasonHint: 'e.g. expired milk, spilled', noteOptional: 'Note (optional)',
-    itemName: 'Item name', unitLabel: 'Unit (e.g. kg, L, pcs, bottle)', categoryOptional: 'Category (optional)', categoryHint: 'e.g. Dairy, Packaging',
+    itemName: 'Item name', unitLabel: 'Unit', categoryLabel: 'Category', chooseOne: 'Choose…', menuCategoryNone: 'Same as the category', categoryOptional: 'Category (optional)', categoryHint: 'e.g. Dairy, Packaging',
     quantityNow: 'Quantity now', minimumBefore: 'Minimum before warning', sendToLaptop: 'Send to laptop', sending: 'Sending…',
     costTitle: 'What it costs', costHint: 'From the receipt: what one pack cost and how much was in it. Ninja works out the cost of each unit. You can leave both empty and add them later.',
     packHeldNew: 'How much was in the pack (in the unit above)',
     sellTitle: 'Selling price', sellHint: 'Only for things you sell as they are, like a can, a bottle or a snack. It goes on the menu, and each sale takes 1 out of stock. Leave it empty for ingredients.',
-    sellPrice: 'Selling price (EGP)', menuCategory: 'Menu section (optional)', menuCategoryHint: 'e.g. Soft Drinks, Snacks',
+    sellPrice: 'Selling price (EGP)', menuCategory: 'Menu section', menuCategoryHint: 'e.g. Soft Drinks, Snacks',
     bothPack: 'Fill in both the pack price and how much was in it, or leave both empty.',
     stockSent: '{what} sent. It will be applied on the laptop at the next sync.', stockWhat: '{kind} {q} {unit} for {name}', newItemWhat: 'New item {name}',
     retryStock: 'Press Send again to retry safely.',
@@ -408,10 +413,12 @@ var I18N = {
     stockHelp: 'اضغط على أي صنف لجرده أو إضافة توريد أو تسجيل استهلاك أو هالك أو تغيير الحد الأدنى. تُطبق التغييرات على اللابتوب الرئيسي عند المزامنة التالية (حوالي دقيقتين).',
     addItem: '+ إضافة صنف جديد', searchStock: 'ابحث في المخزون', noMatch: 'لا توجد أصناف مطابقة.',
     minimumOf: 'الحد الأدنى {n} {unit}', update: 'تحديث {name}', changesFromPhones: 'تغييرات المخزون من الموبايل', item: 'صنف',
-    k_count: 'جرد', k_receive: 'توريد', k_waste: 'استهلاك / هالك', k_minimum: 'حد أدنى جديد', k_newItem: 'صنف جديد', k_price: 'سعر جديد',
+    k_count: 'جرد', k_receive: 'توريد', k_waste: 'استهلاك / هالك', k_minimum: 'حد أدنى جديد', k_newItem: 'صنف جديد', k_price: 'تكلفة جديدة', k_sellPrice: 'سعر البيع',
     s_pending: 'في انتظار اللابتوب', s_applied: 'تم التطبيق', s_rejected: 'مرفوض', s_imported: 'على اللابتوب',
     close: 'إغلاق', newStockItem: 'صنف مخزون جديد', laptopRecord: 'المسجل على اللابتوب: {q} {unit} · الحد الأدنى {p} {unit}',
-    t_count: 'جرد', t_receive: 'توريد', t_waste: 'استهلاك / هالك', t_minimum: 'الحد الأدنى', t_price: 'السعر',
+    t_count: 'جرد', t_receive: 'توريد', t_waste: 'استهلاك / هالك', t_minimum: 'الحد الأدنى', t_price: 'التكلفة', t_sellPrice: 'سعر البيع',
+    sellNow: 'على الكاشير باسم {name}، بيتباع بـ {price}.', sellNotYet: 'مش على الكاشير لسه. حط له سعر بيع وهيتضاف للمنيو ويتباع زي ما هو: كل بيع يخصم 1 من المخزون.',
+    sellIngredient: 'ده مكوّن في أصناف المنيو، فمالوش سعر بيع لوحده. غيّر أسعار الأصناف دي من المنيو على اللابتوب.', sellsFor: 'بيتباع بـ {price}',
     h_price: 'كم دفعت في العبوة، وكم كان بداخلها. نينجا يحسب تكلفة كل {unit}.',
     packPaid: 'سعر العبوة (جنيه)', packHeld: 'الكمية داخلها ({unit})', costPer: '{price} جنيه لكل {size} {unit}', noPrice: 'لا يوجد سعر بعد',
     h_count: 'كم {unit} موجود فعليًا الآن؟ سيحل هذا الرقم محل رقم اللابتوب.',
@@ -419,12 +426,12 @@ var I18N = {
     h_waste: 'كم {unit} استُهلك خارج المبيعات أو انسكب أو تم التخلص منه؟ سيتم خصمه.',
     h_minimum: 'نبّهني عندما يصل المخزون إلى هذا العدد من {unit} أو أقل.',
     quantityUnit: 'الكمية ({unit})', reason: 'السبب', reasonHint: 'مثال: لبن منتهي الصلاحية، انسكب', noteOptional: 'ملاحظة (اختياري)',
-    itemName: 'اسم الصنف', unitLabel: 'الوحدة (مثال: kg أو L أو pcs أو زجاجة)', categoryOptional: 'الفئة (اختياري)', categoryHint: 'مثال: ألبان، تغليف',
+    itemName: 'اسم الصنف', unitLabel: 'الوحدة', categoryLabel: 'الفئة', chooseOne: 'اختر…', menuCategoryNone: 'نفس الفئة', categoryOptional: 'الفئة (اختياري)', categoryHint: 'مثال: ألبان، تغليف',
     quantityNow: 'الكمية الحالية', minimumBefore: 'الحد الأدنى قبل التنبيه', sendToLaptop: 'إرسال إلى اللابتوب', sending: 'جارٍ الإرسال…',
     costTitle: 'التكلفة', costHint: 'من الفاتورة: سعر العبوة الواحدة وكان فيها كام. نينجا يحسب تكلفة كل وحدة. ممكن تسيبهم فاضيين وتضيفهم بعدين.',
     packHeldNew: 'الكمية اللي كانت في العبوة (بالوحدة اللي فوق)',
     sellTitle: 'سعر البيع', sellHint: 'للحاجات اللي بتتباع زي ما هي بس، زي كانز أو زجاجة أو سناك. هتتضاف للمنيو، وكل بيع يخصم 1 من المخزون. سيبه فاضي للمكونات.',
-    sellPrice: 'سعر البيع (جنيه)', menuCategory: 'قسم المنيو (اختياري)', menuCategoryHint: 'مثال: مشروبات غازية، سناكس',
+    sellPrice: 'سعر البيع (جنيه)', menuCategory: 'قسم المنيو', menuCategoryHint: 'مثال: مشروبات غازية، سناكس',
     bothPack: 'اكتب سعر العبوة والكمية اللي فيها مع بعض، أو سيبهم فاضيين.',
     stockSent: 'تم إرسال {what}. سيُطبق على اللابتوب عند المزامنة التالية.', stockWhat: '{kind} {q} {unit} لصنف {name}', newItemWhat: 'الصنف الجديد {name}',
     retryStock: 'اضغط إرسال مرة أخرى لإعادة المحاولة بأمان.',
@@ -519,6 +526,13 @@ function tr(msg) { if (lang !== 'ar' || !msg) return msg; var m = String(msg); f
 function nm(name) { var s = String(name || ''), parts = s.split(/\s+-\s+/); if (parts.length !== 2) return s; var ar = /[\u0600-\u06FF]/, a = parts.filter(function (p) { return ar.test(p); })[0], e = parts.filter(function (p) { return !ar.test(p); })[0]; return a && e ? (lang === 'ar' ? a : e) : s; }
 var UNIT_AR = { pcs: 'قطعة', g: 'جم', kg: 'كجم', ml: 'مل', L: 'لتر', bottle: 'زجاجة', can: 'علبة', pack: 'عبوة', box: 'صندوق', bag: 'كيس', portion: 'حصة' };
 function u(unit) { return lang === 'ar' && UNIT_AR[unit] ? UNIT_AR[unit] : unit; }
+// The units and categories the laptop itself offers, so a phone can never invent one by a slip of the thumb.
+var STOCK_UNITS = ['pcs', 'g', 'kg', 'ml', 'L', 'bottle', 'can', 'pack', 'box', 'bag', 'portion'];
+var UNIT_EN = { pcs: 'Pieces (pcs)', g: 'Grams (g)', kg: 'Kilograms (kg)', ml: 'Millilitres (ml)', L: 'Litres (L)', bottle: 'Bottle', can: 'Can', pack: 'Pack', box: 'Box', bag: 'Bag', portion: 'Portion' };
+function unitLong(x) { return lang === 'ar' ? (UNIT_AR[x] || x) + ' (' + x + ')' : UNIT_EN[x] || x; }
+var STOCK_CATEGORIES = ['Coffee', 'Dairy', 'Syrups & sauces', 'Powders', 'Juices & purees', 'Tea', 'Packaging', 'Condiments', 'Retail goods', 'Food & bakery', 'Cleaning', 'Other'];
+var CAT_AR = { 'Coffee': 'قهوة', 'Dairy': 'ألبان', 'Syrups & sauces': 'سيروب وصوصات', 'Powders': 'بودرة', 'Juices & purees': 'عصائر وبيوريه', 'Tea': 'شاي', 'Packaging': 'تغليف', 'Condiments': 'إضافات', 'Retail goods': 'منتجات للبيع', 'Food & bakery': 'أكل ومخبوزات', 'Cleaning': 'تنظيف', 'Other': 'أخرى', 'General': 'عام' };
+function catName(x) { return lang === 'ar' && CAT_AR[x] ? CAT_AR[x] : nm(x); }
 
 // ---------- business brand (name, logo, colours, light/dark) ----------
 var brandTheme = { primary: '#6DBE45', mode: 'dark' }, logoCache = null, brandName = '';
@@ -700,7 +714,7 @@ function stock() {
     h('section', { class: 'card' }, items.length ? items.map(function (i) {
       var isLow = i.quantity <= i.parLevel, waiting = pendingFor(i.id);
       return h('button', { type: 'button', class: 'row item-row', 'aria-label': t('update', { name: nm(i.name) }), onclick: function () { openStockPanel(i); } },
-        h('span', { text: nm(i.name) }, h('small', { text: (i.category ? i.category + ' · ' : '') + t('minimumOf', { n: i.parLevel, unit: u(i.unit) }) + ' · ' + (i.packPrice ? t('costPer', { price: i.packPrice, size: i.packSize, unit: u(i.unit) }) : t('noPrice')) }), waiting.length ? h('small', { class: 'gold', text: '⏳ ' + waiting.map(describeChange).join(' · ') }) : null),
+        h('span', { text: nm(i.name) }, h('small', { text: (i.category ? i.category + ' · ' : '') + t('minimumOf', { n: i.parLevel, unit: u(i.unit) }) + ' · ' + (i.packPrice ? t('costPer', { price: i.packPrice, size: i.packSize, unit: u(i.unit) }) : t('noPrice')) + (i.sell ? ' · ' + t('sellsFor', { price: money(i.sell.price) }) : '') }), waiting.length ? h('small', { class: 'gold', text: '⏳ ' + waiting.map(describeChange).join(' · ') }) : null),
         h('strong', { class: isLow ? 'low' : '', text: i.quantity + ' ' + u(i.unit) + arrow() }));
     }) : h('p', { class: 'empty', text: t('noMatch') })),
     changes.length ? h('section', { class: 'card' }, h('h2', { text: t('changesFromPhones') }), changes.slice(0, 15).map(function (c) {
@@ -714,17 +728,32 @@ function openStockPanel(item) {
   var overlay = h('div', { class: 'viewer sheet', role: 'dialog', 'aria-label': item ? t('update', { name: nm(item.name) }) : t('newStockItem') });
   function close() { overlay.remove(); }
   function field(label, name, attrs) { return h('label', null, label, h('input', Object.assign({ name: name }, attrs || {}))); }
+  // A list to choose from. options: [[value, label], ...]; the value sent is always the laptop's own word.
+  function choice(label, name, options, attrs) {
+    return h('label', null, label, h('select', Object.assign({ name: name }, attrs || {}), options.map(function (o) { return h('option', { value: o[0], text: o[1] }); })));
+  }
   function draw() {
     overlay.textContent = '';
     var form = h('form', { class: 'card', onsubmit: submit });
     form.appendChild(h('div', { class: 'sheet-head' }, h('h2', { text: item ? nm(item.name) : t('newStockItem') }), h('button', { type: 'button', class: 'icon-btn', text: t('close'), onclick: close })));
     if (item) {
       form.appendChild(h('p', { class: 'note', text: t('laptopRecord', { q: item.quantity, p: item.parLevel, unit: u(item.unit) }) }));
-      form.appendChild(h('div', { class: 'segmented', role: 'tablist' }, ['count', 'receive', 'waste', 'minimum', 'price'].map(function (k) {
+      form.appendChild(h('div', { class: 'segmented', role: 'tablist', style: 'grid-template-columns:repeat(3,1fr)' }, ['count', 'receive', 'waste', 'minimum', 'price', 'sellPrice'].map(function (k) {
         return h('button', { type: 'button', role: 'tab', 'aria-selected': String(kind === k), text: t('t_' + k), onclick: function () { kind = k; draw(); } });
       })));
-      form.appendChild(h('p', { class: 'note', text: t('h_' + kind, { unit: u(item.unit) }) }));
-      if (kind === 'price') {
+      if (kind !== 'sellPrice') form.appendChild(h('p', { class: 'note', text: t('h_' + kind, { unit: u(item.unit) }) }));
+      if (kind === 'sellPrice') {
+        var menuSections = (state.data.snapshot || {}).menuCategories || [];
+        if (item.ingredient) form.appendChild(h('p', { class: 'note', text: t('sellIngredient') }));
+        else {
+          form.appendChild(h('p', { class: 'note', text: item.sell ? t('sellNow', { name: nm(item.sell.name), price: money(item.sell.price) }) : t('sellNotYet') }));
+          form.appendChild(field(t('sellPrice'), 'sellPrice', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: item.sell ? String(item.sell.price) : '' }));
+          if (!item.sell) {
+            if (menuSections.length) form.appendChild(choice(t('menuCategory'), 'menuCategory', [['', t('menuCategoryNone')]].concat(menuSections.map(function (x) { return [x, nm(x)]; }))));
+            else form.appendChild(field(t('menuCategory'), 'menuCategory', { maxlength: '60', placeholder: t('menuCategoryHint') }));
+          }
+        }
+      } else if (kind === 'price') {
         form.appendChild(field(t('packPaid'), 'packPrice', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: item.packPrice ? String(item.packPrice) : '' }));
         form.appendChild(field(t('packHeld', { unit: u(item.unit) }), 'packSize', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: item.packSize ? String(item.packSize) : '' }));
         form.appendChild(field(t('noteOptional'), 'reason', { maxlength: '200' }));
@@ -735,8 +764,12 @@ function openStockPanel(item) {
       }
     } else {
       form.appendChild(field(t('itemName'), 'itemName', { required: 'required', maxlength: '120', autocomplete: 'off' }));
-      form.appendChild(field(t('unitLabel'), 'unit', { required: 'required', maxlength: '20' }));
-      form.appendChild(field(t('categoryOptional'), 'category', { maxlength: '60', placeholder: t('categoryHint') }));
+      var snap = state.data.snapshot || {};
+      form.appendChild(choice(t('unitLabel'), 'unit', [['', t('chooseOne')]].concat(STOCK_UNITS.map(function (x) { return [x, unitLong(x)]; })), { required: 'required' }));
+      // The laptop's standard categories, plus any the business has already used.
+      var cats = STOCK_CATEGORIES.slice();
+      (snap.inventory || []).forEach(function (i) { if (i.category && cats.indexOf(i.category) < 0) cats.push(i.category); });
+      form.appendChild(choice(t('categoryLabel'), 'category', [['', t('chooseOne')]].concat(cats.map(function (x) { return [x, catName(x)]; })), { required: 'required' }));
       form.appendChild(field(t('quantityNow'), 'quantity', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required' }));
       form.appendChild(field(t('minimumBefore'), 'parLevel', { type: 'number', inputmode: 'decimal', min: '0', step: 'any', required: 'required', value: '0' }));
       form.appendChild(h('h3', { class: 'form-sub', text: t('costTitle') }));
@@ -746,10 +779,13 @@ function openStockPanel(item) {
       form.appendChild(h('h3', { class: 'form-sub', text: t('sellTitle') }));
       form.appendChild(h('p', { class: 'note', text: t('sellHint') }));
       form.appendChild(field(t('sellPrice'), 'sellPrice', { type: 'number', inputmode: 'decimal', min: '0', step: 'any' }));
-      form.appendChild(field(t('menuCategory'), 'menuCategory', { maxlength: '60', placeholder: t('menuCategoryHint') }));
+      // Menu sections come from the laptop. A laptop that has not been updated yet sends none: then it is typed, as before.
+      if ((snap.menuCategories || []).length) form.appendChild(choice(t('menuCategory'), 'menuCategory', [['', t('menuCategoryNone')]].concat(snap.menuCategories.map(function (x) { return [x, nm(x)]; }))));
+      else form.appendChild(field(t('menuCategory'), 'menuCategory', { maxlength: '60', placeholder: t('menuCategoryHint') }));
     }
     form.appendChild(h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' }));
-    form.appendChild(h('button', { class: 'primary', type: 'submit', text: t('sendToLaptop') }));
+    // An ingredient has no selling price of its own, so there is nothing to send from that tab.
+    if (!(item && kind === 'sellPrice' && item.ingredient)) form.appendChild(h('button', { class: 'primary', type: 'submit', text: t('sendToLaptop') }));
     overlay.appendChild(form);
     var first = form.querySelector('input'); if (first) setTimeout(function () { first.focus(); }, 50);
   }
@@ -758,6 +794,7 @@ function openStockPanel(item) {
     var f = e.target, button = f.querySelector('button[type=submit]'), err = f.querySelector('.banner.err');
     var change = { id: id, kind: kind, quantity: f.quantity ? (f.quantity.value === '' ? '' : Number(f.quantity.value)) : '', reason: f.reason ? f.reason.value : '' };
     if (kind === 'price') { change.packPrice = f.packPrice.value === '' ? '' : Number(f.packPrice.value); change.packSize = f.packSize.value === '' ? '' : Number(f.packSize.value); }
+    if (kind === 'sellPrice') { change.sellPrice = Number(f.sellPrice.value); change.menuCategory = f.menuCategory ? f.menuCategory.value : ''; }
     if (item) { change.itemId = item.id; change.itemName = item.name; }
     else {
       change.name = f.itemName.value; change.unit = f.unit.value; change.category = f.category.value; change.parLevel = f.parLevel.value === '' ? '' : Number(f.parLevel.value);
@@ -769,7 +806,7 @@ function openStockPanel(item) {
     button.disabled = true; button.textContent = t('sending'); err.hidden = true;
     call('stock', { change: change }).then(function () {
       close();
-      state.message = t('stockSent', { what: item ? t('stockWhat', { kind: kindLabel(kind), q: kind === 'price' ? change.packPrice : change.quantity, unit: kind === 'price' ? 'EGP' : u(item.unit), name: nm(item.name) }) : t('newItemWhat', { name: change.name }) });
+      state.message = t('stockSent', { what: item ? t('stockWhat', { kind: kindLabel(kind), q: kind === 'price' ? change.packPrice : kind === 'sellPrice' ? change.sellPrice : change.quantity, unit: kind === 'price' || kind === 'sellPrice' ? 'EGP' : u(item.unit), name: nm(item.name) }) : t('newItemWhat', { name: change.name }) });
       return load();
     }).catch(function (x) {
       // Same change ID is kept: sending again cannot apply it twice.
