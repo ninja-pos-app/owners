@@ -78,7 +78,7 @@
   .primary:disabled{opacity:.5}
   .link{background:none;border:0;color:var(--green);font-weight:700;padding:4px 0;font-size:12.5px;text-decoration:underline}
   .search{margin-bottom:10px}
-  nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:var(--bar);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--bar);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
   nav button{background:none;border:0;color:var(--muted);min-height:54px;font-size:12px;font-weight:700;border-radius:10px}
   nav button span{display:block;font-size:18px;margin-bottom:2px}
   nav button[aria-current=page]{color:var(--green);background:rgba(109,190,69,.1)}
@@ -104,6 +104,25 @@
   html[lang=ar] .lang-btn{font-family:Montserrat,sans-serif}
   .num{unicode-bidi:isolate;direction:ltr;display:inline-block}
   .form-sub{font-size:15px;margin:18px 0 2px}
+  .rota-range{margin:6px 0 2px;font-weight:700;text-align:center}
+  .rota-legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0}
+  .rota-legend .chip{display:inline-block;min-width:30px;text-align:center;border-radius:7px;padding:3px 6px;font-weight:800}
+  .rota-person{padding-bottom:12px}
+  .rota-name{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+  .rota-name strong{font-size:15px}
+  .warn-txt{color:var(--amber);font-size:12px}
+  .rota-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .rota-day{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--white);min-height:54px}
+  .rota-day small{font-size:10px;opacity:.8}
+  .rota-day b{font-size:13px}
+  .rota-day.today{outline:2px solid var(--green);outline-offset:1px}
+  .rota-day.unset{border-style:dashed;opacity:.75}
+  .morning{background:#f3d98a!important;color:#3d3000!important;border-color:#f3d98a!important}
+  .night{background:#7f93e6!important;color:#0d1640!important;border-color:#7f93e6!important}
+  .off{background:#8d948d!important;color:#151815!important;border-color:#8d948d!important}
+  .rota-fill{display:flex;gap:6px;margin-top:8px}
+  .rota-fill button{flex:1;border:1px solid var(--line);background:none;color:var(--muted);border-radius:9px;padding:7px 4px;font-size:12px;font-weight:700}
+  .banner.ok{background:rgba(109,190,69,.16);color:var(--green);border-radius:12px;padding:10px 12px;margin:10px 0;font-size:13px}
   .kind-row{display:flex;align-items:flex-start;gap:9px;margin:9px 0}
   .kind-row input{width:20px;height:20px;flex:0 0 auto;margin:1px 0 0}
   .kind-row label{font-size:14px;line-height:1.45;font-weight:500}
@@ -119,23 +138,126 @@
   body.signed-out nav,body.signed-out #refresh{display:none}
   .skeleton{height:90px;border-radius:14px;background:linear-gradient(90deg,var(--card),var(--line),var(--card));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px}
   @keyframes sh{to{background-position:-200% 0}}
+
+  /* ================= The look (2026-09 redesign) ================= */
+  :root{--black:#121212;--card:#1E1E1E;--line:rgba(255,255,255,.09);--white:#F6F5F3;--muted:#A7A29C;--field:#2B2B2B;--bar:rgba(34,34,34,.82);--ink:#F6F5F3;--on-ink:#141414;--shadow:0 1px 2px rgba(0,0,0,.35);--soft:rgba(255,255,255,.08);--ease:cubic-bezier(.2,.8,.2,1);--dir:1}
+  html[data-mode=light]{--black:#F3F1EE;--card:#FFFFFF;--line:rgba(20,20,20,.08);--white:#141414;--muted:#77726C;--field:#F3F1EE;--bar:rgba(255,255,255,.82);--ink:#141414;--on-ink:#FFFFFF;--shadow:0 1px 2px rgba(20,20,20,.05),0 8px 22px rgba(20,20,20,.04);--soft:rgba(20,20,20,.06)}
+  html[dir=rtl]{--dir:-1}
+  body{-webkit-tap-highlight-color:transparent}
+  .top{background:color-mix(in srgb,var(--black) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:0;padding:12px 16px}
+  .brand img,.mark{border-radius:12px}
+  .brand b{letter-spacing:.04em;font-size:15px}
+  .icon-btn{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:12px}
+  .icon-btn.round{width:42px;height:42px;padding:0;border-radius:50%;display:grid;place-items:center}
+  .icon-btn.spin .ic{animation:spin .8s linear infinite}
+  main{padding:8px 16px 130px}
+  h1{font-size:28px;letter-spacing:-.02em;margin:4px 0 6px}
+  h2{font-size:16px;letter-spacing:-.01em}
+  .card{border:0;border-radius:22px;padding:16px;box-shadow:var(--shadow)}
+  .hero{background:var(--green);color:var(--on-primary)}
+  .hero span,.stats small{color:inherit;opacity:.78}
+  .stats div{background:rgba(255,255,255,.3);border-radius:14px;padding:10px}
+  .row{padding:13px 0;border-top:1px solid var(--line)}
+  button.row.tappable,.item-row{border-top:1px solid var(--line)}
+  .banner{border:0!important;border-radius:16px}
+  .primary{background:var(--ink);color:var(--on-ink);border-radius:16px;min-height:54px;transition:transform .12s var(--ease),opacity .2s}
+  button.ghost{border:0;background:var(--soft);border-radius:14px;font-weight:700;font-size:14px}
+  .primary:active,button.ghost:active,.icon-btn:active,.menu-row:active,.rota-day:active,.pin-pad button:active,.pill-btn:active,.swatch:active{transform:scale(.96)}
+  input,textarea{border:1px solid transparent;border-radius:14px;background:var(--field)}
+  main>.search,main>input{background:var(--card);box-shadow:var(--shadow)}
+  .segmented{background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+  .segmented button{border-radius:11px;transition:background .2s var(--ease),color .2s,box-shadow .2s}
+  .segmented button.on,.segmented button[aria-selected=true]{background:var(--card);color:var(--white);box-shadow:var(--shadow)}
+  .kpi-dot.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+  .rota-day{border:0;background:var(--soft)}
+  .rota-fill button{border:0;background:var(--soft);color:var(--white)}
+  .swatch{border:2px solid transparent;background:var(--soft);border-radius:16px}
+  .swatch[aria-pressed=true]{border-color:var(--ink)}
+  .skeleton{border-radius:22px;background:linear-gradient(90deg,var(--card) 20%,var(--soft) 50%,var(--card) 80%);background-size:200% 100%}
+  /* The floating bar */
+  nav{left:50%;right:auto;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:4px;padding:6px;border-radius:99px;border:1px solid var(--line);background:var(--bar);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 10px 30px rgba(0,0,0,.18);z-index:6}
+  nav button{min-height:46px;padding:0 14px;border-radius:99px;display:flex;align-items:center;gap:0;font-size:13px;transition:background .25s var(--ease),color .2s,padding .25s var(--ease)}
+  nav button b{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;transition:max-width .3s var(--ease),opacity .2s,margin .3s var(--ease)}
+  nav button[aria-current=page]{background:var(--ink);color:var(--on-ink);padding:0 16px}
+  nav button[aria-current=page] b{max-width:110px;opacity:1;margin-inline-start:8px}
+  .ic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none}
+  .ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  /* Switches: every tick-box in the app is a sliding switch */
+  input[type=checkbox]{-webkit-appearance:none;appearance:none;display:inline-block;width:48px;height:28px;min-width:48px;margin:0;padding:0;border:0;border-radius:99px;background:rgba(127,127,127,.32);position:relative;flex:none;cursor:pointer;transition:background .25s var(--ease)}
+  input[type=checkbox]::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .25s var(--ease)}
+  input[type=checkbox]:checked{background:var(--ink)}
+  input[type=checkbox]:checked::after{transform:translateX(calc(20px * var(--dir)));background:var(--on-ink)}
+  input[type=checkbox]:disabled{opacity:.45}
+  input[type=checkbox]:focus{outline:0}
+  label.check{display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;gap:12px}
+  /* Profile: grouped rows */
+  .me{display:flex;flex-direction:column;align-items:center;gap:3px;margin:6px 0 18px}
+  .avatar{width:84px;height:84px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:32px;font-weight:800;box-shadow:var(--shadow);margin-bottom:8px;overflow:hidden}
+  .me strong{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .me small{color:var(--muted);font-size:13px}
+  .menu{padding:4px 14px}
+  .menu-row,.set-row{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;margin:0;padding:8px 2px;background:none;border:0;border-top:1px solid var(--line);color:inherit;font:inherit;text-align:start;cursor:pointer}
+  .menu>:first-child{border-top:0}
+  .grow{flex:1;min-width:0;font-weight:600;font-size:15px}
+  .grow small{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:2px;line-height:1.4}
+  .ic-chip{width:38px;height:38px;border-radius:12px;background:var(--soft);display:grid;place-items:center;flex:none}
+  .chev{color:var(--muted);width:18px;height:18px}
+  html[dir=rtl] .chev,html[dir=rtl] .back-btn .ic{transform:scaleX(-1)}
+  .pill-btn{display:block;margin:20px auto 0;padding:10px 22px;border:0;border-radius:99px;background:var(--soft);color:var(--white);font-weight:700;font-size:13px}
+  .back-btn{display:inline-flex;align-items:center;gap:2px;border:0;background:none;color:var(--muted);font-weight:700;font-size:13px;padding:6px 0;margin:0 0 0 -4px}
+  /* Opening screen */
+  #splash{position:fixed;inset:0;z-index:100;background:var(--green);color:var(--on-primary);display:grid;place-items:center;transition:opacity .4s ease,visibility .4s}
+  #splash.gone{opacity:0;visibility:hidden}
+  #splash .logo{width:96px;height:96px;margin:0 auto;border-radius:28px;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.18);animation:pop .7s var(--ease) both}
+  #splash .logo img{width:100%;height:100%;object-fit:contain}
+  #splash b{display:block;margin-top:18px;font-size:26px;font-weight:800;letter-spacing:-.01em;text-align:center;animation:rise .6s .2s var(--ease) both}
+  #splash small{display:block;margin-top:4px;text-align:center;font-size:11px;letter-spacing:.24em;font-weight:700;opacity:.7;animation:rise .6s .3s var(--ease) both}
+  /* The lock */
+  #lock{position:fixed;inset:0;z-index:90;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:11vh 24px calc(26px + env(safe-area-inset-bottom));animation:fade .25s ease both;transition:opacity .22s ease}
+  #lock.out{opacity:0}
+  #lock h1{font-size:24px;text-align:center;margin:0 0 8px}
+  #lock p{color:var(--muted);font-size:13px;text-align:center;margin:0;min-height:18px}
+  .pin-dots{display:flex;gap:16px;justify-content:center;margin:32px 0 0}
+  .pin-dots i{width:13px;height:13px;border-radius:50%;background:rgba(127,127,127,.3);transition:background .15s,transform .2s var(--ease)}
+  .pin-dots i.on{background:var(--ink);transform:scale(1.2)}
+  .pin-dots.bad{animation:shake .4s}
+  .pin-pad{display:grid;grid-template-columns:repeat(3,74px);gap:14px 24px;justify-content:center;direction:ltr}
+  .pin-pad button{width:74px;height:74px;border-radius:50%;border:0;background:var(--card);color:var(--white);font-size:25px;font-weight:700;box-shadow:var(--shadow);display:grid;place-items:center;transition:transform .12s var(--ease)}
+  .pin-pad button.flat{background:none;box-shadow:none;font-size:13px;color:var(--muted)}
+  .bio-btn{display:inline-flex;align-items:center;gap:8px;margin:18px auto 0;padding:11px 18px;border:0;border-radius:99px;background:var(--soft);color:var(--white);font-weight:700;font-size:13px}
+  /* Motion */
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes slide{from{opacity:0;transform:translateX(calc(34px * var(--dir)))}to{opacity:1;transform:none}}
+  @keyframes slideback{from{opacity:0;transform:translateX(calc(-34px * var(--dir)))}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:none}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes up{from{transform:translateY(100%)}to{transform:none}}
+  @keyframes shake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  main.anim-rise>*{animation:rise .38s var(--ease) both}
+  main.anim-rise>*:nth-child(2){animation-delay:.03s}main.anim-rise>*:nth-child(3){animation-delay:.06s}main.anim-rise>*:nth-child(4){animation-delay:.09s}main.anim-rise>*:nth-child(5){animation-delay:.12s}main.anim-rise>*:nth-child(6){animation-delay:.15s}main.anim-rise>*:nth-child(n+7){animation-delay:.18s}
+  main.anim-slide>*{animation:slide .32s var(--ease) both}
+  main.anim-back>*{animation:slideback .32s var(--ease) both}
+  .viewer{animation:fade .2s ease both}
+  .sheet form{animation:up .34s var(--ease) both}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div><div class="logo"><img id="splash-logo" src="icon-192.png" alt=""></div><b id="splash-name"></b><small id="splash-sub">OWNERS</small></div></div>
 <header class="top">
   <div class="brand"><div class="mark" id="brand-mark" aria-hidden="true">N</div><div><b id="brand-name"></b><small id="brand-sub">OWNERS</small></div></div>
-  <div class="top-actions"><button class="icon-btn" id="refresh" type="button">Refresh</button></div>
+  <div class="top-actions"><button class="icon-btn round" id="refresh" type="button" aria-label="Refresh"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.340-5.660M20 4.500V9h-4.500"/></svg></span></button></div>
 </header>
 <main id="main" aria-live="polite"><div class="skeleton"></div><div class="skeleton"></div></main>
 <nav id="tabs">
-  <button type="button" data-tab="Reports" aria-current="page"><span aria-hidden="true">◉</span><b>Reports</b></button>
-  <button type="button" data-tab="Stock"><span aria-hidden="true">▦</span><b>Stock</b></button>
-  <button type="button" data-tab="Team"><span aria-hidden="true">☷</span><b>Team</b></button>
-  <button type="button" data-tab="Payroll"><span aria-hidden="true">₤</span><b>Payroll</b></button>
-  <button type="button" data-tab="Profile"><span aria-hidden="true">☺</span><b>Profile</b></button>
+  <button type="button" data-tab="Reports" aria-current="page"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-7"/></svg></span><b>Reports</b></button>
+  <button type="button" data-tab="Stock"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 8L12 3.5 20.5 8v8L12 20.5 3.5 16V8z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5v8"/></svg></span><b>Stock</b></button>
+  <button type="button" data-tab="Team"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2"/><path d="M2.8 19.5c.6-3.2 3-5 6.2-5s5.600 1.800 6.200 5"/><path d="M15.500 5.700a3 3 0 010 5.600M17.800 14.800c1.900.600 3.100 2.200 3.400 4.700"/></svg></span><b>Team</b></button>
+  <button type="button" data-tab="Profile"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.500 20.500c.800-3.800 3.800-5.800 7.500-5.800s6.700 2 7.500 5.800"/></svg></span><b>Profile</b></button>
 </nav>
 <script>
-var state = { tab: 'Reports', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null, payKey: null, payData: null, payMonth: null, payWho: null, payError: '', stockView: 'items', period: 'today' };
+var state = { tab: 'Reports', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null, payKey: null, payData: null, payMonth: null, payWho: null, payError: '', stockView: 'items', period: 'today', teamView: 'shifts', profileView: null, rotaWeek: null, rotaDraft: null, rotaDraftWeek: null, rotaDirty: false, rotaSentId: null };
 var STALE_MINUTES = 15;
 
 // ---------- language (English default; Arabic on request, remembered on this phone) ----------
@@ -221,6 +343,26 @@ var I18N = {
     retryPurchase: 'Your entries are kept; press Save again to retry safely.',
     pdfTooBig: 'PDF must be under 10 MB', cannotRead: 'Could not read the file', badImage: 'That image format is not supported. Use a photo, PNG or PDF.',
     receipt: 'Receipt', loadingReceipt: 'Loading receipt…', downloadPdf: 'Download PDF receipt',
+    back: 'Back', cancel: 'Cancel', security: 'Privacy & security', lockOnShort: 'Locked with a PIN', lockOffShort: 'No lock',
+    notifyThisPhone: 'Notifications on this phone',
+    lockPin: 'Lock the app with a PIN', lockPinNote: 'Asked for when you open the app, and after a minute away from it.', lockChange: 'Change PIN',
+    lockBio: 'Unlock with fingerprint or face', lockBioNote: 'Uses this phone’s own fingerprint or face check. The PIN always works too.', lockBioNeedPin: 'Switch the PIN on first.',
+    lockBioUnsupported: 'This phone or browser cannot do that.', lockBioFailed: 'The fingerprint or face check did not finish. Try again.',
+    lockWelcome: 'Welcome back', lockEnter: 'Enter your PIN to open the app', lockCurrent: 'Current PIN', lockEnterCurrent: 'Enter your current PIN',
+    lockChoose: 'Choose a PIN', lockAgain: 'Enter it again', lockChooseNote: 'Four digits, asked for each time you open the app.',
+    lockMismatch: 'Those two did not match. Start again.', lockWrong: 'Wrong PIN. {n} tries left.', lockWrongPlain: 'Wrong PIN.',
+    lockForgot: 'Forgot?', lockForgotConfirm: 'Forgot your PIN? You will be signed out, and can sign in again with your username and password.',
+    lockUseBio: 'Use fingerprint or face', lockDelete: 'Delete',
+    lockNote: 'The lock protects the app on this phone. After five wrong tries, or if you forget the PIN, you sign in again with your username and password and choose a new one.',
+    lockSaved: 'PIN saved. The app now asks for it.', lockRemoved: 'The PIN lock is off.', lockBioOn: 'Fingerprint or face unlock is on.', lockBioOff: 'Fingerprint or face unlock is off.',
+    weeklyShifts: 'Shifts', attendanceTab: 'Attendance', thisWeek: 'This week', nextWeek: 'Next week', weekAfter: 'Week after',
+    shiftsHint: 'Tap a day to change it: Morning, then Night, then Day off.', sh_Morning: 'Morning', sh_Night: 'Night', sh_Off: 'Day off', shM: 'M', shN: 'N', shOff: 'Off',
+    copyLastWeek: 'Copy the week before', allMorning: 'All morning', allNight: 'All night',
+    shiftsNoDayOff: 'No day off', shiftsDaysOff: '{n} days off',
+    shiftsSent: 'Sent. The laptop applies it at its next sync, in about 2 minutes.', shiftsWaiting: 'Waiting for the laptop…', shiftsApplied: 'The laptop has the new shifts.',
+    shiftsRefused: 'The laptop did not accept those shifts.', shiftsLeave: 'Leave without sending the changes?',
+    shiftsNote: 'If a week is not set in time, nobody is blocked: whoever clocks in is tracked against the shift they actually came in for.',
+    shiftsNobody: 'No employees on payroll yet. Add them on the laptop, under Attendance.', shiftsNeedUpdate: 'Update Ninja on the laptop to set shifts from the phone.',
     recentShifts: 'Recent shifts', shiftIn: 'In {t}', shiftOut: 'out {t}', closed: 'Closed', onShift: 'On shift',
     noShifts: 'No shifts clocked on the new POS yet.',
     privacyNote: 'Passwords are never sent to Google, and payroll travels encrypted: Google holds bytes it cannot read. Manage staff and attendance rules on the main laptop.',
@@ -291,6 +433,26 @@ var I18N = {
     retryPurchase: 'بياناتك محفوظة؛ اضغط حفظ مرة أخرى لإعادة المحاولة بأمان.',
     pdfTooBig: 'يجب أن يكون ملف PDF أقل من 10 ميجابايت', cannotRead: 'تعذرت قراءة الملف', badImage: 'صيغة الصورة غير مدعومة. استخدم صورة أو PNG أو PDF.',
     receipt: 'الإيصال', loadingReceipt: 'جارٍ تحميل الإيصال…', downloadPdf: 'تنزيل إيصال PDF',
+    back: 'رجوع', cancel: 'إلغاء', security: 'الخصوصية والأمان', lockOnShort: 'مقفول برقم سري', lockOffShort: 'بدون قفل',
+    notifyThisPhone: 'الإشعارات على الهاتف ده',
+    lockPin: 'قفل التطبيق برقم سري', lockPinNote: 'بيتطلب لما تفتح التطبيق، وبعد دقيقة من الخروج منه.', lockChange: 'تغيير الرقم السري',
+    lockBio: 'الفتح بالبصمة أو الوجه', lockBioNote: 'بيستخدم بصمة أو وجه الهاتف نفسه. الرقم السري شغال دايمًا برضه.', lockBioNeedPin: 'فعّل الرقم السري الأول.',
+    lockBioUnsupported: 'الهاتف أو المتصفح ده ما يقدرش يعمل كده.', lockBioFailed: 'التحقق بالبصمة أو الوجه ما كملش. حاول تاني.',
+    lockWelcome: 'أهلًا بيك', lockEnter: 'اكتب الرقم السري لفتح التطبيق', lockCurrent: 'الرقم السري الحالي', lockEnterCurrent: 'اكتب رقمك السري الحالي',
+    lockChoose: 'اختر رقم سري', lockAgain: 'اكتبه تاني', lockChooseNote: 'أربع أرقام، بيتطلبوا كل مرة تفتح التطبيق.',
+    lockMismatch: 'الرقمين مش زي بعض. ابدأ من الأول.', lockWrong: 'الرقم السري غلط. فاضل {n} محاولات.', lockWrongPlain: 'الرقم السري غلط.',
+    lockForgot: 'نسيت؟', lockForgotConfirm: 'نسيت الرقم السري؟ هيتسجل خروجك، وتقدر تدخل تاني باسم المستخدم وكلمة المرور.',
+    lockUseBio: 'استخدم البصمة أو الوجه', lockDelete: 'مسح',
+    lockNote: 'القفل بيحمي التطبيق على الهاتف ده. بعد خمس محاولات غلط، أو لو نسيت الرقم السري، بتدخل تاني باسم المستخدم وكلمة المرور وتختار رقم جديد.',
+    lockSaved: 'تم حفظ الرقم السري. التطبيق هيطلبه من دلوقتي.', lockRemoved: 'قفل الرقم السري اتلغى.', lockBioOn: 'الفتح بالبصمة أو الوجه اتفعّل.', lockBioOff: 'الفتح بالبصمة أو الوجه اتلغى.',
+    weeklyShifts: 'الورديات', attendanceTab: 'الحضور', thisWeek: 'الأسبوع ده', nextWeek: 'الأسبوع الجاي', weekAfter: 'اللي بعده',
+    shiftsHint: 'اضغط على اليوم لتغييره: صباحي، ثم مسائي، ثم إجازة.', sh_Morning: 'صباحي', sh_Night: 'مسائي', sh_Off: 'إجازة', shM: 'ص', shN: 'م', shOff: 'راحة',
+    copyLastWeek: 'انسخ الأسبوع اللي قبله', allMorning: 'الكل صباحي', allNight: 'الكل مسائي',
+    shiftsNoDayOff: 'بدون يوم إجازة', shiftsDaysOff: '{n} أيام إجازة',
+    shiftsSent: 'تم الإرسال. اللابتوب هيطبّقها في المزامنة الجاية، خلال دقيقتين تقريبًا.', shiftsWaiting: 'في انتظار اللابتوب…', shiftsApplied: 'الورديات الجديدة وصلت اللابتوب.',
+    shiftsRefused: 'اللابتوب ما قبلش الورديات دي.', shiftsLeave: 'تخرج من غير ما تبعت التعديلات؟',
+    shiftsNote: 'لو الأسبوع ما اتحددش في وقته، محدش بيتعطل: اللي يسجل حضور بيتحسب على الوردية اللي جه فيها فعلًا.',
+    shiftsNobody: 'لا يوجد موظفين على المرتبات بعد. أضفهم من اللابتوب في الحضور.', shiftsNeedUpdate: 'حدّث نينجا على اللابتوب علشان تحدد الورديات من الموبايل.',
     recentShifts: 'أحدث الورديات', shiftIn: 'دخول {t}', shiftOut: 'خروج {t}', closed: 'مغلقة', onShift: 'في الوردية',
     Payroll: 'الرواتب', Reports: 'التقارير',
     stockItems: 'الأصناف', invoices: 'الفواتير',
@@ -386,7 +548,8 @@ function applyLanguage() {
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.title = (brandName ? brandName + ' · ' : '') + (lang === 'ar' ? 'الملّاك' : 'Owners');
   document.getElementById('brand-sub').textContent = t('owners');
-  document.getElementById('refresh').textContent = t('refresh');
+  document.getElementById('refresh').setAttribute('aria-label', t('refresh'));
+  document.getElementById('splash-sub').textContent = t('owners');
   document.getElementById('tabs').setAttribute('aria-label', t('sections'));
   document.querySelectorAll('nav button').forEach(function (b) { b.querySelector('b').textContent = t(b.dataset.tab); });
 }
@@ -451,7 +614,7 @@ function syncLine() {
 }
 
 function segmented(options, current, pick) {
-  return h('div', { class: 'segmented', role: 'tablist' }, options.map(function (o) {
+  return h('div', { class: 'segmented', role: 'tablist', style: 'grid-template-columns:repeat(' + options.length + ',1fr)' }, options.map(function (o) {
     return h('button', { type: 'button', role: 'tab', class: o.id === current ? 'on' : '', 'aria-selected': o.id === current ? 'true' : 'false', text: o.label, onclick: function () { pick(o.id); } });
   }));
 }
@@ -650,7 +813,75 @@ function purchases() {
   ];
 }
 
+// Team: the week's shifts, who clocked in, and payroll - one place for everything about the staff.
 function team() {
+  var picker = seg([['shifts', t('weeklyShifts')], ['attendance', t('attendanceTab')], ['payroll', t('Payroll')]], state.teamView, function (id) {
+    if (state.rotaDirty && id !== 'shifts' && !confirm(t('shiftsLeave'))) return;
+    if (id !== 'shifts') { state.rotaDirty = false; state.rotaDraft = null; }
+    state.teamView = id; state.message = ''; render(); window.scrollTo(0, 0);
+  });
+  return [picker].concat(state.teamView === 'payroll' ? payroll() : state.teamView === 'attendance' ? attendance() : shifts());
+}
+
+// ---------- weekly shifts ----------
+var DOWS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+function dayAdd(key, n) { return new Date(Date.parse(key + 'T12:00:00Z') + n * 86400000).toISOString().slice(0, 10); }
+function dowOf(key) { return DOWS[(new Date(key + 'T12:00:00Z').getUTCDay() + 6) % 7]; }
+function weekStartOf(key, start) { return dayAdd(key, -((DOWS.indexOf(dowOf(key)) - DOWS.indexOf(start) + 7) % 7)); }
+function dayShort(key) { return new Date(key + 'T12:00:00Z').toLocaleDateString(LOCALE(), { weekday: 'short', timeZone: 'UTC' }); }
+function dateShort(key) { return new Date(key + 'T12:00:00Z').toLocaleDateString(LOCALE(), { day: 'numeric', month: 'short', timeZone: 'UTC' }); }
+function shifts() {
+  var r = state.data.snapshot.rota;
+  if (!r || !r.employees || !r.employees.length) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t(r ? 'shiftsNobody' : 'shiftsNeedUpdate') }))];
+  var thisWeek = weekStartOf(todayCairo(), r.weekStart), nextWeek = dayAdd(thisWeek, 7);
+  var has = function (w) { var wk = (r.weeks || {})[w] || {}; return r.employees.every(function (e) { return wk[e.id] && Object.keys(wk[e.id]).length === 7; }); };
+  // Opens on the week that needs attention: this one until it is set, then the next.
+  var week = state.rotaWeek || (has(thisWeek) ? nextWeek : thisWeek);
+  var saved = (r.weeks || {})[week] || {};
+  // What this phone sent stays on screen until the laptop has answered; then the laptop's copy takes over.
+  var sent = state.rotaSentId ? (state.data.phoneRota || []).filter(function (x) { return x.id === state.rotaSentId; })[0] : null;
+  var waiting = Boolean(state.rotaSentId) && (!sent || sent.status === 'pending'), refused = '';
+  if (sent && sent.status !== 'pending') {
+    if (sent.status === 'rejected') refused = tr(sent.note) || t('shiftsRefused'); else state.message = t('shiftsApplied');
+    state.rotaSentId = null; state.rotaDraft = null;
+  }
+  if (!state.rotaDraft || state.rotaDraftWeek !== week) { state.rotaDraft = JSON.parse(JSON.stringify(saved)); state.rotaDraftWeek = week; state.rotaDirty = false; }
+  var draft = state.rotaDraft, days = [0, 1, 2, 3, 4, 5, 6].map(function (n) { var key = dayAdd(week, n); return { key: key, dow: dowOf(key) }; });
+  function go(w) { if (state.rotaDirty && !confirm(t('shiftsLeave'))) return; state.rotaWeek = w; state.rotaDraft = null; state.rotaDirty = false; state.message = ''; render(); }
+  function put(id, dow, v) { var row = draft[id] || (draft[id] = {}); row[dow] = v; state.rotaDirty = true; state.message = ''; render(); }
+  var NEXT = { '': 'Morning', 'Morning': 'Night', 'Night': 'Day Off', 'Day Off': 'Morning' };
+  var lastWeek = (r.weeks || {})[dayAdd(week, -7)];
+  var head = h('section', { class: 'card' },
+    seg([[thisWeek, t('thisWeek')], [nextWeek, t('nextWeek')], [dayAdd(thisWeek, 14), t('weekAfter')]], week, go),
+    h('p', { class: 'rota-range', text: dateShort(week) + ' - ' + dateShort(dayAdd(week, 6)) }),
+    h('p', { class: 'note', text: t('shiftsHint') }),
+    h('div', { class: 'rota-legend' }, h('span', { class: 'chip morning', text: t('shM') }), h('span', { text: t('sh_Morning') }), h('span', { class: 'chip night', text: t('shN') }), h('span', { text: t('sh_Night') }), h('span', { class: 'chip off', text: t('shOff') }), h('span', { text: t('sh_Off') })),
+    lastWeek && Object.keys(lastWeek).length ? h('button', { type: 'button', class: 'ghost', text: t('copyLastWeek'), onclick: function () { state.rotaDraft = JSON.parse(JSON.stringify(lastWeek)); state.rotaDirty = true; render(); } }) : null);
+  var cards = r.employees.map(function (e) {
+    var row = draft[e.id] || {}, offs = days.filter(function (d) { return row[d.dow] === 'Day Off'; }).length, full = days.every(function (d) { return row[d.dow]; });
+    return h('section', { class: 'card rota-person' },
+      h('div', { class: 'rota-name' }, h('strong', { text: e.name }), full && offs !== 1 ? h('small', { class: 'warn-txt', text: offs === 0 ? t('shiftsNoDayOff') : t('shiftsDaysOff', { n: offs }) }) : null),
+      h('div', { class: 'rota-days' }, days.map(function (d) {
+        var v = row[d.dow] || '';
+        return h('button', { type: 'button', class: 'rota-day ' + (v === 'Morning' ? 'morning' : v === 'Night' ? 'night' : v === 'Day Off' ? 'off' : 'unset') + (d.key === todayCairo() ? ' today' : ''), 'aria-label': e.name + ' ' + dayShort(d.key) + ' ' + (v || '-'), onclick: function () { put(e.id, d.dow, NEXT[v]); } },
+          h('small', { text: dayShort(d.key) }), h('b', { text: v === 'Morning' ? t('shM') : v === 'Night' ? t('shN') : v === 'Day Off' ? t('shOff') : '-' }));
+      })),
+      h('div', { class: 'rota-fill' },
+        h('button', { type: 'button', text: t('allMorning'), onclick: function () { days.forEach(function (d) { if ((draft[e.id] || (draft[e.id] = {}))[d.dow] !== 'Day Off') draft[e.id][d.dow] = 'Morning'; }); state.rotaDirty = true; render(); } }),
+        h('button', { type: 'button', text: t('allNight'), onclick: function () { days.forEach(function (d) { if ((draft[e.id] || (draft[e.id] = {}))[d.dow] !== 'Day Off') draft[e.id][d.dow] = 'Night'; }); state.rotaDirty = true; render(); } })));
+  });
+  var send = h('button', { type: 'button', class: 'primary', disabled: state.busy || waiting || !state.rotaDirty ? 'disabled' : null, text: state.busy ? t('sending') : waiting ? t('shiftsWaiting') : t('sendToLaptop'), onclick: function () {
+    var out = {}; r.employees.forEach(function (e) { if (draft[e.id] && Object.keys(draft[e.id]).length) out[e.id] = draft[e.id]; });
+    if (!Object.keys(out).length) return;
+    var id = uuid();
+    state.busy = true; state.error = ''; state.message = ''; render();
+    call('rota', { change: { id: id, week: week, shifts: out } }).then(function () { state.busy = false; state.rotaDirty = false; state.rotaSentId = id; state.message = t('shiftsSent'); return load(); })
+      .catch(function (x) { state.busy = false; state.error = x.message; render(); });
+  } });
+  return [head].concat(cards, [refused ? h('div', { class: 'banner err', role: 'alert', text: refused }) : null, state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null, send, h('p', { class: 'note', text: t('shiftsNote') })]);
+}
+
+function attendance() {
   var s = state.data.snapshot;
   return [
     h('section', { class: 'card' }, h('h2', { text: t('recentShifts') }), s.shifts.length ? s.shifts.map(function (x) {
@@ -732,76 +963,222 @@ function pushTurnOff() {
 }
 window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installPrompt = e; if (state.tab === 'Profile') render(); });
 function seg(options, current, pick) { return h('div', { class: 'segmented', role: 'tablist', style: 'grid-template-columns:repeat(' + options.length + ',1fr)' }, options.map(function (o) { return h('button', { type: 'button', role: 'tab', 'aria-selected': String(current === o[0]), text: o[1], onclick: function () { pick(o[0]); } }); })); }
-function profile() {
-  var who = PWA ? (kv('ninja.user') || '').split('|') : [null, state.data && state.data.email];
-  var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
-  return [
-    state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
-    h('section', { class: 'card' }, h('h2', { text: t('account') }), h('p', { class: 'note', text: t('signedInAs', { who: [who[0], who[1]].filter(Boolean).join(' · ') || '-' }) }),
-      PWA ? h('button', { type: 'button', class: 'primary', text: t('signOut'), onclick: function () { call('logout').catch(function () {}).then(function () { kv('ninja.token', null); kv('ninja.user', null); state.data = null; state.tab = 'Today'; render(); }); } }) : null),
-    h('section', { class: 'card' }, h('h2', { text: t('notifications') }),
-      h('p', { class: 'note', text: t('notifyClock') }),
-      (function () {
-        var key = state.data && state.data.snapshot && state.data.snapshot.pushKey;
-        if (!pushSupported()) return h('p', { class: 'note', text: t('notifyUnsupported') });
-        if (!key) return h('p', { class: 'note', text: t('notifyNotSetUp') });
-        var box = h('div', null, h('p', { class: 'note', text: '…' }));
-        var draw = function () {
-          pushState().then(function (st) {
-            box.textContent = '';
-            if (st === 'blocked') { box.appendChild(h('p', { class: 'note', text: t('notifyBlocked') })); return; }
-            box.appendChild(h('p', { class: 'note', text: st === 'on' ? t('notifyOn') : t('notifyOff') }));
-            box.appendChild(h('button', { type: 'button', class: st === 'on' ? '' : 'primary', text: st === 'on' ? t('notifyStop') : t('notifyAsk'),
-              onclick: function (e) {
-                var b = e.target; b.disabled = true;
-                (st === 'on' ? pushTurnOff() : pushTurnOn(key)).then(draw).catch(function (x) {
-                  b.disabled = false; err.hidden = false; err.textContent = x.message;
-                });
-              } }));
-            if (st === 'on') {
-              box.appendChild(h('label', { class: 'note', text: t('notifyWhat') }));
-              PUSH_KINDS.forEach(function (kind) {
-                var id = 'notify-kind-' + kind;
-                var input = h('input', { type: 'checkbox', id: id });
-                input.checked = myKinds().indexOf(kind) >= 0;
-                input.onchange = function () {
-                  var picked = PUSH_KINDS.filter(function (k) { var el = document.getElementById('notify-kind-' + k); return el && el.checked; });
-                  if (!picked.length) { input.checked = true; err.hidden = false; err.textContent = t('notifyKindNone'); return; }
-                  err.hidden = true;
-                  setMyKinds(picked).then(function () { state.message = t('notifyKindSaved'); })
-                    .catch(function (x) { err.hidden = false; err.textContent = x.message; });
-                };
-                box.appendChild(h('div', { class: 'kind-row' }, input, h('label', { for: id, text: t('notifyKind' + kind.charAt(0).toUpperCase() + kind.slice(1)) })));
-              });
-            }
-            box.appendChild(h('p', { class: 'note', text: t('notifyLate') }));
-          });
-        };
-        draw();
-        return box;
-      })()),
-    h('section', { class: 'card' }, h('h2', { text: t('appearance') }),
-      h('label', null, t('colours')), h('div', { class: 'swatches' }, [h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(!deviceTheme()), onclick: function () { kv('ninja.theme', null); applyColour(); render(); } }, h('i', { style: 'background:' + brandTheme.primary }), t('businessColours'))]
-        .concat(THEMES.map(function (x) { return h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(deviceTheme() === x[0]), onclick: function () { kv('ninja.theme', x[0]); applyColour(); render(); } }, h('i', { style: 'background:' + x[2] }), x[1]); }))),
-      h('label', null, t('lightDark')), seg([['business', t('m_business')], ['light', t('m_light')], ['dark', t('m_dark')], ['auto', t('m_auto')]], deviceMode() || 'business', function (m) { kv('ninja.mode', m === 'business' ? null : m); applyMode(); render(); }),
-      h('label', null, t('language')), seg([['en', 'English'], ['ar', 'العربية']], lang, function (l) { lang = l; kv('ninja.lang', l); applyLanguage(); render(); })),
-    PWA ? h('form', { class: 'card', onsubmit: function (e) {
-      e.preventDefault(); var f = e.target, b = f.querySelector('button[type=submit]'); b.disabled = true; err.hidden = true;
-      call('changePassword', { oldPassword: f.oldPassword.value, newPassword: f.newPassword.value }).then(function () { f.reset(); b.disabled = false; state.message = t('passwordChanged'); render(); }).catch(function (x) { b.disabled = false; err.hidden = false; err.textContent = x.message; });
-    } }, h('h2', { text: t('changePassword') }), h('label', null, t('currentPassword'), h('input', { name: 'oldPassword', type: 'password', required: 'required', autocomplete: 'current-password' })),
-      h('label', null, t('newPassword'), h('input', { name: 'newPassword', type: 'password', minlength: '8', required: 'required', autocomplete: 'new-password' })), err, h('button', { class: 'primary', type: 'submit', text: t('savePassword') })) : null,
-    PWA && !(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ? h('section', { class: 'card' }, h('h2', { text: t('installApp') }), h('p', { class: 'note', text: t('installNote') }),
-      installPrompt ? h('button', { type: 'button', class: 'primary', text: t('install'), onclick: function () { installPrompt.prompt(); installPrompt = null; } }) : null) : null
-  ];
+// ---------- small building blocks ----------
+var ICONS = {"Reports":"<path d=\"M5 20V11M12 20V4M19 20v-7\"/>","Stock":"<path d=\"M3.5 8L12 3.5 20.5 8v8L12 20.5 3.5 16V8z\"/><path d=\"M3.5 8L12 12.5 20.5 8M12 12.5v8\"/>","Team":"<circle cx=\"9\" cy=\"8.5\" r=\"3.2\"/><path d=\"M2.8 19.5c.6-3.2 3-5 6.2-5s5.600 1.800 6.200 5\"/><path d=\"M15.500 5.700a3 3 0 010 5.600M17.800 14.800c1.900.600 3.100 2.200 3.400 4.700\"/>","Profile":"<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4.500 20.500c.800-3.800 3.800-5.800 7.500-5.800s6.700 2 7.500 5.800\"/>","refresh":"<path d=\"M20 12a8 8 0 11-2.340-5.660M20 4.500V9h-4.500\"/>","bell":"<path d=\"M6 16.500V11a6 6 0 1112 0v5.500l1.500 2h-15l1.500-2z\"/><path d=\"M10 20.500a2 2 0 004 0\"/>","palette":"<path d=\"M12 3a9 9 0 100 18c1.400 0 2-1 2-2 0-1.500-1.200-1.700-1.200-3 0-1 .800-1.800 2-1.800H17a4 4 0 004-4c0-4-4-7.200-9-7.200z\"/><circle cx=\"7.800\" cy=\"11\" r=\"1\"/><circle cx=\"11\" cy=\"7.500\" r=\"1\"/><circle cx=\"15.500\" cy=\"8.500\" r=\"1\"/>","globe":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3c2.800 3 2.800 15 0 18M12 3c-2.800 3-2.800 15 0 18\"/>","lock":"<rect x=\"5\" y=\"11\" width=\"14\" height=\"10\" rx=\"2.500\"/><path d=\"M8 11V8a4 4 0 118 0v3\"/>","key":"<circle cx=\"8\" cy=\"15.500\" r=\"4\"/><path d=\"M11 12.500L20 3.500M16.500 7l3 3M14 9.500l2 2\"/>","download":"<path d=\"M12 4v11M7 11l5 5 5-5M5 20h14\"/>","chevron":"<path d=\"M9 6l6 6-6 6\"/>","back":"<path d=\"M15 6l-6 6 6 6\"/>","finger":"<path d=\"M12 11.500v4.500M8.600 18.800c-.700-1.600-1.100-3.300-1.100-5.300a4.500 4.500 0 019 0c0 1.200.100 2.300.400 3.300M5.600 15.800c-.400-1.100-.600-2.400-.600-3.800a7 7 0 0114 0M12.300 20.700c.700-1.300 1.100-2.700 1.200-4.200\"/>","backspace":"<path d=\"M21 5.500H9.500L3.500 12l6 6.500H21v-13z\"/><path d=\"M12.500 9.500l5 5M17.500 9.500l-5 5\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>","day":"<rect x=\"4\" y=\"5\" width=\"16\" height=\"15\" rx=\"3\"/><path d=\"M4 10h16M8.500 3v4M15.500 3v4\"/>","box":"<path d=\"M3.500 8L12 3.500 20.500 8v8L12 20.500 3.500 16V8z\"/><path d=\"M3.500 8L12 12.500 20.500 8\"/>","shifts":"<circle cx=\"9\" cy=\"8.500\" r=\"3.200\"/><path d=\"M2.800 19.500c.600-3.200 3-5 6.200-5 1.300 0 2.400.300 3.400.800\"/><circle cx=\"17.500\" cy=\"16.500\" r=\"4\"/><path d=\"M17.500 14.500v2l1.300 1\"/>","shield":"<path d=\"M12 3l7.500 3v5.500c0 4.700-3.200 8-7.500 9.500-4.300-1.500-7.500-4.800-7.500-9.500V6L12 3z\"/><path d=\"M9 12l2.200 2.200L15.200 10\"/>"};
+function icon(name) { var el = document.createElement('span'); el.className = 'ic'; el.setAttribute('aria-hidden', 'true'); el.innerHTML = '<svg viewBox="0 0 24 24">' + (ICONS[name] || '') + '</svg>'; return el; }
+function chip(name) { return h('span', { class: 'ic-chip' }, icon(name)); }
+// A row that opens something.
+function menuRow(ic, label, value, onclick) {
+  var chev = icon('chevron'); chev.className = 'ic chev';
+  return h('button', { type: 'button', class: 'menu-row', onclick: onclick }, chip(ic), h('span', { class: 'grow', text: label }, value ? h('small', { text: value }) : null), chev);
+}
+// A row with a switch. The whole row is the switch's label, so a thumb anywhere on it works.
+function setRow(ic, label, note, checked, onchange, id, disabled) {
+  var input = h('input', { type: 'checkbox', id: id || null, disabled: disabled ? 'disabled' : null });
+  input.checked = Boolean(checked);
+  input.onchange = function () { onchange(input); };
+  return h('label', { class: 'set-row' }, chip(ic), h('span', { class: 'grow', text: label }, note ? h('small', { text: note }) : null), input);
 }
 
+// ---------- the app lock: a PIN, and the phone's own fingerprint or face check ----------
+// This is a lock on the app on this phone. The PIN is never stored, only a slow one-way scramble of it, and
+// the fingerprint or face never leaves the phone: the phone just answers yes or no.
+var LOCK = {
+  pin: function () { try { return JSON.parse(kv('ninja.lock.pin') || 'null'); } catch (e) { return null; } },
+  bio: function () { return kv('ninja.lock.bio'); }
+};
+function pinHash(pin, salt) {
+  return crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits'])
+    .then(function (k) { return crypto.subtle.deriveBits({ name: 'PBKDF2', salt: b64ToBytes(salt), iterations: 150000, hash: 'SHA-256' }, k, 256); }).then(bytesToB64);
+}
+function setPin(pin) { var salt = bytesToB64(crypto.getRandomValues(new Uint8Array(16))); return pinHash(pin, salt).then(function (x) { kv('ninja.lock.pin', JSON.stringify({ salt: salt, hash: x })); }); }
+function checkPin(pin) { var saved = LOCK.pin(); if (!saved) return Promise.resolve(true); return pinHash(pin, saved.salt).then(function (x) { return x === saved.hash; }); }
+function bioSupported() { return Boolean(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create); }
+function bioEnroll() {
+  if (!bioSupported()) return Promise.reject(new Error(t('lockBioUnsupported')));
+  var user = (kv('ninja.user') || 'owner').split('|')[0] || 'owner';
+  return navigator.credentials.create({ publicKey: {
+    challenge: crypto.getRandomValues(new Uint8Array(32)), rp: { name: brandName || 'Ninja' },
+    user: { id: crypto.getRandomValues(new Uint8Array(16)), name: user, displayName: user },
+    pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+    authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' }, timeout: 60000, attestation: 'none'
+  } }).then(function (c) { if (!c) throw new Error(t('lockBioFailed')); kv('ninja.lock.bio', bytesToB64(c.rawId)); })
+    .catch(function (e) { throw new Error(e && e.name === 'NotAllowedError' ? t('lockBioFailed') : e && e.name === 'NotSupportedError' ? t('lockBioUnsupported') : (e && e.message) || t('lockBioFailed')); });
+}
+function bioVerify() {
+  var id = LOCK.bio();
+  if (!id || !bioSupported()) return Promise.reject(new Error('unavailable'));
+  return navigator.credentials.get({ publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), allowCredentials: [{ type: 'public-key', id: b64ToBytes(id), transports: ['internal'] }], userVerification: 'required', timeout: 60000 } })
+    .then(function (a) { if (!a) throw new Error('cancelled'); return true; });
+}
+function signOutLocal() { kv('ninja.token', null); kv('ninja.user', null); kv('ninja.lock.pin', null); kv('ninja.lock.bio', null); kv('ninja.payroll', null); state.data = null; state.payKey = null; state.payData = null; state.tab = 'Reports'; state.profileView = null; }
+var locked = false, hiddenAt = 0;
+// mode: 'unlock' (opening the app), 'new' (choosing a PIN, typed twice) or 'confirm' (proving the current one).
+function pinOverlay(mode, done) {
+  var old = document.getElementById('lock'); if (old) old.remove();
+  var pin = '', first = null, tries = 0, busy = false;
+  var title = h('h1'), sub = h('p'), dots = h('div', { class: 'pin-dots' }, [0, 1, 2, 3].map(function () { return h('i'); }));
+  var el = h('div', { id: 'lock', role: 'dialog', 'aria-modal': 'true' });
+  function words() {
+    title.textContent = mode === 'unlock' ? t('lockWelcome') : mode === 'confirm' ? t('lockCurrent') : first === null ? t('lockChoose') : t('lockAgain');
+    sub.textContent = mode === 'unlock' ? t('lockEnter') : mode === 'confirm' ? t('lockEnterCurrent') : t('lockChooseNote');
+  }
+  function paint() { [].forEach.call(dots.children, function (d, i) { d.className = i < pin.length ? 'on' : ''; }); }
+  function close() { el.classList.add('out'); setTimeout(function () { el.remove(); }, 230); }
+  function bad(msg) { dots.classList.add('bad'); sub.textContent = msg; setTimeout(function () { dots.classList.remove('bad'); pin = ''; paint(); }, 420); }
+  function finish() { close(); done(); }
+  function complete() {
+    if (mode === 'new') {
+      if (first === null) { first = pin; pin = ''; words(); paint(); return; }
+      if (first !== pin) { first = null; bad(t('lockMismatch')); setTimeout(function () { title.textContent = t('lockChoose'); }, 450); return; }
+      busy = true; setPin(pin).then(finish); return;
+    }
+    busy = true;
+    checkPin(pin).then(function (ok) {
+      busy = false;
+      if (ok) { finish(); return; }
+      tries++;
+      // Five wrong tries: the lock gives way to the real door, the username and password.
+      if (mode === 'unlock' && tries >= 5) { signOutLocal(); locked = false; close(); render(); return; }
+      bad(mode === 'unlock' ? t('lockWrong', { n: 5 - tries }) : t('lockWrongPlain'));
+    });
+  }
+  function press(k) {
+    if (busy) return;
+    if (k === 'del') { pin = pin.slice(0, -1); paint(); return; }
+    if (pin.length >= 4) return;
+    pin += k; paint();
+    if (pin.length === 4) setTimeout(complete, 140);
+  }
+  var del = h('button', { type: 'button', class: 'flat', 'aria-label': t('lockDelete'), onclick: function () { press('del'); } }, icon('backspace'));
+  var left = mode === 'unlock'
+    ? h('button', { type: 'button', class: 'flat', text: t('lockForgot'), onclick: function () { if (confirm(t('lockForgotConfirm'))) { signOutLocal(); locked = false; close(); render(); } } })
+    : h('button', { type: 'button', class: 'flat', text: t('cancel'), onclick: function () { close(); render(); } });
+  var pad = h('div', { class: 'pin-pad' }, ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(function (n) { return h('button', { type: 'button', text: n, onclick: function () { press(n); } }); }),
+    left, h('button', { type: 'button', text: '0', onclick: function () { press('0'); } }), del);
+  function tryBio() { bioVerify().then(function () { finish(); }).catch(function () { /* the PIN is still there */ }); }
+  var bio = mode === 'unlock' && LOCK.bio() && bioSupported() ? h('button', { type: 'button', class: 'bio-btn', onclick: tryBio }, icon('finger'), t('lockUseBio')) : null;
+  el.appendChild(h('div', null, title, sub, dots));
+  el.appendChild(h('div', { style: 'text-align:center' }, pad, bio));
+  words();
+  document.body.appendChild(el);
+  // The phone's own check is offered straight away; if it is dismissed, the keypad is waiting underneath.
+  if (bio) setTimeout(tryBio, 450);
+}
+function showLock() { if (locked || !LOCK.pin() || !signedIn()) return; locked = true; pinOverlay('unlock', function () { locked = false; }); }
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden') hiddenAt = Date.now();
+  else if (hiddenAt && Date.now() - hiddenAt > 60000) showLock();
+});
+
+// ---------- profile ----------
+var PROFILE_TITLES = { notifications: 'notifications', appearance: 'appearance', security: 'security', password: 'changePassword' };
+var KIND_ICON = { clock: 'clock', day: 'day', stock: 'box', shifts: 'shifts' };
+function profile() {
+  if (state.profileView === 'notifications') return profileNotifications();
+  if (state.profileView === 'appearance') return profileAppearance();
+  if (state.profileView === 'security') return profileSecurity();
+  if (state.profileView === 'password') return profilePassword();
+  var who = PWA ? (kv('ninja.user') || '').split('|') : [null, state.data && state.data.email];
+  var name = who[0] || (who[1] || '').split('@')[0] || '-';
+  var go = function (v) { return function () { state.profileView = v; state.message = ''; render(); window.scrollTo(0, 0); }; };
+  var standalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  return [
+    state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
+    h('section', { class: 'me' }, h('div', { class: 'avatar', text: name.charAt(0).toUpperCase() }), h('strong', { text: name }), who[1] ? h('small', { text: who[1] }) : null),
+    h('section', { class: 'card menu' },
+      menuRow('bell', t('notifications'), null, go('notifications')),
+      menuRow('palette', t('appearance'), null, go('appearance')),
+      menuRow('globe', t('language'), lang === 'ar' ? 'العربية' : 'English', function () { lang = lang === 'ar' ? 'en' : 'ar'; kv('ninja.lang', lang); applyLanguage(); render(); }),
+      PWA ? menuRow('shield', t('security'), LOCK.pin() ? t('lockOnShort') : t('lockOffShort'), go('security')) : null,
+      PWA ? menuRow('key', t('changePassword'), null, go('password')) : null),
+    PWA && !standalone ? h('section', { class: 'card' }, h('h2', { text: t('installApp') }), h('p', { class: 'note', text: t('installNote') }),
+      installPrompt ? h('button', { type: 'button', class: 'primary', text: t('install'), onclick: function () { installPrompt.prompt(); installPrompt = null; } }) : null) : null,
+    PWA ? h('button', { type: 'button', class: 'pill-btn', text: t('signOut'), onclick: function () { call('logout').catch(function () {}).then(function () { signOutLocal(); render(); }); } }) : null
+  ];
+}
+function profileNotifications() {
+  var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
+  var key = state.data && state.data.snapshot && state.data.snapshot.pushKey;
+  if (!pushSupported()) return [h('section', { class: 'card' }, h('p', { class: 'note', text: t('notifyUnsupported') }))];
+  if (!key) return [h('section', { class: 'card' }, h('p', { class: 'note', text: t('notifyNotSetUp') }))];
+  var box = h('section', { class: 'card menu' }, h('p', { class: 'note', text: '…' }));
+  var draw = function () {
+    pushState().then(function (st) {
+      box.textContent = '';
+      if (st === 'blocked') { box.appendChild(h('p', { class: 'note', text: t('notifyBlocked') })); return; }
+      box.appendChild(setRow('bell', t('notifyThisPhone'), st === 'on' ? t('notifyOn') : t('notifyOff'), st === 'on', function (input) {
+        input.disabled = true; err.hidden = true;
+        (st === 'on' ? pushTurnOff() : pushTurnOn(key)).then(draw).catch(function (x) { input.disabled = false; input.checked = st === 'on'; err.hidden = false; err.textContent = x.message; });
+      }));
+      if (st !== 'on') return;
+      PUSH_KINDS.forEach(function (kind) {
+        box.appendChild(setRow(KIND_ICON[kind], t('notifyKind' + kind.charAt(0).toUpperCase() + kind.slice(1)), null, myKinds().indexOf(kind) >= 0, function (input) {
+          var picked = PUSH_KINDS.filter(function (k) { var el = document.getElementById('notify-kind-' + k); return el && el.checked; });
+          if (!picked.length) { input.checked = true; err.hidden = false; err.textContent = t('notifyKindNone'); return; }
+          err.hidden = true;
+          setMyKinds(picked).catch(function (x) { err.hidden = false; err.textContent = x.message; });
+        }, 'notify-kind-' + kind));
+      });
+    });
+  };
+  draw();
+  return [err, box, h('p', { class: 'note', text: t('notifyLate') })];
+}
+function profileAppearance() {
+  return [h('section', { class: 'card' },
+    h('label', null, t('colours')), h('div', { class: 'swatches' }, [h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(!deviceTheme()), onclick: function () { kv('ninja.theme', null); applyColour(); render(); } }, h('i', { style: 'background:' + brandTheme.primary }), t('businessColours'))]
+      .concat(THEMES.map(function (x) { return h('button', { type: 'button', class: 'swatch', 'aria-pressed': String(deviceTheme() === x[0]), onclick: function () { kv('ninja.theme', x[0]); applyColour(); render(); } }, h('i', { style: 'background:' + x[2] }), x[1]); }))),
+    h('label', null, t('lightDark')), seg([['business', t('m_business')], ['light', t('m_light')], ['dark', t('m_dark')], ['auto', t('m_auto')]], deviceMode() || 'business', function (m) { kv('ninja.mode', m === 'business' ? null : m); applyMode(); render(); }))];
+}
+function profileSecurity() {
+  var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
+  var fail = function (x) { err.hidden = false; err.textContent = x.message; };
+  var hasPin = Boolean(LOCK.pin()), hasBio = Boolean(LOCK.bio());
+  return [
+    state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null, err,
+    h('section', { class: 'card menu' },
+      setRow('lock', t('lockPin'), t('lockPinNote'), hasPin, function (input) {
+        if (input.checked) pinOverlay('new', function () { state.message = t('lockSaved'); render(); });
+        else pinOverlay('confirm', function () { kv('ninja.lock.pin', null); kv('ninja.lock.bio', null); state.message = t('lockRemoved'); render(); });
+        input.checked = hasPin; // the switch moves only once the PIN screen has finished
+      }),
+      hasPin ? menuRow('key', t('lockChange'), null, function () { pinOverlay('confirm', function () { pinOverlay('new', function () { state.message = t('lockSaved'); render(); }); }); }) : null,
+      setRow('finger', t('lockBio'), !bioSupported() ? t('lockBioUnsupported') : hasPin ? t('lockBioNote') : t('lockBioNeedPin'), hasBio, function (input) {
+        err.hidden = true;
+        if (!input.checked) { kv('ninja.lock.bio', null); state.message = t('lockBioOff'); render(); return; }
+        input.checked = false; input.disabled = true;
+        bioEnroll().then(function () { state.message = t('lockBioOn'); render(); }).catch(function (x) { input.disabled = false; fail(x); });
+      }, null, !hasPin || !bioSupported())),
+    h('p', { class: 'note', text: t('lockNote') })
+  ];
+}
+function profilePassword() {
+  var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
+  return [state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
+    h('form', { class: 'card', onsubmit: function (e) {
+      e.preventDefault(); var f = e.target, b = f.querySelector('button[type=submit]'); b.disabled = true; err.hidden = true;
+      call('changePassword', { oldPassword: f.oldPassword.value, newPassword: f.newPassword.value }).then(function () { f.reset(); b.disabled = false; state.message = t('passwordChanged'); render(); }).catch(function (x) { b.disabled = false; err.hidden = false; err.textContent = x.message; });
+    } }, h('label', null, t('currentPassword'), h('input', { name: 'oldPassword', type: 'password', required: 'required', autocomplete: 'current-password' })),
+      h('label', null, t('newPassword'), h('input', { name: 'newPassword', type: 'password', minlength: '8', required: 'required', autocomplete: 'new-password' })), err, h('button', { class: 'primary', type: 'submit', text: t('savePassword') }))];
+}
+
+var lastScreen = '', lastDepth = 0;
 function render() {
   var main = document.getElementById('main');
   main.textContent = '';
   document.body.classList.toggle('signed-out', !signedIn());
   if (!signedIn()) { main.appendChild(authScreen()); return; }
   document.querySelectorAll('nav button').forEach(function (b) { if (b.dataset.tab === state.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
-  main.appendChild(h('h1', { text: t(state.tab) }));
+  // A new screen arrives with a little movement: deeper pages slide in from the side, going back slides the
+  // other way, and a change of section rises into place. A plain refresh of the same screen does not move.
+  var sub = state.tab === 'Profile' ? state.profileView : null;
+  var screenKey = [state.tab, state.profileView || '', state.teamView, state.stockView, state.payWho || '', state.loading ? 'loading' : ''].join('|');
+  var depth = (sub ? 1 : 0) + (state.tab === 'Team' && state.payWho ? 1 : 0);
+  main.className = screenKey === lastScreen ? '' : depth > lastDepth ? 'anim-slide' : depth < lastDepth ? 'anim-back' : 'anim-rise';
+  lastScreen = screenKey; lastDepth = depth;
+  if (sub) main.appendChild(h('button', { type: 'button', class: 'back-btn', onclick: function () { state.profileView = null; state.message = ''; render(); window.scrollTo(0, 0); } }, icon('back'), t('back')));
+  main.appendChild(h('h1', { text: sub ? t(PROFILE_TITLES[sub]) : t(state.tab) }));
   if (state.error) main.appendChild(h('div', { class: 'banner err', role: 'alert', text: state.error }));
   if (state.loading) { main.appendChild(h('div', { class: 'skeleton' })); main.appendChild(h('div', { class: 'skeleton' })); return; }
   if (!state.data) return;
@@ -972,16 +1349,34 @@ function viewReceipt(reference) {
   }).catch(function (e) { overlay.lastChild.textContent = e.message; });
 }
 
-document.querySelectorAll('nav button').forEach(function (b) { b.addEventListener('click', function () { state.tab = b.dataset.tab; state.message = ''; render(); window.scrollTo(0, 0); }); });
-document.getElementById('refresh').addEventListener('click', load);
+document.querySelectorAll('nav button').forEach(function (b) { b.addEventListener('click', function () { state.tab = b.dataset.tab; state.profileView = null; state.message = ''; render(); window.scrollTo(0, 0); }); });
+document.getElementById('refresh').addEventListener('click', function () { load(); });
 if (window.matchMedia) window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyMode);
-function busyScreen() { return state.busy || state.tab === 'Profile' || (state.tab === 'Stock' && state.stockView === 'invoices'); }
+function busyScreen() { return state.busy || state.tab === 'Profile' || (state.tab === 'Team' && state.rotaDirty) || (state.tab === 'Stock' && state.stockView === 'invoices'); }
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && !busyScreen()) load(); });
 setInterval(function () { if (document.visibilityState === 'visible' && !busyScreen()) load(); }, 120000);
+// The business's colour and name are remembered on the phone, so the opening screen is already theirs
+// before anything has been fetched.
+try { var savedBrand = JSON.parse(localStorage.getItem('ninja.brand') || 'null'); if (savedBrand) { if (savedBrand.theme) brandTheme = savedBrand.theme; brandName = savedBrand.name || ''; } } catch (e) {}
+var plainApplyBrand = applyBrand;
+applyBrand = function (d) {
+  plainApplyBrand(d);
+  try { localStorage.setItem('ninja.brand', JSON.stringify({ theme: brandTheme, name: brandName })); } catch (e) {}
+  document.getElementById('splash-name').textContent = brandName;
+  if (brandName && !document.getElementById('brand-name').textContent) document.getElementById('brand-name').textContent = brandName.toUpperCase();
+  if (logoCache && logoCache.dataUrl) document.getElementById('splash-logo').src = logoCache.dataUrl;
+};
+var plainLoad = load;
+load = function () { var r = document.getElementById('refresh'); r.classList.add('spin'); return plainLoad().then(function (x) { r.classList.remove('spin'); return x; }); };
+var splashAt = Date.now();
+function hideSplash() { var sp = document.getElementById('splash'); if (sp) setTimeout(function () { sp.classList.add('gone'); }, Math.max(0, 1100 - (Date.now() - splashAt))); }
+setTimeout(hideSplash, 3500); // never stuck on the opening screen, even with no signal
 applyLanguage();
 applyBrand(null);
+showLock(); // under the opening screen, so the app itself is never glimpsed first
 // Stay unlocked on this phone if the owner asked for that: the passphrase is kept here, never at Google.
 load().then(function () {
+  hideSplash();
   var saved = kv('ninja.payroll');
   if (saved && state.data && state.data.snapshot && state.data.snapshot.payroll && !state.payData) return unlockPayroll(saved, false);
 });
