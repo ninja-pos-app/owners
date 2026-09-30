@@ -176,7 +176,7 @@ var I18N = {
     topItems: 'Top items today', noItemsToday: 'No items sold yet today.',
     notifications: 'Notifications', notifyClock: 'Tell me when someone clocks in or out',
     notifyWhat: 'What to tell me about', notifyKindClock: 'Someone clocks in or out',
-    notifyKindDay: 'The day is closed (sales, profit and the cash count)', notifyKindStock: 'Something is out of stock or running low',
+    notifyKindDay: 'The day is closed (sales, profit and the cash count)', notifyKindStock: 'Something is out of stock or running low', notifyKindShifts: 'The week’s shifts need setting',
     notifyKindNone: 'Choose at least one, or turn notifications off.', notifyKindSaved: 'Saved.',
     notifyOn: 'On for this phone', notifyOff: 'Off for this phone', notifyAsk: 'Turn on',
     notifyStop: 'Turn off', notifyBlocked: 'Notifications are blocked for this app in the phone settings.',
@@ -246,7 +246,7 @@ var I18N = {
     topItems: 'الأكثر مبيعًا اليوم', noItemsToday: 'لم يُبع أي صنف اليوم بعد.',
     notifications: 'الإشعارات', notifyClock: 'نبّهني عند تسجيل الحضور أو الانصراف',
     notifyWhat: 'أخبرني عن', notifyKindClock: 'تسجيل الحضور أو الانصراف',
-    notifyKindDay: 'إقفال اليوم (المبيعات والأرباح وجرد الكاش)', notifyKindStock: 'صنف خلص أو قارب على الخلاص',
+    notifyKindDay: 'إقفال اليوم (المبيعات والأرباح وجرد الكاش)', notifyKindStock: 'صنف خلص أو قارب على الخلاص', notifyKindShifts: 'ورديات الأسبوع محتاجة تتحدد',
     notifyKindNone: 'اختر نوعًا واحدًا على الأقل، أو أوقف الإشعارات.', notifyKindSaved: 'تم الحفظ.',
     notifyOn: 'مفعّلة على هذا الهاتف', notifyOff: 'غير مفعّلة على هذا الهاتف', notifyAsk: 'تفعيل',
     notifyStop: 'إيقاف', notifyBlocked: 'الإشعارات محظورة لهذا التطبيق من إعدادات الهاتف.',
@@ -692,11 +692,18 @@ function pushState() {
   return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
     .then(function (sub) { return sub ? 'on' : 'off'; }).catch(function () { return 'off'; });
 }
-var PUSH_KINDS = ['clock', 'day', 'stock'];
+var PUSH_KINDS = ['clock', 'day', 'stock', 'shifts'];
 function myKinds() {
   var raw = kv('ninja.notifyKinds');
   if (!raw) return PUSH_KINDS.slice();
   var asked = raw.split(',').filter(function (x) { return PUSH_KINDS.indexOf(x) >= 0; });
+  // A kind added after this phone made its choice starts switched on, once, and the laptop is told.
+  if (kv('ninja.notifyKindsSeen') !== PUSH_KINDS.join(',')) {
+    var seen = (kv('ninja.notifyKindsSeen') || 'clock,day,stock').split(',');
+    PUSH_KINDS.forEach(function (k) { if (seen.indexOf(k) < 0 && asked.indexOf(k) < 0) asked.push(k); });
+    kv('ninja.notifyKindsSeen', PUSH_KINDS.join(','));
+    setMyKinds(asked).catch(function () {});
+  }
   return asked;
 }
 function setMyKinds(kinds) {
