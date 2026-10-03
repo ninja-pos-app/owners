@@ -151,6 +151,11 @@
   .icon-btn.round{width:42px;height:42px;padding:0;border-radius:50%;display:grid;place-items:center}
   .icon-btn.spin .ic{animation:spin .8s linear infinite}
   main{padding:8px 16px 130px}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  body{display:flex;flex-direction:column;height:100dvh}
+  .top{flex:none}
+  main{flex:1 1 auto;min-height:0;width:100%;box-sizing:border-box;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  body.signed-out main{overflow-y:auto}
   h1{font-size:28px;letter-spacing:-.02em;margin:4px 0 6px}
   h2{font-size:16px;letter-spacing:-.01em}
   .card{border:0;border-radius:22px;padding:16px;box-shadow:var(--shadow)}
@@ -169,6 +174,7 @@
   .segmented button{border-radius:11px;transition:background .2s var(--ease),color .2s,box-shadow .2s}
   .segmented button.on,.segmented button[aria-selected=true]{background:var(--card);color:var(--white);box-shadow:var(--shadow)}
   .kpi-dot.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+  .note-row{align-items:flex-start;gap:10px}.note-row span{display:flex;flex-direction:column;gap:2px;min-width:0}.note-row span small{white-space:normal;line-height:1.4}.note-when{flex:none;white-space:nowrap;opacity:.7}
   .rota-day{border:0;background:var(--soft)}
   .rota-fill button{border:0;background:var(--soft);color:var(--white)}
   .swatch{border:2px solid transparent;background:var(--soft);border-radius:16px}
@@ -353,7 +359,7 @@ var I18N = {
     pdfTooBig: 'PDF must be under 10 MB', cannotRead: 'Could not read the file', badImage: 'That image format is not supported. Use a photo, PNG or PDF.',
     receipt: 'Receipt', loadingReceipt: 'Loading receipt…', downloadPdf: 'Download PDF receipt',
     back: 'Back', cancel: 'Cancel', security: 'Privacy & security', lockOnShort: 'Locked with a PIN', lockOffShort: 'No lock',
-    notifyThisPhone: 'Notifications on this phone',
+    notifyThisPhone: 'Notifications on this phone', notifyHistory: 'Last 7 days', notifyHistoryEmpty: 'Nothing in the last 7 days.', notifyHistoryNote: 'Kept on this phone for a week, then removed by itself.',
     lockPin: 'Lock the app with a PIN', lockPinNote: 'Asked for when you open the app, and after a minute away from it.', lockChange: 'Change PIN',
     lockBio: 'Unlock with fingerprint or face', lockBioNote: 'Uses this phone’s own fingerprint or face check. The PIN always works too.', lockBioNeedPin: 'Switch the PIN on first.',
     lockBioUnsupported: 'This phone or browser cannot do that.', lockBioFailed: 'The fingerprint or face check did not finish. Try again.',
@@ -445,7 +451,7 @@ var I18N = {
     pdfTooBig: 'يجب أن يكون ملف PDF أقل من 10 ميجابايت', cannotRead: 'تعذرت قراءة الملف', badImage: 'صيغة الصورة غير مدعومة. استخدم صورة أو PNG أو PDF.',
     receipt: 'الإيصال', loadingReceipt: 'جارٍ تحميل الإيصال…', downloadPdf: 'تنزيل إيصال PDF',
     back: 'رجوع', cancel: 'إلغاء', security: 'الخصوصية والأمان', lockOnShort: 'مقفول برقم سري', lockOffShort: 'بدون قفل',
-    notifyThisPhone: 'الإشعارات على الهاتف ده',
+    notifyThisPhone: 'الإشعارات على الهاتف ده', notifyHistory: 'آخر 7 أيام', notifyHistoryEmpty: 'مفيش إشعارات في آخر 7 أيام.', notifyHistoryNote: 'بتتحفظ على الهاتف ده لمدة أسبوع وبعدين بتتمسح لوحدها.',
     lockPin: 'قفل التطبيق برقم سري', lockPinNote: 'بيتطلب لما تفتح التطبيق، وبعد دقيقة من الخروج منه.', lockChange: 'تغيير الرقم السري',
     lockBio: 'الفتح بالبصمة أو الوجه', lockBioNote: 'بيستخدم بصمة أو وجه الهاتف نفسه. الرقم السري شغال دايمًا برضه.', lockBioNeedPin: 'فعّل الرقم السري الأول.',
     lockBioUnsupported: 'الهاتف أو المتصفح ده ما يقدرش يعمل كده.', lockBioFailed: 'التحقق بالبصمة أو الوجه ما كملش. حاول تاني.',
@@ -595,6 +601,8 @@ function todayCairo() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Afr
 function arrow() { return lang === 'ar' ? ' ‹' : ' ›'; }
 var PWA = !(window.google && google.script && google.script.run);
 var BACKEND_URL_RE = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/;
+// The content area is what scrolls now, so "back to the top" means the top of it.
+(function () { var scrollPage = window.scrollTo; window.scrollTo = function () { var m = document.querySelector('main'); if (m) m.scrollTop = 0; try { scrollPage.apply(window, arguments); } catch (e) {} }; })();
 function kv(k, v) { try { if (arguments.length === 1) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
 if (PWA) { try { var qb = new URLSearchParams(location.search).get('b'); if (qb && BACKEND_URL_RE.test(qb)) { if (kv('ninja.backend') !== qb) { kv('ninja.token', null); kv('ninja.user', null); } kv('ninja.backend', qb); history.replaceState(null, '', location.pathname); } } catch (e) {} }
 function signedIn() { return !PWA || (kv('ninja.backend') && kv('ninja.token')); }
@@ -1141,8 +1149,8 @@ function profile() {
 function profileNotifications() {
   var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
   var key = state.data && state.data.snapshot && state.data.snapshot.pushKey;
-  if (!pushSupported()) return [h('section', { class: 'card' }, h('p', { class: 'note', text: t('notifyUnsupported') }))];
-  if (!key) return [h('section', { class: 'card' }, h('p', { class: 'note', text: t('notifyNotSetUp') }))];
+  if (!pushSupported()) return [h('section', { class: 'card' }, h('p', { class: 'note', text: t('notifyUnsupported') }))].concat(noteHistoryCard());
+  if (!key) return [h('section', { class: 'card' }, h('p', { class: 'note', text: t('notifyNotSetUp') }))].concat(noteHistoryCard());
   var box = h('section', { class: 'card menu' }, h('p', { class: 'note', text: '…' }));
   var draw = function () {
     pushState().then(function (st) {
@@ -1164,7 +1172,29 @@ function profileNotifications() {
     });
   };
   draw();
-  return [err, box, h('p', { class: 'note', text: t('notifyLate') })];
+  return [err, box, h('p', { class: 'note', text: t('notifyLate') })].concat(noteHistoryCard());
+}
+function noteHistoryCard() {
+  var history = h('section', { class: 'card' }, h('h2', { text: t('notifyHistory') }), h('p', { class: 'note', text: '…' }));
+  noteHistory().then(function (list) {
+    while (history.childNodes.length > 1) history.removeChild(history.lastChild);
+    if (!list.length) { history.appendChild(h('p', { class: 'empty', text: t('notifyHistoryEmpty') })); return; }
+    list.forEach(function (n) {
+      history.appendChild(h('div', { class: 'row note-row' }, h('span', {}, h('b', { text: n.title || 'Ninja' }), h('small', { text: n.body || '' })), h('small', { class: 'note-when', text: noteWhen(n.at) })));
+    });
+  });
+  return [history, h('p', { class: 'note', text: t('notifyHistoryNote') })];
+}
+// What the service worker wrote down as notifications arrived (see sw.js): newest first, a week at most.
+function noteHistory() {
+  if (!('caches' in window)) return Promise.resolve([]);
+  return caches.open('ninja-notes').then(function (c) { return c.match('./__notes.json'); }).then(function (r) { return r ? r.json() : []; }).then(function (list) {
+    var cut = Date.now() - 7 * 86400000;
+    return (Array.isArray(list) ? list : []).filter(function (n) { return n && n.at > cut; }).sort(function (a, b) { return b.at - a.at; });
+  }).catch(function () { return []; });
+}
+function noteWhen(at) {
+  try { return new Date(at).toLocaleString(state.lang === 'ar' ? 'ar-EG' : 'en-GB', { timeZone: 'Africa/Cairo', weekday: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; }
 }
 function profileAppearance() {
   return [h('section', { class: 'card' },
@@ -1270,7 +1300,7 @@ function sendKpi(employeeId, month, scores) {
   state.busy = true; state.error = ''; state.message = ''; render();
   return sealWith(state.payKey, { id: id, employeeId: employeeId, month: month, scores: scores, submittedAt: new Date().toISOString() })
     .then(function (sealed) { return call('kpi', { change: { id: id, sealed: { v: 1, iv: sealed.iv, data: sealed.data, salt: state.data.snapshot.payroll.kdf.salt } } }); })
-    .then(function () { state.busy = false; state.message = t('kpiSaved'); return load(); })
+    .then(function () { state.kpiDraft = state.kpiDraft || {}; state.kpiDraft[employeeId + '|' + month] = { scores: scores.slice(), sent: true, at: Date.now() }; state.busy = false; state.message = t('kpiSaved'); return load(); })
     .catch(function (e) { state.busy = false; state.error = e.message; render(); });
 }
 
@@ -1316,20 +1346,26 @@ function employeePay(e, monthKey, months) {
     ['overtimePay', money(e.overtime) + ' - ' + t('otHours', { n: e.overtimeHours })], ['kpiBonusLabel', money(e.kpiBonus)], ['excellence', money(e.excellence)]]);
   var counts = [['daysWorked', e.worked], ['daysOffLabel', e.daysOff], ['noShowsLabel', e.noShows], ['lateDays', e.lateDays], ['warningsLabel', e.warnings]];
   var categories = state.payData.categories || [];
-  var picked = categories.map(function (c, i) { return Number((e.kpi || [])[i]) || 0; });
+  var draftKey = e.id + '|' + monthKey; state.kpiDraft = state.kpiDraft || {};
+  var saved = categories.map(function (c, i) { return Number((e.kpi || [])[i]) || 0; });
+  var pend = state.kpiDraft[draftKey];
+  // Sent and now reflected by the laptop, or sent long ago: the draft has done its job.
+  if (pend && pend.sent && (pend.scores.join(',') === saved.join(',') || Date.now() - pend.at > 20 * 60000)) { delete state.kpiDraft[draftKey]; pend = null; }
+  var picked = pend ? pend.scores.slice() : saved;
   var kpiCard = h('section', { class: 'card' }, h('h2', { text: t('kpiScores') }),
     categories.map(function (c, i) {
       var value = h('strong', { text: picked[i] + ' / 5' });
       return h('div', { class: 'row' }, h('span', { text: c.name }, h('small', { text: t('kpiOutOf') })),
         h('span', { class: 'kpi-pick' }, [0, 1, 2, 3, 4, 5].map(function (n) {
           return h('button', { type: 'button', class: 'kpi-dot' + (picked[i] === n ? ' on' : ''), text: String(n), onclick: function (ev) {
-            picked[i] = n; value.textContent = n + ' / 5';
+            picked[i] = n; value.textContent = n + ' / 5'; state.kpiDraft[draftKey] = { scores: picked.slice(), sent: false, at: Date.now() };
             var group = ev.target.parentNode.childNodes;
             for (var j = 0; j < group.length; j++) group[j].className = 'kpi-dot' + (Number(group[j].textContent) === n ? ' on' : '');
           } });
         })), value);
     }),
     categories.length ? h('button', { class: 'primary', type: 'button', disabled: state.busy ? 'disabled' : null, text: state.busy ? t('saving') : t('kpiSave'), onclick: function () { sendKpi(e.id, monthKey, picked); } }) : h('p', { class: 'empty', text: t('noPayrollMonth') }));
+  if (pend && pend.sent) kpiCard.appendChild(h('p', { class: 'note', text: t('kpiWaiting') + '…' }));
   var history = h('section', { class: 'card' }, h('h2', { text: t('monthByMonth') }),
     months.map(function (m) {
       var mine = (m.employees || []).filter(function (x) { return x.id === e.id; })[0];
