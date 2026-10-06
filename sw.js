@@ -1,4 +1,4 @@
-const CACHE = 'owners-284c3a39d1';
+const CACHE = 'owners-4e7706bfb2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== CACHE && n !== NOTES).map(n => caches.delete(n)))).then(() => self.clients.claim())); });

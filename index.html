@@ -50,6 +50,11 @@
   .row small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
   .row strong{white-space:nowrap;font-weight:700}
   .low{color:var(--danger)} .ok-txt{color:var(--green)} .gold{color:var(--gold)} .warn-txt{color:var(--amber)}
+  .att-flags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:46%}
+  .att-flags .chip{display:inline-block;border-radius:7px;padding:3px 7px;font-size:11px;font-weight:700;white-space:nowrap}
+  .att-flags .chip.late{background:rgba(216,78,58,.14);color:var(--danger)} .att-flags .chip.warn{background:rgba(214,152,36,.16);color:var(--amber)} .att-flags .chip.pin{background:rgba(122,46,0,.16);color:#c9742f} .att-flags .chip.ok{background:rgba(109,190,69,.14);color:var(--green)}
+  .att-day{width:100%;background:none;border:0;border-top:1px solid var(--line);color:inherit;font:inherit;text-align:inherit;cursor:pointer}
+  .att-day.today strong{color:var(--green)}
   /* Payroll: a whole row is tappable, and KPI scores are big enough to hit with a thumb. */
   button.row.tappable{width:100%;background:none;border:0;border-top:1px solid rgba(78,74,75,.6);color:inherit;font:inherit;text-align:inherit;cursor:pointer}
   button.row.tappable:first-of-type{border-top:0}
@@ -380,6 +385,10 @@ var I18N = {
     shiftsNobody: 'No employees on payroll yet. Add them on the laptop, under Attendance.', shiftsNeedUpdate: 'Update Ninja on the laptop to set shifts from the phone.',
     recentShifts: 'Recent shifts', shiftIn: 'In {t}', shiftOut: 'out {t}', closed: 'Closed', onShift: 'On shift',
     noShifts: 'No shifts clocked on the new POS yet.',
+    attNobody: 'No employees on payroll yet. Add them on the laptop, under Attendance.', attNeedUpdate: 'Update Ninja on the laptop to see daily attendance here.', attEmployee: 'Employee', attHint: 'Tap a day to correct it. The laptop applies the change at its next sync and marks the time as typed.',
+    attLate: '{n} min late', attEarly: 'Left {n} min early', attPinFlag: 'PIN after {n} failed Face ID', attNoId: 'PIN · no Face ID set', onTime: 'On time', attEmpty: 'Nothing recorded this month yet.',
+    attEdit: 'Correct a day', attEditNote: 'Leave a time empty if the person did not punch. A typed time is marked as typed on the laptop.', attIn: 'Arrival', attOut: 'Departure', attShift: 'Shift', attSpecial: 'Special day', attNormal: 'Normal day', attNotes: 'Note',
+    attSent: 'Sent. The laptop applies it at its next sync, in about 2 minutes.', attWaiting: 'Sent, waiting for the laptop', attRefused: 'The laptop did not accept it', sh_NoShow: 'No show',
     privacyNote: 'Passwords are never sent to Google, and payroll travels encrypted: Google holds bytes it cannot read. Manage staff and attendance rules on the main laptop.',
     connection: 'Connection problem. Try again.', credit: 'Ninja - POS & Restaurant Management System', mode_light: 'Light mode', mode_dark: 'Dark mode', mode_auto: 'Automatic mode', mode_default: 'Business default mode'
   },
@@ -489,6 +498,10 @@ var I18N = {
     kpiSaved: 'تم إرسال الدرجات. ستظهر هنا بعد مزامنة اللابتوب.', kpiWaiting: 'في انتظار اللابتوب', noPayrollMonth: 'لا يوجد تسجيل لهذا الشهر بعد.',
     monthByMonth: 'شهرًا بشهر', payDays: 'الحضور', backToTeam: 'كل الموظفين', kpiOutOf: 'من 5',
     noShifts: 'لم تُسجل أي ورديات على نظام الكاشير الجديد بعد.',
+    attNobody: 'لا يوجد موظفون على كشف الرواتب بعد. أضفهم من اللابتوب، تحت الحضور.', attNeedUpdate: 'حدّث نينجا على اللابتوب لترى الحضور اليومي هنا.', attEmployee: 'الموظف', attHint: 'اضغط على يوم لتصحيحه. اللابتوب يطبّق التغيير في المزامنة التالية ويسجّل الوقت كمُدخل يدويًا.',
+    attLate: 'تأخير {n} دقيقة', attEarly: 'انصرف مبكرًا {n} دقيقة', attPinFlag: 'PIN بعد {n} محاولات Face ID فاشلة', attNoId: 'PIN · لا يوجد Face ID', onTime: 'في الموعد', attEmpty: 'لا شيء مسجّل هذا الشهر بعد.',
+    attEdit: 'تصحيح يوم', attEditNote: 'اترك الوقت فارغًا إن لم يسجّل الشخص. الوقت المُدخل يُعلَّم على اللابتوب كمُدخل يدويًا.', attIn: 'الحضور', attOut: 'الانصراف', attShift: 'الوردية', attSpecial: 'يوم خاص', attNormal: 'يوم عادي', attNotes: 'ملاحظة',
+    attSent: 'تم الإرسال. يطبّقه اللابتوب في المزامنة التالية خلال دقيقتين تقريبًا.', attWaiting: 'أُرسل، في انتظار اللابتوب', attRefused: 'لم يقبله اللابتوب', sh_NoShow: 'غياب',
     privacyNote: 'لا تُرسل كلمات المرور إلى Google أبدًا، والرواتب تُرسل مشفّرة: تحتفظ Google ببيانات لا تستطيع قراءتها. إدارة الموظفين وقواعد الحضور تتم على اللابتوب الرئيسي.',
     connection: 'مشكلة في الاتصال. حاول مرة أخرى.', credit: 'نينجا - نظام نقاط البيع وإدارة المطاعم', mode_light: 'الوضع الفاتح', mode_dark: 'الوضع الداكن', mode_auto: 'وضع تلقائي', mode_default: 'الوضع الافتراضي للنشاط'
   }
@@ -930,14 +943,66 @@ function shifts() {
   return [head].concat(cards, [refused ? h('div', { class: 'banner err', role: 'alert', text: refused }) : null, state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null, send, h('p', { class: 'note', text: t('shiftsNote') })]);
 }
 
+// Attendance: each employee's day-by-day record for this month and last, as the laptop works it out (late or
+// early and by how much, how the punch was made), and a way to correct a day. The correction travels to the
+// laptop like a week of shifts does: queued at Google, applied at the laptop's next sync, then acknowledged.
 function attendance() {
-  var s = state.data.snapshot;
-  return [
-    h('section', { class: 'card' }, h('h2', { text: t('recentShifts') }), s.shifts.length ? s.shifts.map(function (x) {
-      return h('div', { class: 'row' }, h('span', { text: x.employeeName }, h('small', { text: t('shiftIn', { t: cairo(x.clockIn) }) + (x.clockOut ? ' · ' + t('shiftOut', { t: cairo(x.clockOut, { hour: '2-digit', minute: '2-digit' }) }) : '') })), h('strong', { class: x.clockOut ? '' : 'ok-txt', text: x.clockOut ? t('closed') : t('onShift') }));
-    }) : h('p', { class: 'empty', text: t('noShifts') })),
-    h('p', { class: 'note', text: t('privacyNote') })
-  ];
+  var s = state.data.snapshot, sealedBlock = s.payroll;
+  // The daily records travel sealed with the payroll: the same passphrase opens both.
+  if (!sealedBlock || sealedBlock.empty) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t(sealedBlock && sealedBlock.empty ? 'attNobody' : 'attNeedUpdate') }))];
+  if (!state.payData) return [payrollLockForm()];
+  var ad = state.payData.attendanceDays;
+  var recent = h('section', { class: 'card' }, h('h2', { text: t('recentShifts') }), s.shifts.length ? s.shifts.map(function (x) {
+    return h('div', { class: 'row' }, h('span', { text: x.employeeName }, h('small', { text: t('shiftIn', { t: cairo(x.clockIn) }) + (x.clockOut ? ' · ' + t('shiftOut', { t: cairo(x.clockOut, { hour: '2-digit', minute: '2-digit' }) }) : '') })), h('strong', { class: x.clockOut ? '' : 'ok-txt', text: x.clockOut ? t('closed') : t('onShift') }));
+  }) : h('p', { class: 'empty', text: t('noShifts') }));
+  var privacy = h('p', { class: 'note', text: t('privacyNote') });
+  if (!ad || !ad.months || !ad.months.length || !ad.months[0].employees.length) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t(ad ? 'attNobody' : 'attNeedUpdate') })), recent, privacy];
+  var month = ad.months.filter(function (m) { return m.month === state.attMonth; })[0] || ad.months[0];
+  var who = month.employees.filter(function (e) { return e.id === state.attWho; })[0] || month.employees[0];
+  var sentList = state.data.phoneAttendance || [];
+  var pickers = h('section', { class: 'card' },
+    h('label', { text: t('attEmployee') }, h('select', { onchange: function (e) { state.attWho = e.target.value; render(); } }, month.employees.map(function (e) { return h('option', { value: e.id, selected: e.id === who.id ? 'selected' : null, text: e.name }); }))),
+    h('label', { text: t('month') }, h('select', { onchange: function (e) { state.attMonth = e.target.value; render(); } }, ad.months.map(function (m) { return h('option', { value: m.month, selected: m.month === month.month ? 'selected' : null, text: m.month }); }))),
+    h('p', { class: 'note', text: t('attHint') }));
+  var days = who.days.slice().reverse().map(function (d) {
+    var flags = [];
+    if (d.tier && ['On Time', 'Grace', 'Pending', 'Day Off'].indexOf(d.tier) < 0) flags.push(h('span', { class: 'chip late', text: d.minsLate ? t('attLate', { n: d.minsLate }) + ' · ' + tr(d.tier) : tr(d.tier) }));
+    if (d.earlyTier && ['On Time', 'Grace', ''].indexOf(d.earlyTier) < 0) flags.push(h('span', { class: 'chip late', text: t('attEarly', { n: d.earlyMinutes }) }));
+    if (d.warning) flags.push(h('span', { class: 'chip warn', text: tr(d.warning) }));
+    if (d.inHow === 'pin' || d.outHow === 'pin') flags.push(h('span', { class: 'chip pin', text: d.noId ? t('attNoId') : t('attPinFlag', { n: d.idFails || 5 }) }));
+    var sent = sentList.filter(function (x) { return x.employeeId === who.id && x.day === d.key; })[0];
+    var status = sent ? (sent.status === 'pending' ? t('attWaiting') : sent.status === 'rejected' ? t('attRefused') + (sent.note ? ': ' + tr(sent.note) : '') : '') : '';
+    return h('button', { type: 'button', class: 'row tappable att-day' + (d.key === todayCairo() ? ' today' : ''), onclick: function () { daySheet(who, d, ad); } },
+      h('span', null, h('strong', { text: dayShort(d.key) + ' ' + dateShort(d.key) }), h('small', { text: (d.shift === 'Day Off' ? t('sh_Off') : d.shift === 'No Show' ? t('sh_NoShow') : d.shift === 'Night' ? t('sh_Night') : t('sh_Morning')) + ' · ' + (d.checkIn || '-') + ' / ' + (d.checkOut || '-') + (d.special && d.special !== 'Normal' ? ' · ' + tr(d.special) : '') }), status ? h('small', { class: sent && sent.status === 'rejected' ? 'low' : 'warn-txt', text: status }) : null),
+      h('span', { class: 'att-flags' }, flags.length ? flags : h('span', { class: 'chip ok', text: d.checkIn ? t('onTime') : d.shift === 'Day Off' ? t('sh_Off') : '-' })));
+  });
+  return [pickers, h('section', { class: 'card' }, h('h2', { text: who.name }), days.length ? days : h('p', { class: 'empty', text: t('attEmpty') })), recent, privacy];
+}
+// Correct one day: arrival, departure, shift, special day, note. Sent to the laptop, which applies it and marks
+// a typed time as typed (so the day no longer reads as a Face ID or PIN punch).
+function daySheet(who, d, ad) {
+  var overlay = h('div', { class: 'viewer sheet', role: 'dialog', 'aria-label': t('attEdit') });
+  function close() { overlay.remove(); }
+  function field(label, name, attrs) { return h('label', null, label, h('input', Object.assign({ name: name }, attrs || {}))); }
+  function choice(label, name, options, current) { return h('label', null, label, h('select', { name: name }, options.map(function (o) { return h('option', { value: o[0], text: o[1], selected: o[0] === current ? 'selected' : null }); }))); }
+  var err = h('div', { class: 'banner err', role: 'alert', hidden: 'hidden' });
+  var form = h('form', { class: 'card', onsubmit: function (e) {
+    e.preventDefault(); var f = e.target, b = f.querySelector('button[type=submit]');
+    var record = { checkIn: f.checkIn.value, checkOut: f.checkOut.value, shift: f.shift.value, special: f.special.value, notes: f.notes.value.trim() };
+    var id = uuid(); b.disabled = true; err.hidden = true;
+    call('attendance', { change: { id: id, employeeId: who.id, day: d.key, record: record } }).then(function () { state.attSentId = id; state.message = t('attSent'); close(); render(); return load(); }).catch(function (x) { b.disabled = false; err.hidden = false; err.textContent = x.message; });
+  } });
+  form.appendChild(h('div', { class: 'sheet-head' }, h('h2', { text: who.name + ' · ' + dayShort(d.key) + ' ' + dateShort(d.key) }), h('button', { type: 'button', class: 'icon-btn', text: t('close'), onclick: close })));
+  form.appendChild(h('p', { class: 'note', text: t('attEditNote') }));
+  form.appendChild(field(t('attIn'), 'checkIn', { type: 'time', value: d.checkIn || '' }));
+  form.appendChild(field(t('attOut'), 'checkOut', { type: 'time', value: d.checkOut || '' }));
+  form.appendChild(choice(t('attShift'), 'shift', (ad.shifts || ['Morning', 'Night', 'Day Off', 'No Show']).map(function (x) { return [x, x === 'Day Off' ? t('sh_Off') : x === 'No Show' ? t('sh_NoShow') : x === 'Night' ? t('sh_Night') : x === 'Morning' ? t('sh_Morning') : x]; }), d.shift));
+  form.appendChild(choice(t('attSpecial'), 'special', (ad.specialDays || ['Normal']).map(function (x) { return [x, x === 'Normal' ? t('attNormal') : tr(x)]; }), d.special || 'Normal'));
+  form.appendChild(h('label', null, t('attNotes'), h('textarea', { name: 'notes', maxlength: '500', rows: '2', text: d.notes || '' })));
+  form.appendChild(err);
+  form.appendChild(h('button', { class: 'primary', type: 'submit', text: t('sendToLaptop') }));
+  overlay.appendChild(form);
+  document.body.appendChild(overlay);
 }
 
 function authScreen() {
@@ -1307,7 +1372,12 @@ function sendKpi(employeeId, month, scores) {
 function payroll() {
   var sealed = state.data.snapshot.payroll;
   if (!sealed || sealed.empty) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t(sealed && sealed.empty ? 'payrollNobody' : 'payrollOff') }))];
-  if (!state.payData) {
+  if (!state.payData) return [payrollLockForm()];
+  var months = state.payData.months || [];
+  if (!months.length) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t('noPayrollMonth') })), lockButton()];
+  return payrollScreen(months);
+}
+function payrollLockForm() {
     var form = h('form', { class: 'card', onsubmit: function (e) { e.preventDefault(); unlockPayroll(e.target.pass.value, e.target.remember.checked); } },
       h('h2', { text: t('payrollLocked') }),
       state.payError ? h('div', { class: 'banner err', role: 'alert', text: state.payError }) : null,
@@ -1315,10 +1385,9 @@ function payroll() {
       h('label', { class: 'check' }, h('input', { name: 'remember', type: 'checkbox', checked: 'checked' }), h('span', { text: t('rememberPhone') })),
       h('button', { class: 'primary', type: 'submit', disabled: state.busy ? 'disabled' : null, text: state.busy ? t('unlocking') : t('unlock') }),
       h('p', { class: 'note', text: t('payrollNote') }));
-    return [form];
-  }
-  var months = state.payData.months || [];
-  if (!months.length) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t('noPayrollMonth') })), lockButton()];
+    return form;
+}
+function payrollScreen(months) {
   var monthKey = state.payMonth || months[0].month;
   var month = months.filter(function (m) { return m.month === monthKey; })[0] || months[0];
   var picker = h('section', { class: 'card' },
