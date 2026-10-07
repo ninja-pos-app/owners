@@ -71,8 +71,12 @@
   .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:3px 8px;background:rgba(255,255,255,.08)}
   .pill.pending{background:rgba(233,185,73,.18);color:var(--amber)} .pill.imported{background:rgba(109,190,69,.18);color:var(--green)} .pill.rejected{background:rgba(240,113,103,.18);color:var(--danger)}
   .bars{display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:6px}
-  .bars div{flex:1;background:var(--green);border-radius:4px 4px 0 0;min-height:2px;opacity:.85}
-  .bars div.today{background:var(--gold);opacity:1}
+  .bars button{flex:1;border:0;padding:0;margin:0;background:var(--green);border-radius:4px 4px 0 0;min-height:2px;opacity:.85;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .bars button.today{background:var(--gold);opacity:1}
+  .bars button.on{opacity:1;outline:2px solid var(--white);outline-offset:1px}
+  .pick{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(78,74,75,.6);font-size:13px}
+  .pick small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+  .pick strong{text-align:end}
   .axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:4px}
   .note{font-size:12px;color:var(--muted);line-height:1.5;margin:6px 0 12px}
   label{display:block;font-size:13px;font-weight:700;margin:12px 0 0}
@@ -275,7 +279,7 @@
   <button type="button" data-tab="Profile"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.500 20.500c.800-3.800 3.800-5.800 7.500-5.800s6.700 2 7.500 5.800"/></svg></span><b>Profile</b></button>
 </nav>
 <script>
-var state = { tab: 'Reports', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null, payKey: null, payData: null, payMonth: null, payWho: null, payError: '', stockView: 'items', period: 'today', teamView: 'shifts', profileView: null, rotaWeek: null, rotaDraft: null, rotaDraftWeek: null, rotaDirty: false, rotaSentId: null };
+var state = { tab: 'Reports', data: null, error: '', message: '', busy: false, loading: true, stockFilter: '', purchaseId: null, payKey: null, payData: null, payMonth: null, payWho: null, payError: '', stockView: 'items', period: 'today', pickedDay: null, teamView: 'shifts', profileView: null, rotaWeek: null, rotaDraft: null, rotaDraftWeek: null, rotaDirty: false, rotaSentId: null };
 var STALE_MINUTES = 15;
 
 // ---------- language (English default; Arabic on request, remembered on this phone) ----------
@@ -312,6 +316,8 @@ var I18N = {
     netSales: 'Net sales · business day {day}', orders: 'orders', average: 'average', discounts: 'discounts',
     dayNote: 'A business day runs from your opening hour until the same hour the next morning. Recorded sales only: not profit, and payment labels are not bank settlement.',
     last14: 'Last 14 business days', chartLabel: 'Daily net sales for the last 14 business days', todayAxis: 'Today',
+    mcTitle: 'Close the month', mcLocked: 'The month result includes salaries, so it opens with the payroll passphrase.', mcNet: 'Net sales (after refunds)', mcVat: 'VAT collected (owed to the tax office)', mcPurchases: 'Purchases', mcInvoices: '{n} invoices', mcSalaries: 'Salaries', mcPeople: '{n} people', mcResult: 'Month result', mcLoss: 'A loss this month', mcOpen: 'Not closed yet. Press the button on the last day, after the last invoice is recorded and the salaries are paid.', mcClosedOn: 'Closed {when} by {who}', mcChanged: 'Figures have changed since: now {n}.', mcClose: 'Close the month', mcAgain: 'Close the month again', mcConfirm: 'Close {m}? Do this after the last invoice is recorded and the salaries are paid.', mcSent: 'Sent. The laptop closes the month at its next sync, in about 2 minutes.', mcNote: 'Everything collected, minus the VAT in it, the supplier invoices dated this month and the month\'s payroll. Rent and other bills are not in Ninja.',
+    tapBar: 'Tap a bar to see that day.', dayOrders: '{n} orders', grossProfit: 'Gross profit', cogs: 'Cost of goods', marginOf: '{p}% margin', costedShare: 'From the {p}% of sales whose items have a known cost. Add recipes and costs on the laptop to cover more.', noCost: 'No cost known yet. Add recipes and item costs on the laptop (Stock & menu) and profit shows here.', noDayProfit: 'no costed sales',
     paymentsToday: 'Payments today (recorded)', nOrders: '{n} orders', noSalesToday: 'No sales yet today.',
     topItems: 'Top items today', noItemsToday: 'No items sold yet today.',
     notifications: 'Notifications', notifyClock: 'Tell me when someone clocks in or out',
@@ -408,6 +414,8 @@ var I18N = {
     netSales: 'صافي المبيعات · يوم العمل {day}', orders: 'طلبات', average: 'المتوسط', discounts: 'الخصومات',
     dayNote: 'يوم العمل يبدأ من ساعة الفتح حتى نفس الساعة في صباح اليوم التالي. هذه مبيعات مسجلة فقط وليست أرباحًا، وطريقة الدفع المسجلة لا تعني تسوية بنكية.',
     last14: 'آخر 14 يوم عمل', chartLabel: 'صافي المبيعات اليومية لآخر 14 يوم عمل', todayAxis: 'اليوم',
+    mcTitle: 'إقفال الشهر', mcLocked: 'نتيجة الشهر تشمل الرواتب، لذلك تُفتح بكلمة مرور الرواتب.', mcNet: 'صافي المبيعات (بعد المرتجعات)', mcVat: 'القيمة المضافة المحصّلة (مستحقة للضرائب)', mcPurchases: 'المشتريات', mcInvoices: '{n} فواتير', mcSalaries: 'الرواتب', mcPeople: '{n} أشخاص', mcResult: 'نتيجة الشهر', mcLoss: 'خسارة هذا الشهر', mcOpen: 'لم يُقفل بعد. اضغط الزر في آخر يوم، بعد تسجيل آخر فاتورة ودفع الرواتب.', mcClosedOn: 'أُقفل {when} بواسطة {who}', mcChanged: 'تغيّرت الأرقام منذ ذلك: الآن {n}.', mcClose: 'إقفال الشهر', mcAgain: 'إقفال الشهر مرة أخرى', mcConfirm: 'إقفال {m}؟ افعل ذلك بعد تسجيل آخر فاتورة ودفع الرواتب.', mcSent: 'تم الإرسال. يقفل اللابتوب الشهر في المزامنة التالية خلال دقيقتين تقريبًا.', mcNote: 'كل ما تحصّل، ناقص القيمة المضافة فيه، وفواتير الموردين بتاريخ هذا الشهر، ورواتب الشهر. الإيجار والفواتير الأخرى ليست في نينجا.',
+    tapBar: 'اضغط على عمود لترى أرقام ذلك اليوم.', dayOrders: '{n} طلبات', grossProfit: 'مجمل الربح', cogs: 'تكلفة البضاعة', marginOf: 'هامش {p}%', costedShare: 'من {p}% من المبيعات التي لأصنافها تكلفة معروفة. أضف الوصفات والتكاليف على اللابتوب لتغطية أكثر.', noCost: 'لا توجد تكلفة معروفة بعد. أضف الوصفات وتكاليف الأصناف على اللابتوب (المخزون والمنيو) وسيظهر الربح هنا.', noDayProfit: 'لا مبيعات بتكلفة معروفة',
     paymentsToday: 'مدفوعات اليوم (المسجلة)', nOrders: '{n} طلبات', noSalesToday: 'لا توجد مبيعات اليوم بعد.',
     topItems: 'الأكثر مبيعًا اليوم', noItemsToday: 'لم يُبع أي صنف اليوم بعد.',
     notifications: 'الإشعارات', notifyClock: 'نبّهني عند تسجيل الحضور أو الانصراف',
@@ -672,6 +680,8 @@ function reports() {
         h('div', null, h('b', { text: String(m.orders) }), h('small', { text: t('monthOrders') })),
         h('div', null, h('b', { text: money(m.averageTicket) }), h('small', { text: t('average') })),
         h('div', null, h('b', { text: money(m.refunds) }), h('small', { text: t('refundsGiven') })))),
+    profitCard(m.profit),
+    monthCloseCard(m.month),
     m.orders ? h('section', { class: 'card' }, h('h2', { text: t('paymentsPeriod') }), m.payments.map(function (x) {
       return h('div', { class: 'row' }, h('span', { text: payLabel(x.method) }), h('strong', { text: money(x.total) }));
     })) : h('section', { class: 'card' }, h('p', { class: 'empty', text: t('noMonthData') })),
@@ -687,6 +697,51 @@ function reports() {
   ];
 }
 
+// Gross profit for a period: the laptop sends it over the orders whose items all had a cost at the time of sale.
+function profitCard(pr) {
+  if (!pr || !pr.costedSales) return h('section', { class: 'card' }, h('h2', { text: t('grossProfit') }), h('p', { class: 'empty', text: t('noCost') }));
+  return h('section', { class: 'card' }, h('h2', { text: t('grossProfit') }),
+    h('div', { class: 'row' }, h('span', { text: t('grossProfit') }, h('small', { text: t('marginOf', { p: pr.margin }) })), h('strong', { class: pr.grossProfit < 0 ? 'low' : '', text: money(pr.grossProfit) })),
+    h('div', { class: 'row' }, h('span', { text: t('cogs') }), h('strong', { text: money(pr.cogs) })),
+    h('p', { class: 'note', text: t('costedShare', { p: pr.costedShare }) }));
+}
+// Close the month from the phone: the figures come sealed with payroll; the laptop does the closing.
+function monthCloseCard(month) {
+  var sealed = state.data.snapshot.payroll;
+  if (!sealed || sealed.empty) return null;
+  if (!state.payData) return h('section', { class: 'card' }, h('h2', { text: t('mcTitle') }), h('p', { class: 'note', text: t('mcLocked') }), payrollLockForm());
+  var mc = (state.payData.monthClose || []).filter(function (x) { return x.month === month; })[0];
+  if (!mc) return null;
+  var closed = mc.closed, f = closed || mc;
+  var sent = (state.data.phoneMonthCloses || []).filter(function (x) { return x.month === month; })[0];
+  var waiting = sent && sent.status === 'pending';
+  var row = function (label, small, value, cls) { return h('div', { class: 'row' }, h('span', { text: label }, small ? h('small', { text: small }) : null), h('strong', { class: cls || '', text: value })); };
+  return h('section', { class: 'card' }, h('h2', { text: t('mcTitle') + ' · ' + month }),
+    closed ? h('p', { class: 'note', text: t('mcClosedOn', { when: cairo(closed.closedAt), who: closed.closedBy }) + (closed.result !== mc.result ? ' ' + t('mcChanged', { n: money(mc.result) }) : '') }) : h('p', { class: 'note', text: t('mcOpen') }),
+    row(t('mcNet'), null, money(f.netSales)),
+    f.vat ? row(t('mcVat'), null, '− ' + money(f.vat)) : null,
+    row(t('mcPurchases'), t('mcInvoices', { n: f.invoices }), '− ' + money(f.purchases)),
+    row(t('mcSalaries'), t('mcPeople', { n: f.employees }), '− ' + money(f.salaries)),
+    row(t('mcResult'), f.result < 0 ? t('mcLoss') : null, money(f.result), f.result < 0 ? 'low' : 'gold'),
+    waiting ? h('p', { class: 'note', text: t('attWaiting') }) : sent && sent.status === 'rejected' ? h('div', { class: 'banner err', text: t('attRefused') + (sent.note ? ' · ' + sent.note : '') }) : null,
+    h('button', { class: 'primary', type: 'button', disabled: state.busy || waiting ? 'disabled' : null, text: closed ? t('mcAgain') : t('mcClose'), onclick: function () { if (window.confirm(t('mcConfirm', { m: month }))) sendMonthClose(month); } }),
+    h('p', { class: 'note', text: t('mcNote') }));
+}
+function sendMonthClose(month) {
+  var id = uuid();
+  state.busy = true; state.error = ''; state.message = ''; render();
+  return call('monthClose', { change: { id: id, month: month } })
+    .then(function () { state.busy = false; state.message = t('mcSent'); return load(); })
+    .catch(function (e) { state.busy = false; state.error = e.message; render(); });
+}
+// The chart's bars can be tapped: the chosen day's numbers show under the chart until tapped again.
+function dayPick(daily) {
+  var i = state.pickedDay, d = i === null ? null : daily[i];
+  if (!d) return h('p', { class: 'note', text: t('tapBar') });
+  return h('div', { class: 'pick' },
+    h('span', { text: d.date === daily[daily.length - 1].date ? t('todayAxis') + ' · ' + d.date : d.date }, h('small', { text: t('dayOrders', { n: d.orders }) + ' · ' + t('grossProfit') + ' ' + (d.grossProfit === null ? t('noDayProfit') : money(d.grossProfit)) })),
+    h('strong', { text: money(d.netSales) }));
+}
 function today() {
   var s = state.data.snapshot, tt = s.today;
   var max = Math.max.apply(null, s.daily.map(function (d) { return d.netSales; }).concat([1]));
@@ -694,9 +749,11 @@ function today() {
     h('section', { class: 'card hero' }, h('span', { text: t('netSales', { day: s.businessDay }) }), h('strong', { text: money(tt.netSales) }),
       h('div', { class: 'stats' }, h('div', null, h('b', { text: String(tt.orders) }), h('small', { text: t('orders') })), h('div', null, h('b', { text: money(tt.averageTicket) }), h('small', { text: t('average') })), h('div', null, h('b', { text: money(tt.discounts) }), h('small', { text: t('discounts') })))),
     h('p', { class: 'note', text: t('dayNote') }),
+    profitCard(tt.profit),
     h('section', { class: 'card' }, h('h2', { text: t('last14') }),
-      h('div', { class: 'bars', role: 'img', 'aria-label': t('chartLabel') }, s.daily.map(function (d, i) { return h('div', { class: i === s.daily.length - 1 ? 'today' : '', style: 'height:' + Math.max(2, Math.round(d.netSales / max * 100)) + '%', title: d.date + ': ' + money(d.netSales) }); })),
-      h('div', { class: 'axis' }, h('span', { text: s.daily[0].date.slice(5) }), h('span', { text: t('todayAxis') }))),
+      h('div', { class: 'bars', role: 'group', 'aria-label': t('chartLabel') }, s.daily.map(function (d, i) { return h('button', { type: 'button', class: (i === s.daily.length - 1 ? 'today' : '') + (state.pickedDay === i ? ' on' : ''), style: 'height:' + Math.max(2, Math.round(d.netSales / max * 100)) + '%', 'aria-label': d.date + ': ' + money(d.netSales), 'aria-pressed': state.pickedDay === i ? 'true' : 'false', onclick: function () { state.pickedDay = state.pickedDay === i ? null : i; render(); } }); })),
+      h('div', { class: 'axis' }, h('span', { text: s.daily[0].date.slice(5) }), h('span', { text: t('todayAxis') })),
+      dayPick(s.daily)),
     h('section', { class: 'card' }, h('h2', { text: t('paymentsToday') }), tt.payments.length ? tt.payments.map(function (p) { return h('div', { class: 'row' }, h('span', { text: payLabel(p.method) }, h('small', { text: t('nOrders', { n: p.orders }) })), h('strong', { text: money(p.total) })); }) : h('p', { class: 'empty', text: t('noSalesToday') })),
     h('section', { class: 'card' }, h('h2', { text: t('drawer') }), (s.drawers || []).length ? (s.drawers || []).slice(0, 7).map(function (d) {
       if (d.status === 'open') return h('div', { class: 'row' }, h('span', { text: t('drawerOpen', { when: cairo(d.openedAt) }) }, h('small', { text: t('drawerFloat', { n: money(d.openingFloat) }) })), h('strong', { class: 'gold', text: '⏳' }));
