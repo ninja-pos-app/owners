@@ -611,7 +611,7 @@ function h(tag, attrs) {
   for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c === null || c === undefined || c === false) continue; if (Array.isArray(c)) c.forEach(function (x) { if (x) el.appendChild(x); }); else el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); }
   return el;
 }
-function payLabel(m) { return I18N.en[m] ? t(m) : String(m).replace(/_/g, ' '); }
+function payLabel(m) { var list = state.data && state.data.snapshot && state.data.snapshot.paymentMethods, hit = list && list.filter(function (x) { return x.id === m; })[0]; if (hit && !I18N.en[m]) return hit.name; return I18N.en[m] ? t(m) : String(m).replace(/_/g, ' '); }
 function money(n) { return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-EG', { style: 'currency', currency: 'EGP', maximumFractionDigits: 2 }).format(Number(n) || 0); }
 function utc(s) { if (!s) return null; return new Date(/Z$|[+-]\d\d:\d\d$/.test(s) ? s : String(s).replace(' ', 'T') + 'Z'); }
 function cairo(s, opts) { var d = utc(s); return d ? d.toLocaleString(LOCALE(), Object.assign({ timeZone: 'Africa/Cairo' }, opts || { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })) : ''; }
@@ -1023,8 +1023,8 @@ function attendance() {
     h('p', { class: 'note', text: t('attHint') }));
   var days = who.days.slice().reverse().map(function (d) {
     var flags = [];
-    if (d.tier && ['On Time', 'Grace', 'Pending', 'Day Off'].indexOf(d.tier) < 0) flags.push(h('span', { class: 'chip late', text: d.minsLate ? t('attLate', { n: d.minsLate }) + ' · ' + tr(d.tier) : tr(d.tier) }));
-    if (d.earlyTier && ['On Time', 'Grace', ''].indexOf(d.earlyTier) < 0) flags.push(h('span', { class: 'chip late', text: t('attEarly', { n: d.earlyMinutes }) }));
+    if (d.tier && ['On Time', 'Grace', 'Pending', 'Day Off'].indexOf(d.tier) < 0) flags.push(h('span', { class: 'chip late', text: (d.minsLate ? t('attLate', { n: d.minsLate }) + ' · ' + tr(d.tier) : tr(d.tier)) + (d.deduction ? ' · −' + money(d.deduction) : '') }));
+    if (d.earlyTier && ['On Time', 'Grace', ''].indexOf(d.earlyTier) < 0) flags.push(h('span', { class: 'chip late', text: t('attEarly', { n: d.earlyMinutes }) + (d.earlyDeduction ? ' · −' + money(d.earlyDeduction) : '') }));
     if (d.warning) flags.push(h('span', { class: 'chip warn', text: tr(d.warning) }));
     if (d.inHow === 'pin' || d.outHow === 'pin') flags.push(h('span', { class: 'chip pin', text: d.noId ? t('attNoId') : t('attPinFlag', { n: d.idFails || 5 }) }));
     var sent = sentList.filter(function (x) { return x.employeeId === who.id && x.day === d.key; })[0];
@@ -1499,8 +1499,9 @@ function employeePay(e, monthKey, months) {
     }).filter(Boolean));
   var days = h('section', { class: 'card' }, h('h2', { text: t('payDays') }),
     (e.days || []).length ? e.days.map(function (d) {
-      var detail = [d.checkIn && (d.checkIn + (d.checkOut ? ' - ' + d.checkOut : '')), d.tier, d.otHrs ? t('otHours', { n: d.otHrs }) : '', d.warning].filter(Boolean).join(' - ');
-      return h('div', { class: 'row' }, h('span', { text: d.date }, h('small', { text: detail })), h('strong', { class: d.deduction ? 'warn-txt' : '', text: d.deduction ? '- ' + money(d.deduction) : d.bonus ? money(d.bonus) : '' }));
+      var cut = (d.deduction || 0) + (d.earlyDeduction || 0);
+      var detail = [d.checkIn && (d.checkIn + (d.checkOut ? ' - ' + d.checkOut : '')), d.tier, d.deduction && d.earlyDeduction ? t('lateOnly') + ' −' + money(d.deduction) + ' · ' + t('earlyOnly') + ' −' + money(d.earlyDeduction) : d.earlyDeduction ? t('earlyOnly') + ' −' + money(d.earlyDeduction) : '', d.otHrs ? t('otHours', { n: d.otHrs }) : '', d.warning].filter(Boolean).join(' - ');
+      return h('div', { class: 'row' }, h('span', { text: d.date }, h('small', { text: detail })), h('strong', { class: cut ? 'warn-txt' : '', text: cut ? '- ' + money(cut) : d.bonus ? money(d.bonus) : '' }));
     }) : h('p', { class: 'empty', text: t('noPayrollMonth') }));
   return [
     h('button', { class: 'ghost', type: 'button', text: t('backToTeam'), onclick: function () { state.payWho = null; state.message = ''; render(); } }),
