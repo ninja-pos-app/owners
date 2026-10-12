@@ -50,7 +50,8 @@
   .row small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
   .row strong{white-space:nowrap;font-weight:700}
   .low{color:var(--danger)} .ok-txt{color:var(--green)} .gold{color:var(--gold)} .warn-txt{color:var(--amber)}
-  .att-flags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:46%}
+  .att-flags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:46%;align-items:center}
+  button.ghost.small{width:auto;padding:6px 10px;font-size:12px;min-height:0}
   .att-flags .chip{display:inline-block;border-radius:7px;padding:3px 7px;font-size:11px;font-weight:700;white-space:nowrap}
   .att-flags .chip.late{background:rgba(216,78,58,.14);color:var(--danger)} .att-flags .chip.warn{background:rgba(214,152,36,.16);color:var(--amber)} .att-flags .chip.pin{background:rgba(122,46,0,.16);color:#c9742f} .att-flags .chip.ok{background:rgba(109,190,69,.14);color:var(--green)}
   .att-day{width:100%;background:none;border:0;border-top:1px solid var(--line);color:inherit;font:inherit;text-align:inherit;cursor:pointer}
@@ -299,7 +300,7 @@ var I18N = {
     rememberPhone: 'Stay unlocked on this phone', lockPayroll: 'Lock payroll on this phone',
     lateOnly: 'of which late arrival', earlyOnly: 'of which early leave',
     month: 'Month', netPay: 'Net pay', baseSalary: 'Base salary', deductions: 'Deductions', bonuses: 'Bonuses', overtimePay: 'Overtime',
-    otHours: '{n} h', kpiBonusLabel: 'KPI bonus', excellence: 'Excellence bonus', daysWorked: 'Days worked', daysOffLabel: 'Days off',
+    otHours: '{n} h', otMins: '{h}h {m}m', insuranceShare: 'Social insurance (employee share)', insuranceEmployer: 'Employer share of insurance: {n}', kpiBonusLabel: 'KPI bonus', excellence: 'Excellence bonus', daysWorked: 'Days worked', daysOffLabel: 'Days off',
     noShowsLabel: 'No shows', lateDays: 'Late days', warningsLabel: 'Warnings', kpiScores: 'KPI scores', kpiSave: 'Save KPI scores',
     kpiSaved: 'KPI scores sent. They appear here after the laptop syncs.', kpiWaiting: 'Waiting for the laptop', noPayrollMonth: 'Nothing recorded for this month yet.',
     monthByMonth: 'Month by month', payDays: 'Attendance', backToTeam: 'All employees', kpiOutOf: 'out of 5',
@@ -333,7 +334,7 @@ var I18N = {
     drawerExpected: 'Should hold', drawerCounted: 'Counted', drawerShort: 'Short by {n}', drawerOver: 'Over by {n}',
     drawerExact: 'Matched exactly', drawerNone: 'No drawer counts yet.', drawerClosedBy: 'closed by {who}',
     recentOrders: 'Recent orders', noOrders: 'No orders recorded yet.', dineIn: 'Dine-in', takeaway: 'Takeaway',
-    cash: 'Cash', instapay: 'InstaPay', opay_visa: 'Card (OPay)',
+    cash: 'Cash', instapay: 'InstaPay', opay_visa: 'Card (OPay)', credit: 'On account',
     lowItems: '{n} item(s) at or below minimum.', noLow: 'No low-stock flags.',
     stockHelp: 'Tap an item to count it, add a delivery, record use or waste, or change its minimum. Changes are applied on the main laptop at its next sync (about 2 minutes).',
     addItem: '+ Add new stock item', searchStock: 'Search stock', noMatch: 'No matching items.',
@@ -389,7 +390,7 @@ var I18N = {
     shiftsRefused: 'The laptop did not accept those shifts.', shiftsLeave: 'Leave without sending the changes?',
     shiftsNote: 'If a week is not set in time, nobody is blocked: whoever clocks in is tracked against the shift they actually came in for.',
     shiftsNobody: 'No employees on payroll yet. Add them on the laptop, under Attendance.', shiftsNeedUpdate: 'Update Ninja on the laptop to set shifts from the phone.',
-    recentShifts: 'Recent shifts', shiftIn: 'In {t}', shiftOut: 'out {t}', closed: 'Closed', onShift: 'On shift',
+    recentShifts: 'Recent shifts', shiftIn: 'In {t}', shiftOut: 'out {t}', closed: 'Closed', onShift: 'On shift', clockOutBtn: 'Clock out', clockOutConfirm: 'Clock {name} out now? The laptop ends the shift at its next update and the departure goes on the day\'s record.', clockOutSent: 'Sent. The laptop clocks them out at its next update, in about 2 minutes.',
     noShifts: 'No shifts clocked on the new POS yet.',
     attNobody: 'No employees on payroll yet. Add them on the laptop, under Attendance.', attNeedUpdate: 'Update Ninja on the laptop to see daily attendance here.', attEmployee: 'Employee', attHint: 'Tap a day to correct it. The laptop applies the change at its next sync and marks the time as typed.',
     attLate: '{n} min late', attEarly: 'Left {n} min early', attPinFlag: 'PIN after {n} failed Face ID', attNoId: 'PIN · no Face ID set', onTime: 'On time', attEmpty: 'Nothing recorded this month yet.',
@@ -431,7 +432,7 @@ var I18N = {
     drawerExpected: 'المفروض به', drawerCounted: 'الفعلي', drawerShort: 'عجز {n}', drawerOver: 'زيادة {n}',
     drawerExact: 'مطابق تمامًا', drawerNone: 'لا يوجد جرد للدرج بعد.', drawerClosedBy: 'أغلقه {who}',
     recentOrders: 'أحدث الطلبات', noOrders: 'لا توجد طلبات مسجلة بعد.', dineIn: 'داخل المحل', takeaway: 'تيك أواي',
-    cash: 'نقدًا', instapay: 'إنستاباي', opay_visa: 'بطاقة (OPay)',
+    cash: 'نقدًا', instapay: 'إنستاباي', opay_visa: 'بطاقة (OPay)', credit: 'على الحساب',
     lowItems: '{n} صنف عند الحد الأدنى أو أقل.', noLow: 'لا توجد أصناف منخفضة.',
     stockHelp: 'اضغط على أي صنف لجرده أو إضافة توريد أو تسجيل استهلاك أو هالك أو تغيير الحد الأدنى. تُطبق التغييرات على اللابتوب الرئيسي عند المزامنة التالية (حوالي دقيقتين).',
     addItem: '+ إضافة صنف جديد', searchStock: 'ابحث في المخزون', noMatch: 'لا توجد أصناف مطابقة.',
@@ -487,7 +488,7 @@ var I18N = {
     shiftsRefused: 'اللابتوب ما قبلش الورديات دي.', shiftsLeave: 'تخرج من غير ما تبعت التعديلات؟',
     shiftsNote: 'لو الأسبوع ما اتحددش في وقته، محدش بيتعطل: اللي يسجل حضور بيتحسب على الوردية اللي جه فيها فعلًا.',
     shiftsNobody: 'لا يوجد موظفين على المرتبات بعد. أضفهم من اللابتوب في الحضور.', shiftsNeedUpdate: 'حدّث نينجا على اللابتوب علشان تحدد الورديات من الموبايل.',
-    recentShifts: 'أحدث الورديات', shiftIn: 'دخول {t}', shiftOut: 'خروج {t}', closed: 'مغلقة', onShift: 'في الوردية',
+    recentShifts: 'أحدث الورديات', shiftIn: 'دخول {t}', shiftOut: 'خروج {t}', closed: 'مغلقة', onShift: 'في الوردية', clockOutBtn: 'تسجيل انصراف', clockOutConfirm: 'تسجيل انصراف {name} الآن؟ ينهي اللابتوب الوردية في تحديثه التالي ويُكتب الانصراف في سجل اليوم.', clockOutSent: 'تم الإرسال. يسجّل اللابتوب الانصراف في تحديثه التالي خلال دقيقتين تقريبًا.',
     Payroll: 'الرواتب', Reports: 'التقارير',
     stockItems: 'الأصناف', invoices: 'الفواتير',
     p_today: 'اليوم', p_month: 'هذا الشهر', p_last: 'الشهر الماضي',
@@ -501,7 +502,7 @@ var I18N = {
     rememberPhone: 'إبقاء الفتح على هذا الهاتف', lockPayroll: 'قفل الرواتب على هذا الهاتف',
     lateOnly: 'منها تأخير الحضور', earlyOnly: 'منها الانصراف المبكر',
     month: 'الشهر', netPay: 'صافي الراتب', baseSalary: 'الراتب الأساسي', deductions: 'الخصومات', bonuses: 'المكافآت', overtimePay: 'الوقت الإضافي',
-    otHours: '{n} س', kpiBonusLabel: 'مكافأة الأداء', excellence: 'مكافأة التميز', daysWorked: 'أيام العمل', daysOffLabel: 'أيام الراحة',
+    otHours: '{n} س', otMins: '{h}س {m}د', insuranceShare: 'التأمين الاجتماعي (حصة العامل)', insuranceEmployer: 'حصة صاحب العمل في التأمين: {n}', kpiBonusLabel: 'مكافأة الأداء', excellence: 'مكافأة التميز', daysWorked: 'أيام العمل', daysOffLabel: 'أيام الراحة',
     noShowsLabel: 'أيام الغياب', lateDays: 'أيام التأخير', warningsLabel: 'الإنذارات', kpiScores: 'درجات الأداء', kpiSave: 'حفظ درجات الأداء',
     kpiSaved: 'تم إرسال الدرجات. ستظهر هنا بعد مزامنة اللابتوب.', kpiWaiting: 'في انتظار اللابتوب', noPayrollMonth: 'لا يوجد تسجيل لهذا الشهر بعد.',
     monthByMonth: 'شهرًا بشهر', payDays: 'الحضور', backToTeam: 'كل الموظفين', kpiOutOf: 'من 5',
@@ -726,6 +727,13 @@ function monthCloseCard(month) {
     waiting ? h('p', { class: 'note', text: t('attWaiting') }) : sent && sent.status === 'rejected' ? h('div', { class: 'banner err', text: t('attRefused') + (sent.note ? ' · ' + sent.note : '') }) : null,
     h('button', { class: 'primary', type: 'button', disabled: state.busy || waiting ? 'disabled' : null, text: closed ? t('mcAgain') : t('mcClose'), onclick: function () { if (window.confirm(t('mcConfirm', { m: month }))) sendMonthClose(month); } }),
     h('p', { class: 'note', text: t('mcNote') }));
+}
+function sendClockOut(shiftId) {
+  var id = uuid();
+  state.busy = true; state.error = ''; state.message = ''; render();
+  return call('clockOut', { change: { id: id, shiftId: shiftId } })
+    .then(function () { state.busy = false; state.message = t('clockOutSent'); return load(); })
+    .catch(function (e) { state.busy = false; state.error = e.message; render(); });
 }
 function sendMonthClose(month) {
   var id = uuid();
@@ -1009,8 +1017,11 @@ function attendance() {
   if (!sealedBlock || sealedBlock.empty) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t(sealedBlock && sealedBlock.empty ? 'attNobody' : 'attNeedUpdate') }))];
   if (!state.payData) return [payrollLockForm()];
   var ad = state.payData.attendanceDays;
+  var sentOuts = state.data.phoneClockOuts || [];
   var recent = h('section', { class: 'card' }, h('h2', { text: t('recentShifts') }), s.shifts.length ? s.shifts.map(function (x) {
-    return h('div', { class: 'row' }, h('span', { text: x.employeeName }, h('small', { text: t('shiftIn', { t: cairo(x.clockIn) }) + (x.clockOut ? ' · ' + t('shiftOut', { t: cairo(x.clockOut, { hour: '2-digit', minute: '2-digit' }) }) : '') })), h('strong', { class: x.clockOut ? '' : 'ok-txt', text: x.clockOut ? t('closed') : t('onShift') }));
+    var waiting = !x.clockOut && sentOuts.some(function (o) { return o.shiftId === x.id && o.status === 'pending'; });
+    var right = x.clockOut ? h('strong', { text: t('closed') }) : waiting ? h('small', { class: 'warn-txt', text: t('attWaiting') }) : h('span', { class: 'att-flags' }, h('strong', { class: 'ok-txt', text: t('onShift') }), x.id ? h('button', { type: 'button', class: 'ghost small', text: t('clockOutBtn'), onclick: function () { if (confirm(t('clockOutConfirm', { name: x.employeeName }))) sendClockOut(x.id); } }) : null);
+    return h('div', { class: 'row' }, h('span', { text: x.employeeName }, h('small', { text: t('shiftIn', { t: cairo(x.clockIn) }) + (x.clockOut ? ' · ' + t('shiftOut', { t: cairo(x.clockOut, { hour: '2-digit', minute: '2-digit' }) }) : '') })), right);
   }) : h('p', { class: 'empty', text: t('noShifts') }));
   var privacy = h('p', { class: 'note', text: t('privacyNote') });
   if (!ad || !ad.months || !ad.months.length || !ad.months[0].employees.length) return [h('section', { class: 'card' }, h('p', { class: 'empty', text: t(ad ? 'attNobody' : 'attNeedUpdate') })), recent, privacy];
@@ -1469,7 +1480,8 @@ function employeePay(e, monthKey, months) {
   var rows = [['baseSalary', money(e.baseSalary)], ['deductions', '- ' + money(e.deductions)]];
   if (e.earlyDeductions) { rows.push(['lateOnly', '- ' + money(e.lateDeductions)]); rows.push(['earlyOnly', '- ' + money(e.earlyDeductions)]); }
   rows = rows.concat([['bonuses', money(e.bonus)],
-    ['overtimePay', money(e.overtime) + ' - ' + t('otHours', { n: e.overtimeHours })], ['kpiBonusLabel', money(e.kpiBonus)], ['excellence', money(e.excellence)]]);
+    ['overtimePay', money(e.overtime) + ' - ' + (e.otMinutes !== undefined ? t('otMins', { h: Math.floor(e.otMinutes / 60), m: e.otMinutes % 60 }) : t('otHours', { n: e.overtimeHours }))], ['kpiBonusLabel', money(e.kpiBonus)], ['excellence', money(e.excellence)]]);
+  if (e.insurance) rows.push(['insuranceShare', '- ' + money(e.insurance.employee)]);
   var counts = [['daysWorked', e.worked], ['daysOffLabel', e.daysOff], ['noShowsLabel', e.noShows], ['lateDays', e.lateDays], ['warningsLabel', e.warnings]];
   var categories = state.payData.categories || [];
   var draftKey = e.id + '|' + monthKey; state.kpiDraft = state.kpiDraft || {};
@@ -1500,7 +1512,7 @@ function employeePay(e, monthKey, months) {
   var days = h('section', { class: 'card' }, h('h2', { text: t('payDays') }),
     (e.days || []).length ? e.days.map(function (d) {
       var cut = (d.deduction || 0) + (d.earlyDeduction || 0);
-      var detail = [d.checkIn && (d.checkIn + (d.checkOut ? ' - ' + d.checkOut : '')), d.tier, d.deduction && d.earlyDeduction ? t('lateOnly') + ' −' + money(d.deduction) + ' · ' + t('earlyOnly') + ' −' + money(d.earlyDeduction) : d.earlyDeduction ? t('earlyOnly') + ' −' + money(d.earlyDeduction) : '', d.otHrs ? t('otHours', { n: d.otHrs }) : '', d.warning].filter(Boolean).join(' - ');
+      var detail = [d.checkIn && (d.checkIn + (d.checkOut ? ' - ' + d.checkOut : '')), d.tier, d.deduction && d.earlyDeduction ? t('lateOnly') + ' −' + money(d.deduction) + ' · ' + t('earlyOnly') + ' −' + money(d.earlyDeduction) : d.earlyDeduction ? t('earlyOnly') + ' −' + money(d.earlyDeduction) : '', d.otMins ? t('otMins', { h: Math.floor(d.otMins / 60), m: d.otMins % 60 }) : d.otHrs ? t('otHours', { n: d.otHrs }) : '', d.warning].filter(Boolean).join(' - ');
       return h('div', { class: 'row' }, h('span', { text: d.date }, h('small', { text: detail })), h('strong', { class: cut ? 'warn-txt' : '', text: cut ? '- ' + money(cut) : d.bonus ? money(d.bonus) : '' }));
     }) : h('p', { class: 'empty', text: t('noPayrollMonth') }));
   return [
