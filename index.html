@@ -323,7 +323,7 @@ var I18N = {
     topItems: 'Top items today', noItemsToday: 'No items sold yet today.',
     notifications: 'Notifications', notifyClock: 'Tell me when someone clocks in or out',
     notifyWhat: 'What to tell me about', notifyKindClock: 'Someone clocks in or out',
-    notifyKindDay: 'The day is closed (sales, profit and the cash count)', notifyKindStock: 'Something is out of stock or running low', notifyKindShifts: 'The week’s shifts need setting',
+    notifyKindDay: 'The day is closed (sales, profit and the cash count)', notifyKindStock: 'Something is out of stock or running low', notifyKindShifts: 'The week’s shifts need setting', notifyKindMaintenance: 'A machine is due for maintenance', maintenanceDue: 'Maintenance due', maintOverdue: 'overdue by {n} days', maintToday: 'due today', maintIn: 'due in {n} days', chooseSupplier: 'Choose a supplier…', newSupplier: '+ New supplier…', newSupplierName: 'New supplier name',
     notifyKindNone: 'Choose at least one, or turn notifications off.', notifyKindSaved: 'Saved.',
     notifyOn: 'On for this phone', notifyOff: 'Off for this phone', notifyAsk: 'Turn on',
     notifyStop: 'Turn off', notifyBlocked: 'Notifications are blocked for this app in the phone settings.',
@@ -421,7 +421,7 @@ var I18N = {
     topItems: 'الأكثر مبيعًا اليوم', noItemsToday: 'لم يُبع أي صنف اليوم بعد.',
     notifications: 'الإشعارات', notifyClock: 'نبّهني عند تسجيل الحضور أو الانصراف',
     notifyWhat: 'أخبرني عن', notifyKindClock: 'تسجيل الحضور أو الانصراف',
-    notifyKindDay: 'إقفال اليوم (المبيعات والأرباح وجرد الكاش)', notifyKindStock: 'صنف خلص أو قارب على الخلاص', notifyKindShifts: 'ورديات الأسبوع محتاجة تتحدد',
+    notifyKindDay: 'إقفال اليوم (المبيعات والأرباح وجرد الكاش)', notifyKindStock: 'صنف خلص أو قارب على الخلاص', notifyKindShifts: 'ورديات الأسبوع محتاجة تتحدد', notifyKindMaintenance: 'ماكينة موعد صيانتها جه', maintenanceDue: 'صيانة مستحقة', maintOverdue: 'متأخرة {n} يوم', maintToday: 'مستحقة اليوم', maintIn: 'بعد {n} يوم', chooseSupplier: 'اختر المورد…', newSupplier: '+ مورد جديد…', newSupplierName: 'اسم المورد الجديد',
     notifyKindNone: 'اختر نوعًا واحدًا على الأقل، أو أوقف الإشعارات.', notifyKindSaved: 'تم الحفظ.',
     notifyOn: 'مفعّلة على هذا الهاتف', notifyOff: 'غير مفعّلة على هذا الهاتف', notifyAsk: 'تفعيل',
     notifyStop: 'إيقاف', notifyBlocked: 'الإشعارات محظورة لهذا التطبيق من إعدادات الهاتف.',
@@ -750,12 +750,21 @@ function dayPick(daily) {
     h('span', { text: d.date === daily[daily.length - 1].date ? t('todayAxis') + ' · ' + d.date : d.date }, h('small', { text: t('dayOrders', { n: d.orders }) + ' · ' + t('grossProfit') + ' ' + (d.grossProfit === null ? t('noDayProfit') : money(d.grossProfit)) })),
     h('strong', { text: money(d.netSales) }));
 }
+function maintenanceCard(s) {
+  var list = s.maintenance || [];
+  if (!list.length) return null;
+  return h('section', { class: 'card' }, h('h2', { text: t('maintenanceDue') }), list.map(function (d) {
+    var when = d.status === 'overdue' ? t('maintOverdue', { n: -d.days }) : d.status === 'today' ? t('maintToday') : t('maintIn', { n: d.days });
+    return h('div', { class: 'row' }, h('span', { text: d.name }, h('small', { text: d.nextDue })), h('strong', { class: d.status === 'overdue' ? 'low' : '', text: when }));
+  }));
+}
 function today() {
   var s = state.data.snapshot, tt = s.today;
   var max = Math.max.apply(null, s.daily.map(function (d) { return d.netSales; }).concat([1]));
   return [
     h('section', { class: 'card hero' }, h('span', { text: t('netSales', { day: s.businessDay }) }), h('strong', { text: money(tt.netSales) }),
       h('div', { class: 'stats' }, h('div', null, h('b', { text: String(tt.orders) }), h('small', { text: t('orders') })), h('div', null, h('b', { text: money(tt.averageTicket) }), h('small', { text: t('average') })), h('div', null, h('b', { text: money(tt.discounts) }), h('small', { text: t('discounts') })))),
+    maintenanceCard(s),
     h('p', { class: 'note', text: t('dayNote') }),
     profitCard(tt.profit),
     h('section', { class: 'card' }, h('h2', { text: t('last14') }),
@@ -905,10 +914,13 @@ function openStockPanel(item) {
 
 function statusPill(status) { return h('span', { class: 'pill ' + status, text: t('s_' + status) }); }
 
+function supplierNames() { var s = state.data && state.data.snapshot; return (s && s.suppliers) || []; }
 function buildPurchaseForm() {
   return h('form', { class: 'card', onsubmit: submitPurchase },
     h('h2', { text: t('newPurchase') }),
-    h('label', null, t('supplier'), h('input', { name: 'supplier', required: 'required', maxlength: '200', autocomplete: 'off' })),
+    h('label', null, t('supplier'), h('select', { name: 'supplierPick', required: 'required', onchange: function () { var box = this.form.querySelector('.new-supplier'); box.style.display = this.value === '__new' ? '' : 'none'; box.querySelector('input').required = this.value === '__new'; } },
+      [h('option', { value: '', text: t('chooseSupplier') })].concat(supplierNames().map(function (n) { return h('option', { value: n, text: n }); })).concat([h('option', { value: '__new', text: t('newSupplier') })]))),
+    h('label', { class: 'new-supplier', style: 'display:none' }, t('newSupplierName'), h('input', { name: 'supplier', maxlength: '200', autocomplete: 'off' })),
     h('label', null, t('invoiceDate'), h('input', { name: 'purchasedAt', type: 'date', required: 'required', value: todayCairo() })),
     h('label', null, t('totalEgp'), h('input', { name: 'total', type: 'number', inputmode: 'decimal', min: '0', max: '10000000', step: '0.01', required: 'required' })),
     h('label', null, t('whatBought'), h('textarea', { name: 'description', maxlength: '2000' })),
@@ -922,7 +934,8 @@ function purchases() {
   if (!state.purchaseId) { state.purchaseId = uuid(); state.form = null; }
   // The same form element is reused across refreshes so typed values and the chosen photo survive
   // (Android may reload data after the camera closes). It is rebuilt only when the language changes.
-  if (!state.form || state.formLang !== lang) { var old = state.form; state.form = buildPurchaseForm(); state.formLang = lang; if (old) ['supplier', 'purchasedAt', 'total', 'description'].forEach(function (n) { state.form[n].value = old[n].value; }); }
+  var formKey = lang + '|' + supplierNames().join('|');
+  if (!state.form || state.formLang !== formKey) { var old = state.form; state.form = buildPurchaseForm(); state.formLang = formKey; if (old) ['supplierPick', 'supplier', 'purchasedAt', 'total', 'description'].forEach(function (n) { if (old[n]) state.form[n].value = old[n].value; }); if (state.form.supplierPick.value === '__new') { state.form.querySelector('.new-supplier').style.display = ''; } }
   var phone = d.phonePurchases || [];
   return [
     state.message ? h('div', { class: 'banner ok', role: 'status', text: state.message }) : null,
@@ -1019,8 +1032,9 @@ function attendance() {
   var ad = state.payData.attendanceDays;
   var sentOuts = state.data.phoneClockOuts || [];
   var recent = h('section', { class: 'card' }, h('h2', { text: t('recentShifts') }), s.shifts.length ? s.shifts.map(function (x) {
-    var waiting = !x.clockOut && sentOuts.some(function (o) { return o.shiftId === x.id && o.status === 'pending'; });
-    var right = x.clockOut ? h('strong', { text: t('closed') }) : waiting ? h('small', { class: 'warn-txt', text: t('attWaiting') }) : h('span', { class: 'att-flags' }, h('strong', { class: 'ok-txt', text: t('onShift') }), x.id ? h('button', { type: 'button', class: 'ghost small', text: t('clockOutBtn'), onclick: function () { if (confirm(t('clockOutConfirm', { name: x.employeeName }))) sendClockOut(x.id); } }) : null);
+    var sent = sentOuts.filter(function (o) { return o.shiftId === x.id; })[0];
+    var waiting = !x.clockOut && sent && sent.status === 'pending', refused = !x.clockOut && sent && sent.status === 'rejected';
+    var right = x.clockOut ? h('strong', { text: t('closed') }) : waiting ? h('small', { class: 'warn-txt', text: t('attWaiting') }) : h('span', { class: 'att-flags' }, refused ? h('small', { class: 'warn-txt', text: t('attRefused') + (sent.note ? ': ' + sent.note : '') }) : h('strong', { class: 'ok-txt', text: t('onShift') }), x.id ? h('button', { type: 'button', class: 'ghost small', text: t('clockOutBtn'), onclick: function () { if (confirm(t('clockOutConfirm', { name: x.employeeName }))) sendClockOut(x.id); } }) : null);
     return h('div', { class: 'row' }, h('span', { text: x.employeeName }, h('small', { text: t('shiftIn', { t: cairo(x.clockIn) }) + (x.clockOut ? ' · ' + t('shiftOut', { t: cairo(x.clockOut, { hour: '2-digit', minute: '2-digit' }) }) : '') })), right);
   }) : h('p', { class: 'empty', text: t('noShifts') }));
   var privacy = h('p', { class: 'note', text: t('privacyNote') });
@@ -1105,7 +1119,7 @@ function pushState() {
   return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
     .then(function (sub) { return sub ? 'on' : 'off'; }).catch(function () { return 'off'; });
 }
-var PUSH_KINDS = ['clock', 'day', 'stock', 'shifts'];
+var PUSH_KINDS = ['clock', 'day', 'stock', 'shifts', 'maintenance'];
 function myKinds() {
   var raw = kv('ninja.notifyKinds');
   if (!raw) return PUSH_KINDS.slice();
@@ -1255,7 +1269,7 @@ document.addEventListener('visibilitychange', function () {
 
 // ---------- profile ----------
 var PROFILE_TITLES = { notifications: 'notifications', appearance: 'appearance', security: 'security', password: 'changePassword' };
-var KIND_ICON = { clock: 'clock', day: 'day', stock: 'box', shifts: 'shifts' };
+var KIND_ICON = { clock: 'clock', day: 'day', stock: 'box', shifts: 'shifts', maintenance: 'box' };
 function profile() {
   if (state.profileView === 'notifications') return profileNotifications();
   if (state.profileView === 'appearance') return profileAppearance();
@@ -1539,7 +1553,7 @@ function submitPurchase(e) {
   e.preventDefault();
   if (state.busy) return;
   var f = e.target, file = f.receipt.files[0];
-  var purchase = { id: state.purchaseId, supplier: f.supplier.value, purchasedAt: f.purchasedAt.value, total: f.total.value, description: f.description.value, receipt: null };
+  var purchase = { id: state.purchaseId, supplier: f.supplierPick.value === '__new' ? f.supplier.value.trim() : f.supplierPick.value, purchasedAt: f.purchasedAt.value, total: f.total.value, description: f.description.value, receipt: null };
   var button = f.querySelector('button[type=submit]');
   function setBusy(on) { state.busy = on; button.disabled = on; button.textContent = on ? t('saving') : t('savePurchase'); }
   setBusy(true); state.error = ''; state.message = ''; render();
